@@ -221,7 +221,9 @@ tbody tr:hover { background:rgba(160,192,64,0.06); }
       <button class="tab-btn" data-tab="tab-lthr">LTHR 测试</button>
       <button class="tab-btn" data-tab="tab-hrr">HRR 心率区间</button>
       <button class="tab-btn" data-tab="tab-hrrcalc">💓 心率计算器</button>
-      <button class="tab-btn" data-tab="tab-race">🏁 比赛策略</button>
+      <button class="tab-btn" data-tab="tab-vt">VT1/VT2</button>
+      <button class="tab-btn" data-tab="tab-race">🏁 8段策略</button>
+      <button class="tab-btn" data-tab="tab-sim">📋 全流程模拟</button>
     </div>
 
     <!-- CS -->
@@ -279,13 +281,127 @@ tbody tr:hover { background:rgba(160,192,64,0.06); }
       <p style="text-align:center;color:var(--ssp-muted);font-size:0.82rem;margin-top:10px;">LTHR 红线 = <span id="hrr-lthr-display">--</span> | 公式：RHR + (MHR−RHR) × %</p>
     </div>
 
-    <!-- Race Strategy -->
-    <div class="tab-panel" id="tab-race">
-      <h3>🏁 HYROX 比赛策略：用数据代替感觉</h3>
+    <!-- VT1/VT2 -->
+    <div class="tab-panel" id="tab-vt">
+      <h3>VT1 / VT2 通气阈测试（无需设备的小白友好方法）</h3>
+      <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
+        通气阈 (VT) 是最古老也最好用的训练分区锚点之一。<strong>VT1</strong>≈有氧阈（能聊天→只能说短句的转折点），<strong>VT2</strong>≈无氧阈（只能说 1-2 个字→说不出话的转折点）。以下是三步骤简易方法。
+      </p>
+
       <div class="step-list">
-        <div class="step-item"><strong>配速模板（8×1km）</strong><p>Run 1：CS×0.90（保守开局，心率建仓）→ Run 2-3：CS×0.93（找巡航节奏）→ Run 4-6：CS×0.95（核心巡航）→ Run 7-8：视 D' 余量决定是否提速。站点后 200m 用小步频恢复跑姿，不急于回到目标配速。</p></div>
-        <div class="step-item"><strong>站点→跑步过渡诊断</strong><p>Ski 后看踏空感（心率高但腿不酸→心率封顶问题）| Sled Push 后看步频是否骤降（股四头肌疲劳）| Sled Pull 后站直是否眩晕（体位性低血压）| Row 后看大腿再灌注 | Wall Balls 后看 Run 8 是否失去跑步刚性。</p></div>
-        <div class="step-item"><strong>D' 的实时管理</strong><p>高于 CS 的每一秒都在消耗 D'。初期压速（存 D'），中期可适度提取（追上目标时间），末期清空 D'（冲刺）。低于 CS 跑时 D' 缓慢恢复——站点和恢复跑段都是充电机会。</p></div>
+        <div class="step-item">
+          <strong>🧪 说话测试 (Talk Test) — 找 VT1</strong>
+          <p>在跑台上从走路开始，每 <span class="highlight">2 分钟提速 0.5 km/h</span>。每一级结束时大声说一段 30 字的标准句子（如"我现在的配速感觉很轻松，可以一直跑下去"）。当你能完整说出但<span class="highlight">说完后需要吸一大口气</span>——这就是 VT1。对应的配速 ≈ Z2 上限，心率 ≈ <span class="highlight">65-75% HRmax</span>。HYROX 应用：你的恢复跑和站点后过渡跑不应超过 VT1。</p>
+        </div>
+
+        <div class="step-item" style="border-left-color:var(--ssp-gold);">
+          <strong>🧪 倒数说话测试 — 找 VT2</strong>
+          <p>继续每 2 分钟提速。当你说出同一句话时，<span class="highlight">只能吐出 3-5 个字就必须换气</span>——这就是 VT2。此时你还能说单词但不能说句子。对应的配速 ≈ <span class="highlight">85-90% HRmax</span>，与 LTHR 高度相关（但不完全等同）。HYROX 应用：VT2 是你的比赛巡航上限线——跑步段心率不应长时间超过 VT2。</p>
+        </div>
+
+        <div class="step-item">
+          <strong>📊 VT1 vs VT2 vs LTHR vs MLSS 关系速查</strong>
+          <table style="margin-top:8px;">
+            <thead><tr><th>指标</th><th>生理意义</th><th>主观感受</th><th>≈ %HRmax</th><th>HYROX 用途</th></tr></thead>
+            <tbody>
+              <tr><td><strong>VT1</strong></td><td>有氧阈：血乳酸首次上升</td><td>能说话但需多换气</td><td>65-75%</td><td>恢复跑 / 站点后过渡</td></tr>
+              <tr><td><strong>VT2</strong></td><td>无氧阈：乳酸快速累积起点</td><td>只能说 1-3 个词</td><td>85-90%</td><td>比赛巡航心率上限</td></tr>
+              <tr><td><strong>LTHR</strong></td><td>乳酸阈值心率 ≈ 60min 红线</td><td>艰难但可维持</td><td>85-92%</td><td>整场比赛心率封顶</td></tr>
+              <tr><td><strong>MLSS</strong></td><td>最大乳酸稳态</td><td>极难但乳酸不累积</td><td>≈VT2 稍高</td><td>≈ CS 生理等价值</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="step-item" style="border-left-color:var(--ssp-gold);">
+          <strong>🏃 心率漂移测试 (Cardiac Drift) — 验证 VT1</strong>
+          <p>在疑似 VT1 配速下<span class="highlight">匀速跑 60 分钟</span>。记录第 10 分钟和第 60 分钟的心率。心率上升 <span class="highlight">≤5%</span> → 确认 VT1 正确；上升 <span class="highlight">5-10%</span> → 可能略高于 VT1；上升 <span class="highlight">>10%</span> → 配速远高于 VT1，降速重测。这是验证训练分区准确性最简单有效的方法。</p>
+        </div>
+
+        <div class="step-item">
+          <strong>⚠️ 注意事项</strong>
+          <p>说话测试受主观因素影响，重复 2-3 次取平均更可靠。不同器械（跑/划船/滑雪）的 VT1/VT2 心率不同——划船 VT 通常比跑步低 3-5 bpm。测试时保持标准化的说话内容、换气节奏和提速度步长。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8段策略 -->
+    <div class="tab-panel" id="tab-race">
+      <h3>🏁 8 个跑段的出入站策略</h3>
+      <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">目标不是每公里都跑快，而是在该恢复的地方恢复，在能拿回时间的地方拿回时间。</p>
+
+      <div class="step-list">
+
+        <div class="step-item" style="border-left-color:var(--ssp-gold);">
+          <strong>01 · Phase 0 + Run 1 — SkiErg → 第 1 跑</strong>
+          <p><span class="highlight">生理主题：氧亏与 VO₂ 慢成分。</span>0-500m 不超速，进站感觉应像"还能再跑 5km"。Ski 心率高不一定等于全身失控——上肢耗氧占比大但腿部仍相对新鲜。首跑用 CS×0.90，给心率建仓留空间。</p>
+        </div>
+
+        <div class="step-item">
+          <strong>02 · Run 2-3 — Sled Push / Pull → 第 2-3 跑</strong>
+          <p><span class="highlight">生理主题：Pi 积累、钙离子释放衰竭与升压反射。</span>推雪橇分段波动控制在 10% 以内——第一段压住速度。拉雪橇每次发力配合强呼气，松手站直后视线平视远处固定点，避免 ROXZone 眩晕。跑步段目标 CS×0.93，找到巡航节奏。</p>
+        </div>
+
+        <div class="step-item" style="border-left-color:var(--ssp-gold);">
+          <strong>03 · Run 4-5 — Burpee Broad Jump → 第 4-5 跑</strong>
+          <p><span class="highlight">生理主题：直立性压力与神经肌肉传递下降。</span>红区暴露 >95% HRmax 时开始计时——每次超红区应有时间上限。每 5m 看 Burpee 节律是否掉线（单次耗时波动 >0.5s = 神经肌肉输出崩）。<strong>Run 5 是主动恢复段</strong>——降配速换 D' 恢复。</p>
+        </div>
+
+        <div class="step-item">
+          <strong>04 · Run 6 — Row → 第 6 跑</strong>
+          <p><span class="highlight">生理主题：心输出量天花板与血流竞争。</span>心率封顶设 Run 1 均值 −5 bpm 或 88-90% HRmax。同配速下心率漂移 >5 bpm → 主动降功率。前 200m 用高步频冲刷跑，不急于回到巡航配速。</p>
+        </div>
+
+        <div class="step-item" style="border-left-color:var(--ssp-gold);">
+          <strong>05 · Run 7 — Farmers Carry → 第 7 跑</strong>
+          <p><span class="highlight">生理主题：呼吸肌代谢反射。</span>220+ spm 滑步走法，30-40cm 短步幅。4 步 1 呼吸周期——避免膈肌因稳定任务过度疲劳。上半身尽量减小垂直震荡，颈部放松。</p>
+        </div>
+
+        <div class="step-item">
+          <strong>06 · Run 8 + Finish — Lunges / Wall Balls → 终跑</strong>
+          <p><span class="highlight">生理主题：离心损伤与中枢疲劳。</span>箭步蹲膝盖最后 5cm 有意识减速，避免砸地离心损伤。墙球用腿-髋-核心-手的动量传递完成，手臂仅在惯性顶点顺势推出，记录中断次数。Run 8 不硬追配速——除非 D' 还有余量。</p>
+        </div>
+
+      </div>
+
+      <div class="tip" style="margin-top:18px;">
+        <strong>教练决策框架：</strong>每站后看三点——① 配速是否在 CS×0.90-0.95 区间？② 心率是否拉回 LTHR 以下？③ D' 剩余是否足够完成后续站点的加速需求？三个答案全是"是"，你的策略就对了。
+      </div>
+    </div>
+
+    <!-- 全流程模拟 -->
+    <div class="tab-panel" id="tab-sim">
+      <h3>📋 HYROX 全流程模拟评估</h3>
+
+      <div class="step-list">
+        <div class="step-item">
+          <strong>📝 必须记录的字段</strong>
+          <p>每个 1km 跑步时间 | 站点耗时 | <span class="highlight">进站心率</span> | <span class="highlight">出站心率</span> | RPE (1-10) | 动作中断次数 | ROXZone 过渡耗时（秒）</p>
+        </div>
+
+        <div class="step-item" style="border-left-color:var(--ssp-gold);">
+          <strong>🔍 三大核心判定标准</strong>
+          <p>① 跑步段 CV（变异系数）<span class="highlight">超过 6%</span> → 配速策略不稳定；② 雪橇分段波动<span class="highlight">超过 10%</span> → 动作效率或发力节奏问题；③ 站点后 400m <span class="highlight">明显掉速</span> → 通常是策略或动作效率问题，而不只是体能不够。</p>
+        </div>
+
+        <div class="step-item">
+          <strong>📉 恢复衰减链（站点→跑步过渡诊断）</strong>
+          <table style="margin-top:8px;">
+            <thead><tr><th>站点后</th><th>看什么</th><th>生理原因</th></tr></thead>
+            <tbody>
+              <tr><td>Ski → Run 2</td><td>踏空感（心率高但腿不酸）</td><td>上肢耗氧占优，腿部仍相对新鲜</td></tr>
+              <tr><td>Push → Run 3</td><td>步频是否骤降</td><td>股四头肌离心疲劳</td></tr>
+              <tr><td>Pull → ROXZone</td><td>站直后是否眩晕</td><td>体位性低血压 + 升压反射</td></tr>
+              <tr><td>Row → Run 6</td><td>大腿再灌注感觉</td><td>血流竞争恢复，下肢重新供血</td></tr>
+              <tr><td>Farmers → Run 7</td><td>呼吸与步频是否脱节</td><td>膈肌疲劳 → 呼吸节律紊乱</td></tr>
+              <tr><td>Lunges → Run 8</td><td>是否失去跑步刚性</td><td>离心损伤 + 中枢疲劳叠加</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="step-item" style="border-left-color:var(--ssp-gold);">
+          <strong>🎯 模拟后的三类输出靶点</strong>
+          <p>① <span class="highlight">速度靶点：</span>下个训练周期的每段配速目标（精确到 ±3 秒/km）；② <span class="highlight">心率封顶：</span>各站点的出站心率上限 + 跑步段恢复目标心率；③ <span class="highlight">站点动作节奏：</span>每个功能站点的分段策略和中断容忍上限。公开课现场用这三类靶点反推训练模块设计。</p>
+        </div>
       </div>
     </div>
   </div>
