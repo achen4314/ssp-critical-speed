@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSP 临界速度计算器 | Critical Speed Calculator</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --ssp-dark: #204040;
+    --ssp-green: #a0c040;
+    --ssp-gold: #c0c060;
+    --ssp-light: #f2f4f0;
+    --ssp-card: #ffffff;
+    --ssp-text: #2d2d2d;
+    --ssp-muted: #6b7280;
+    --ssp-danger: #e07060;
+    --ssp-info: #5b9bd5;
+    --radius: 12px;
+    --shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+    background: #f8f9f7;
+    color: var(--ssp-text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--ssp-dark);
+    color: #fff;
+    padding: 36px 24px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--ssp-green), var(--ssp-gold), var(--ssp-green));
+  }
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .header h1 .accent { color: var(--ssp-green); }
+  .header .subtitle {
+    margin-top: 6px;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.7);
+    font-weight: 400;
+  }
+
+  /* ── Container ── */
+  .container {
+    max-width: 1020px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--ssp-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border: 1px solid #e8ece6;
+  }
+  .card h2 {
+    font-size: 1.25rem;
+    color: var(--ssp-dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card h2 .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--ssp-green);
+    flex-shrink: 0;
+  }
+
+  /* ── Form ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    margin-bottom: 16px;
+  }
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-row label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ssp-dark);
+  }
+  .form-row .input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .form-row input, .form-row select {
+    padding: 10px 14px;
+    border: 1.5px solid #d8dcd4;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    background: #fafbf9;
+  }
+  .form-row input:focus, .form-row select:focus {
+    outline: none;
+    border-color: var(--ssp-green);
+    box-shadow: 0 0 0 3px rgba(160,192,64,0.12);
+  }
+  .form-row input.dist { width: 130px; }
+  .form-row input.time-min { width: 72px; }
+  .form-row input.time-sec { width: 72px; }
+  .form-row .unit { color: var(--ssp-muted); font-size: 0.85rem; flex-shrink: 0; }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .btn {
+    padding: 11px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--ssp-green);
+    color: #1a1a1a;
+  }
+  .btn-primary:hover { background: #b3d450; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--ssp-dark);
+    color: var(--ssp-dark);
+  }
+  .btn-outline:hover { background: var(--ssp-dark); color: #fff; }
+  .btn-sm {
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    border-radius: 6px;
+  }
+
+  /* ── Results ── */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .result-box {
+    background: var(--ssp-light);
+    border-radius: 10px;
+    padding: 20px 24px;
+    text-align: center;
+    border-left: 4px solid var(--ssp-green);
+  }
+  .result-box .label {
+    font-size: 0.82rem;
+    color: var(--ssp-muted);
+    margin-bottom: 4px;
+  }
+  .result-box .value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--ssp-dark);
+  }
+  .result-box .sub {
+    font-size: 0.85rem;
+    color: var(--ssp-muted);
+    margin-top: 2px;
+  }
+
+  /* ── Chart ── */
+  .chart-wrap {
+    position: relative;
+    height: 320px;
+    margin: 12px 0;
+  }
+  .chart-wrap canvas { width: 100% !important; }
+
+  /* ── Explain ── */
+  .explain-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .explain-card {
+    background: var(--ssp-light);
+    border-radius: 10px;
+    padding: 22px 24px;
+    border-top: 3px solid var(--ssp-green);
+  }
+  .explain-card h3 {
+    font-size: 1.05rem;
+    color: var(--ssp-dark);
+    margin-bottom: 10px;
+  }
+  .explain-card p, .explain-card li {
+    font-size: 0.9rem;
+    color: #4a4a4a;
+    margin-bottom: 6px;
+  }
+  .explain-card ul {
+    padding-left: 18px;
+  }
+  .explain-card .highlight {
+    background: rgba(160,192,64,0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .explain-card .tag {
+    display: inline-block;
+    background: var(--ssp-dark);
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+
+  /* ── Table ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  thead th {
+    background: var(--ssp-dark);
+    color: #fff;
+    padding: 11px 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #e8ece6;
+  }
+  tbody tr:nth-child(even) { background: #fafbf9; }
+  tbody tr:hover { background: rgba(160,192,64,0.06); }
+
+  /* ── Tips ── */
+  .tip {
+    background: #fefdf5;
+    border: 1px solid #e8e0a0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 0.88rem;
+    color: #6b6010;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .tip::before { content: '💡'; flex-shrink: 0; font-size: 1.1rem; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--ssp-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid #e8ece6;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .explain-grid { grid-template-columns: 1fr; }
+    .results-grid { grid-template-columns: 1fr 1fr; }
+    .header h1 { font-size: 1.5rem; }
+    .card { padding: 20px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="header">
+  <h1><span class="accent">SSP</span> 临界速度计算器</h1>
+  <p class="subtitle">Critical Speed · 训练分区 · 新手友好</p>
+</header>
+
+<div class="container">
+
+<!-- ═══════════ 输入区 ═══════════ -->
+<div class="card" id="input-card">
+  <h2><span class="dot"></span>输入测试数据</h2>
+  <p style="color:var(--ssp-muted);font-size:0.88rem;margin-bottom:16px;">
+    选择 2 或 3 个全力测试的距离和用时（建议覆盖 2-12 分钟区间）
+  </p>
+
+  <div class="form-grid" id="test-entries">
+    <!-- JS 生成 -->
+  </div>
+
+  <div class="btn-row" style="justify-content:space-between;">
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-sm btn-outline" onclick="addTest()">+ 添加测试</button>
+      <button class="btn btn-sm btn-outline" onclick="removeTest()" id="btn-remove" style="display:none;">− 移除</button>
+      <button class="btn btn-sm btn-outline" onclick="loadExample()">📋 载入示例</button>
+    </div>
+    <button class="btn btn-primary" onclick="calculate()">🔍 计算临界速度</button>
+  </div>
+</div>
+
+<!-- ═══════════ 结果区 ═══════════ -->
+<div class="card" id="results-card" style="display:none;">
+  <h2><span class="dot"></span>计算结果</h2>
+  <div class="results-grid" id="results-grid"></div>
+  <div class="chart-wrap"><canvas id="cs-chart"></canvas></div>
+  <p id="regression-info" style="text-align:center;color:var(--ssp-muted);font-size:0.85rem;"></p>
+</div>
+
+<!-- ═══════════ 训练分区 ═══════════ -->
+<div class="card" id="zones-card" style="display:none;">
+  <h2><span class="dot"></span>基于 CS 的训练配速分区</h2>
+  <p style="color:var(--ssp-muted);font-size:0.88rem;margin-bottom:14px;">
+    以你的临界速度（CS）为基准 100%，不同训练强度的建议配速如下：
+  </p>
+  <div style="overflow-x:auto;">
+    <table id="zones-table">
+      <thead>
+        <tr>
+          <th>训练区间</th>
+          <th>%CS</th>
+          <th>配速 (/km)</th>
+          <th>速度 (m/s)</th>
+          <th>主观感受</th>
+          <th>主要收益</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ 指标解释 ═══════════ -->
+<div class="card">
+  <h2><span class="dot"></span>各指标含义详解（新手必读）</h2>
+  <div class="explain-grid">
+
+    <!-- CS -->
+    <div class="explain-card">
+      <span class="tag">核心指标</span>
+      <h3>CS — 临界速度 (Critical Speed)</h3>
+      <p><strong>定义：</strong>你能<span class="highlight">理论上无限维持</span>的最高跑步速度。</p>
+      <p><strong>生理本质：</strong>此时身体<span class="highlight">产生乳酸 = 清除乳酸</span>，乳酸不再累积，是可持续跑的边界线。</p>
+      <ul>
+        <li>CS ≈ 最大乳酸稳态 (MLSS)</li>
+        <li>CS ≈ 马拉松/半马比赛配速</li>
+        <li>CS ≈ 最大心率 88-92%</li>
+      </ul>
+      <p><strong>怎么提升：</strong>慢跑堆量（线粒体↑）+ 节奏跑（乳酸清除↑）+ 长距离</p>
+    </div>
+
+    <!-- D' -->
+    <div class="explain-card">
+      <span class="tag">核心指标</span>
+      <h3>D' — 无氧距离储备 (Anaerobic Distance Reserve)</h3>
+      <p><strong>定义：</strong>高于 CS 时你能额外跑出的<span class="highlight">总距离</span>，像一块"无氧电池"。</p>
+      <p><strong>生理本质：</strong>磷酸原 + 糖酵解系统的总容量。速度超出 CS 越多，电池消耗越快。</p>
+      <ul>
+        <li>耗尽时间 t = D' / (当前速度 − CS)</li>
+        <li>低于 CS 跑时，D' 缓慢恢复</li>
+        <li>800/1500m 选手 D' 通常很大</li>
+      </ul>
+      <p><strong>怎么提升：</strong>短间歇冲刺 + 力量训练 + 高强度间歇（≥CS 的 2-4min 重复跑）</p>
+    </div>
+
+    <!-- CS-D' tradeoff -->
+    <div class="explain-card">
+      <span class="tag">教练必读</span>
+      <h3>CS 与 D' 的权衡关系</h3>
+      <p>同一个运动员，<span class="highlight">CS 和 D' 往往负相关</span>——你很难同时拥有极高的 CS 和极大的 D'。</p>
+      <ul>
+        <li><strong>耐力型</strong>（如马拉松选手）：CS↑↑↑ / D'↓</li>
+        <li><strong>速度型</strong>（如 800m 选手）：CS↓ / D'↑↑↑</li>
+        <li><strong>全能型</strong>（极罕见，如 Jakob）：CS↑ / D'↑</li>
+      </ul>
+      <p>训练必须根据项目距离权衡二者投入比例。</p>
+    </div>
+
+    <!-- R² -->
+    <div class="explain-card">
+      <span class="tag">质量控制</span>
+      <h3>R² — 拟合优度</h3>
+      <p><strong>定义：</strong>测试数据的线性拟合程度，范围 0-1。越接近 1 说明数据越可信。</p>
+      <ul>
+        <li><strong>R² ≥ 0.98</strong>：数据非常可靠，CS/D' 精确</li>
+        <li><strong>0.95 ≤ R² &lt; 0.98</strong>：可用，有小波动</li>
+        <li><strong>R² &lt; 0.95</strong>：数据不稳定，建议重新测试</li>
+      </ul>
+      <p>不稳定的原因：距离太接近、未全力跑、或测试间隔过短导致疲劳。</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ 实测指南 ═══════════ -->
+<div class="card">
+  <h2><span class="dot"></span>如何正确测试（实测指南）</h2>
+  <div class="explain-grid">
+
+    <div class="explain-card">
+      <span class="tag">测试方案</span>
+      <h3>推荐测试距离/时间</h3>
+      <p>选择 2-3 个点，<span class="highlight">间隔尽可能大</span>（覆盖 2-12 分钟区间效果最佳）：</p>
+      <table style="margin-top:10px;">
+        <thead><tr><th>选项</th><th>短距离</th><th>中距离</th><th>长距离</th></tr></thead>
+        <tbody>
+          <tr><td>A (距离)</td><td>1200m</td><td>2400m</td><td>3600m</td></tr>
+          <tr><td>B (时间)</td><td>3 分钟</td><td>6 分钟</td><td>9 分钟</td></tr>
+          <tr><td>C (混合)</td><td>800m</td><td>1500m</td><td>3000m</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="explain-card">
+      <span class="tag">注意事项</span>
+      <h3>测试必须遵守</h3>
+      <ul>
+        <li><strong>全力跑：</strong>每个距离都必须是当前的最大努力，不能"留力"</li>
+        <li><strong>充分休息：</strong>两次测试之间至少间隔 30-60 分钟</li>
+        <li><strong>标准化条件：</strong>尽量在同一跑道、相近天气下测试</li>
+        <li><strong>热身充分：</strong>每次测试前 10-15 分钟慢跑 + 动态拉伸</li>
+        <li><strong>定期重测：</strong>训练 8-12 周后重新测试以追踪进步</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /.container -->
+
+<footer class="footer">
+  2026 SteelBull Sport Performance (铁牛运动表现)
+</footer>
+
+<script>
+// ═══════════ State ═══════════
+let tests = [
+  { id: 1, dist: 1200, min: 4, sec: 0 },
+  { id: 2, dist: 2400, min: 8, sec: 30 },
+];
+let nextId = 3;
+let chartInstance = null;
+
+// ═══════════ Render ═══════════
+function renderTests() {
+  const el = document.getElementById('test-entries');
+  el.innerHTML = tests.map((t, i) => `
+    <div class="form-row">
+      <label>测试 ${i + 1}</label>
+      <div class="input-group">
+        <span style="font-size:0.85rem;flex-shrink:0;color:var(--ssp-muted);">距离</span>
+        <input type="number" class="dist" value="${t.dist}" min="100" max="10000" step="100"
+               onchange="updateTest(${t.id},'dist',this.value)" placeholder="米">
+        <span class="unit">m</span>
+        <span style="font-size:0.85rem;flex-shrink:0;color:var(--ssp-muted);margin-left:8px;">用时</span>
+        <input type="number" class="time-min" value="${t.min}" min="0" max="60"
+               onchange="updateTest(${t.id},'min',this.value)" placeholder="分">
+        <span class="unit">:</span>
+        <input type="number" class="time-sec" value="${t.sec}" min="0" max="59"
+               onchange="updateTest(${t.id},'sec',this.value)" placeholder="秒">
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('btn-remove').style.display = tests.length > 2 ? 'inline-block' : 'none';
+}
+
+function updateTest(id, field, val) {
+  const t = tests.find(x => x.id === id);
+  if (!t) return;
+  t[field] = parseInt(val) || 0;
+}
+
+function addTest() {
+  if (tests.length >= 5) return;
+  tests.push({ id: nextId++, dist: 3600, min: 13, sec: 30 });
+  renderTests();
+}
+
+function removeTest() {
+  if (tests.length <= 2) return;
+  tests.pop();
+  renderTests();
+}
+
+function loadExample() {
+  tests = [
+    { id: nextId++, dist: 1200, min: 4, sec: 0 },
+    { id: nextId++, dist: 2400, min: 8, sec: 30 },
+    { id: nextId++, dist: 3600, min: 13, sec: 12 },
+  ];
+  renderTests();
+}
+
+// ═══════════ Calculate ═══════════
+function calculate() {
+  // Parse
+  const pts = tests.map(t => ({
+    dist: t.dist,
+    time: t.min * 60 + t.sec,
+  })).filter(p => p.dist > 0 && p.time > 0);
+
+  if (pts.length < 2) {
+    alert('请至少填写 2 个有效测试（距离 > 0，用时 > 0）');
+    return;
+  }
+
+  // Linear regression: dist = CS * time + D'
+  const n = pts.length;
+  const sumX = pts.reduce((s, p) => s + p.time, 0);
+  const sumY = pts.reduce((s, p) => s + p.dist, 0);
+  const sumXY = pts.reduce((s, p) => s + p.time * p.dist, 0);
+  const sumX2 = pts.reduce((s, p) => s + p.time * p.time, 0);
+  const denom = n * sumX2 - sumX * sumX;
+
+  let CS, Dprime;
+  if (Math.abs(denom) < 1e-10) {
+    // All points have the same time — degenerate, use 2-point slope
+    CS = (pts[pts.length - 1].dist - pts[0].dist) / (pts[pts.length - 1].time - pts[0].time || 1);
+    Dprime = pts[0].dist - CS * pts[0].time;
+  } else {
+    CS = (n * sumXY - sumX * sumY) / denom;
+    Dprime = (sumY - CS * sumX) / n;
+  }
+
+  // R²
+  const meanY = sumY / n;
+  const ssRes = pts.reduce((s, p) => { const e = p.dist - (CS * p.time + Dprime); return s + e * e; }, 0);
+  const ssTot = pts.reduce((s, p) => { const d = p.dist - meanY; return s + d * d; }, 0);
+  const rSquared = ssTot > 0 ? 1 - ssRes / ssTot : 1;
+
+  // Pace
+  const pacePerKm = CS > 0 ? 1000 / CS : 0; // seconds per km
+  const paceMin = Math.floor(pacePerKm / 60);
+  const paceSec = Math.round(pacePerKm % 60);
+
+  // Show results
+  document.getElementById('results-card').style.display = 'block';
+  document.getElementById('zones-card').style.display = 'block';
+
+  const grid = document.getElementById('results-grid');
+  grid.innerHTML = `
+    <div class="result-box">
+      <div class="label">CS 临界速度</div>
+      <div class="value">${CS.toFixed(2)}</div>
+      <div class="sub">m/s</div>
+    </div>
+    <div class="result-box">
+      <div class="label">CS 对应配速</div>
+      <div class="value">${paceMin}:${String(paceSec).padStart(2, '0')}</div>
+      <div class="sub">/km</div>
+    </div>
+    <div class="result-box">
+      <div class="label">D' 无氧距离储备</div>
+      <div class="value">${Dprime.toFixed(0)}</div>
+      <div class="sub">米</div>
+    </div>
+    <div class="result-box">
+      <div class="label">R² 拟合优度</div>
+      <div class="value">${rSquared.toFixed(4)}</div>
+      <div class="sub">${rSquared >= 0.98 ? '✅ 非常可靠' : rSquared >= 0.95 ? '⚠️ 可用' : '❌ 建议重测'}</div>
+    </div>
+  `;
+
+  document.getElementById('regression-info').textContent =
+    `回归方程：距离 = ${CS.toFixed(2)} × 时间 + ${Dprime.toFixed(0)}　|　基于 ${n} 个数据点`;
+
+  // Chart
+  drawChart(pts, CS, Dprime);
+
+  // Zone table
+  buildZoneTable(CS);
+
+  // Scroll
+  document.getElementById('results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ═══════════ Chart ═══════════
+function drawChart(pts, CS, Dprime) {
+  if (chartInstance) chartInstance.destroy();
+
+  const ctx = document.getElementById('cs-chart').getContext('2d');
+  const tMin = Math.min(...pts.map(p => p.time));
+  const tMax = Math.max(...pts.map(p => p.time));
+  const pad = (tMax - tMin) * 0.15;
+  const xMin = Math.max(0, tMin - pad);
+  const xMax = tMax + pad;
+
+  // Generate regression line points
+  const lineX = [xMin, xMax];
+  const lineY = [CS * xMin + Dprime, CS * xMax + Dprime];
+
+  chartInstance = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: '实测数据',
+          data: pts.map(p => ({ x: p.time, y: p.dist })),
+          backgroundColor: '#204040',
+          borderColor: '#204040',
+          pointRadius: 7,
+          pointHoverRadius: 9,
+          order: 1,
+        },
+        {
+          label: 'CS 回归线',
+          data: [
+            { x: lineX[0], y: lineY[0] },
+            { x: lineX[1], y: lineY[1] },
+          ],
+          type: 'line',
+          borderColor: '#a0c040',
+          borderWidth: 2.5,
+          borderDash: [6, 3],
+          pointRadius: 0,
+          fill: false,
+          order: 0,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { usePointStyle: true, padding: 20, font: { family: 'Microsoft YaHei, sans-serif', size: 13 } },
+        },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              if (ctx.dataset.label === '实测数据') {
+                const min = Math.floor(ctx.parsed.x / 60);
+                const sec = Math.round(ctx.parsed.x % 60);
+                return `距离: ${ctx.parsed.y}m  |  用时: ${min}:${String(sec).padStart(2, '0')}`;
+              }
+              return `回归 D = ${CS.toFixed(2)}t + ${Dprime.toFixed(0)}`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: '时间 (秒)', font: { family: 'sans-serif', size: 13 } },
+          min: xMin,
+        },
+        y: {
+          title: { display: true, text: '距离 (米)', font: { family: 'sans-serif', size: 13 } },
+        },
+      },
+    },
+  });
+}
+
+// ═══════════ Zones ═══════════
+function buildZoneTable(CS) {
+  const zones = [
+    { name: '恢复跑 (Recovery)', pct: '60-70%', low: 0.60, high: 0.70, feel: '能轻松聊天', benefit: '促进恢复、脂肪代谢' },
+    { name: '有氧基础 (Easy/LSD)', pct: '70-80%', low: 0.70, high: 0.80, feel: '可持续对话', benefit: '线粒体密度↑、毛细血管↑' },
+    { name: '有氧耐力 (Moderate)', pct: '80-88%', low: 0.80, high: 0.88, feel: '说短句', benefit: '乳酸阈值↑、脂肪糖类混合供能' },
+    { name: '节奏跑 / 阈值跑 (Threshold)', pct: '92-97%', low: 0.92, high: 0.97, feel: '能说 1-2 个字', benefit: '乳酸清除率↑、比赛配速感' },
+    { name: '临界速度 (CS)', pct: '100%', low: 1.00, high: 1.00, feel: '艰难但可控', benefit: 'MLSS 适应、半马/全马配速' },
+    { name: '间歇跑 (VO₂max)', pct: '103-110%', low: 1.03, high: 1.10, feel: '很困难, 能维持 2-5 分钟', benefit: 'VO₂max↑、D\' 消耗训练' },
+    { name: '重复冲刺 (Anaerobic)', pct: '115-130%', low: 1.15, high: 1.30, feel: '极困难, 维持 30-90 秒', benefit: 'D\' 容量↑、磷酸原系统↑' },
+    { name: '最大冲刺 (Sprint)', pct: '>140%', low: 1.40, high: 1.80, feel: '全速, <30 秒', benefit: '神经肌肉招募↑、最大速度↑' },
+  ];
+
+  function formatPace(spd) {
+    if (spd <= 0) return '—';
+    const s = 1000 / spd;
+    const m = Math.floor(s / 60);
+    const sec = Math.round(s % 60);
+    return `${m}:${String(sec).padStart(2, '0')}`;
+  }
+
+  const tbody = document.querySelector('#zones-table tbody');
+  tbody.innerHTML = zones.map(z => {
+    const lowSpd = CS * z.low;
+    const highSpd = CS * z.high;
+    const paceLo = formatPace(highSpd); // slower pace = lower speed
+    const paceHi = formatPace(lowSpd);  // faster pace = higher speed
+    const paceStr = z.low === z.high ? formatPace(lowSpd) : `${paceHi} – ${paceLo}`;
+    const spdStr = z.low === z.high ? lowSpd.toFixed(1) : `${lowSpd.toFixed(1)} – ${highSpd.toFixed(1)}`;
+
+    return `<tr>
+      <td><strong>${z.name}</strong></td>
+      <td>${z.pct}</td>
+      <td>${paceStr}</td>
+      <td>${spdStr}</td>
+      <td>${z.feel}</td>
+      <td>${z.benefit}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════ Init ═══════════
+renderTests();
+</script>
+
+</body>
+</html>
