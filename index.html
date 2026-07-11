@@ -3,696 +3,434 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SSP 临界速度计算器 | 测试规范 · 训练分区 · 比赛策略</title>
+<title>SSP 临界速度计算器 | HYROX 数据锚点 · 测试规范 · 比赛策略</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-  :root {
-    --ssp-dark: #204040;
-    --ssp-green: #a0c040;
-    --ssp-gold: #c0c060;
-    --ssp-light: #f2f4f0;
-    --ssp-card: #ffffff;
-    --ssp-text: #2d2d2d;
-    --ssp-muted: #6b7280;
-    --ssp-danger: #e07060;
-    --ssp-info: #5b9bd5;
-    --radius: 12px;
-    --shadow: 0 2px 16px rgba(0,0,0,0.06);
-    --tab-bg: #ebf0e6;
-  }
+:root {
+  --ssp-dark: #204040; --ssp-green: #a0c040; --ssp-gold: #c0c060;
+  --ssp-light: #f2f4f0; --ssp-card: #fff; --ssp-text: #2d2d2d;
+  --ssp-muted: #6b7280; --radius: 12px; --shadow: 0 2px 16px rgba(0,0,0,0.06);
+} * { margin:0; padding:0; box-sizing:border-box; } html { scroll-behavior:smooth; }
+body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; background:#f8f9f7; color:var(--ssp-text); line-height:1.7; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+/* Nav */
+.top-nav { position:sticky; top:0; z-index:100; background:rgba(248,249,247,0.95); backdrop-filter:blur(12px); border-bottom:1px solid rgba(32,64,64,0.08); display:flex; align-items:center; gap:20px; padding:8px 5vw; font-size:0.85rem; }
+.top-nav a { text-decoration:none; color:var(--ssp-dark); font-weight:500; padding:4px 0; border-bottom:2px solid transparent; transition:border-color .2s; }
+.top-nav a:hover { border-color:var(--ssp-green); }
+.nav-brand { display:flex; align-items:center; gap:10px; margin-right:auto; }
+.nav-brand img { height:32px; width:auto; }
+.nav-brand span { font-weight:700; color:var(--ssp-dark); font-size:0.95rem; }
 
-  body {
-    font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
-    background: #f8f9f7;
-    color: var(--ssp-text);
-    line-height: 1.7;
-    min-height: 100vh;
-  }
+/* Header */
+.header { background:var(--ssp-dark); color:#fff; padding:36px 24px 30px; text-align:center; position:relative; }
+.header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:4px; background:linear-gradient(90deg,var(--ssp-green),var(--ssp-gold),var(--ssp-green)); }
+.header-logo { height:52px; margin-bottom:14px; }
+.header h1 { font-size:1.9rem; font-weight:700; }
+.header h1 .accent { color:var(--ssp-green); }
+.header .subtitle { margin-top:6px; font-size:0.9rem; color:rgba(255,255,255,0.7); }
 
-  /* ── Nav ── */
-  .top-nav {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(248,249,247,0.94);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(32,64,64,0.08);
-    display: flex; align-items: center; gap: 24px;
-    padding: 10px 5vw; font-size: 0.88rem;
-  }
-  .top-nav a {
-    text-decoration: none; color: var(--ssp-dark);
-    font-weight: 500; padding: 4px 0;
-    border-bottom: 2px solid transparent; transition: border-color 0.2s;
-  }
-  .top-nav a:hover { border-color: var(--ssp-green); }
-  .top-nav .brand { font-weight: 700; color: var(--ssp-green); margin-right: auto; font-size: 1rem; }
+.container { max-width:1060px; margin:0 auto; padding:24px 20px 60px; }
 
-  /* ── Header ── */
-  .header {
-    background: var(--ssp-dark); color: #fff;
-    padding: 40px 24px 36px; text-align: center; position: relative; overflow: hidden;
-  }
-  .header::after {
-    content: ''; position: absolute;
-    bottom: 0; left: 0; right: 0; height: 4px;
-    background: linear-gradient(90deg, var(--ssp-green), var(--ssp-gold), var(--ssp-green));
-  }
-  .header h1 { font-size: 2rem; font-weight: 700; letter-spacing: 0.02em; }
-  .header h1 .accent { color: var(--ssp-green); }
-  .header .subtitle { margin-top: 6px; font-size: 0.95rem; color: rgba(255,255,255,0.7); }
+.card { background:var(--ssp-card); border-radius:var(--radius); box-shadow:var(--shadow); padding:28px 32px; margin-bottom:24px; border:1px solid #e8ece6; }
+.card h2 { font-size:1.25rem; color:var(--ssp-dark); margin-bottom:18px; display:flex; align-items:center; gap:10px; }
+.card h2 .dot { width:8px; height:8px; border-radius:50%; background:var(--ssp-green); flex-shrink:0; }
+.card h3 { font-size:1.05rem; color:var(--ssp-dark); margin-bottom:10px; }
 
-  .container { max-width: 1060px; margin: 0 auto; padding: 28px 20px 60px; }
+/* Form */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px 16px; margin-bottom:16px; }
+.form-row { display:flex; flex-direction:column; gap:6px; }
+.form-row label { font-size:0.85rem; font-weight:600; color:var(--ssp-dark); }
+.form-row .input-group { display:flex; gap:8px; align-items:center; }
+input,select { padding:10px 14px; border:1.5px solid #d8dcd4; border-radius:8px; font-size:0.95rem; font-family:inherit; background:#fafbf9; transition:border-color .2s; }
+input:focus,select:focus { outline:none; border-color:var(--ssp-green); box-shadow:0 0 0 3px rgba(160,192,64,0.12); }
+.form-row input.dist { width:130px; } .form-row input.time-min { width:72px; } .form-row input.time-sec { width:72px; }
+.form-row .unit { color:var(--ssp-muted); font-size:0.85rem; flex-shrink:0; }
+.btn-row { display:flex; gap:10px; justify-content:center; margin-top:8px; }
+.btn { padding:11px 28px; border:none; border-radius:8px; font-size:0.95rem; font-weight:600; font-family:inherit; cursor:pointer; transition:all .2s; }
+.btn-primary { background:var(--ssp-green); color:#1a1a1a; } .btn-primary:hover { background:#b3d450; transform:translateY(-1px); }
+.btn-outline { background:transparent; border:1.5px solid var(--ssp-dark); color:var(--ssp-dark); } .btn-outline:hover { background:var(--ssp-dark); color:#fff; }
+.btn-sm { padding:6px 14px; font-size:0.82rem; border-radius:6px; }
 
-  /* ── Cards ── */
-  .card {
-    background: var(--ssp-card); border-radius: var(--radius);
-    box-shadow: var(--shadow); padding: 28px 32px; margin-bottom: 24px;
-    border: 1px solid #e8ece6;
-  }
-  .card h2 { font-size: 1.25rem; color: var(--ssp-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-  .card h2 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ssp-green); flex-shrink: 0; }
-  .card h3 { font-size: 1.05rem; color: var(--ssp-dark); margin-bottom: 10px; }
+/* Results */
+.results-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+.result-box { background:var(--ssp-light); border-radius:10px; padding:18px 20px; text-align:center; border-left:4px solid var(--ssp-green); }
+.result-box .label { font-size:0.78rem; color:var(--ssp-muted); margin-bottom:3px; }
+.result-box .value { font-size:1.7rem; font-weight:700; color:var(--ssp-dark); }
+.result-box .sub { font-size:0.82rem; color:var(--ssp-muted); margin-top:2px; }
+.chart-wrap { position:relative; height:300px; margin:12px 0; } .chart-wrap canvas { width:100%!important; }
 
-  /* ── Form ── */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-bottom: 16px; }
-  .form-row { display: flex; flex-direction: column; gap: 6px; }
-  .form-row label { font-size: 0.85rem; font-weight: 600; color: var(--ssp-dark); }
-  .form-row .input-group { display: flex; gap: 8px; align-items: center; }
-  .form-row input, .form-row select {
-    padding: 10px 14px; border: 1.5px solid #d8dcd4; border-radius: 8px;
-    font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s; background: #fafbf9;
-  }
-  .form-row input:focus, .form-row select:focus {
-    outline: none; border-color: var(--ssp-green); box-shadow: 0 0 0 3px rgba(160,192,64,0.12);
-  }
-  .form-row input.dist { width: 130px; }
-  .form-row input.time-min { width: 72px; }
-  .form-row input.time-sec { width: 72px; }
-  .form-row .unit { color: var(--ssp-muted); font-size: 0.85rem; flex-shrink: 0; }
+/* Tabs */
+.tabs-container { border:1px solid #e0e4db; border-radius:var(--radius); overflow:hidden; }
+.tabs-nav { display:flex; flex-wrap:wrap; gap:0; background:#ebf0e6; border-bottom:1px solid #d8dcd4; }
+.tab-btn { padding:13px 18px; border:none; background:transparent; font-size:0.86rem; font-weight:600; font-family:inherit; cursor:pointer; color:var(--ssp-muted); transition:all .2s; border-bottom:3px solid transparent; }
+.tab-btn:hover { color:var(--ssp-dark); background:rgba(160,192,64,0.08); }
+.tab-btn.active { color:var(--ssp-dark); border-bottom-color:var(--ssp-green); background:#fff; }
+.tab-panel { display:none; padding:24px 28px; }
+.tab-panel.active { display:block; }
 
-  .btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
-  .btn {
-    padding: 11px 28px; border: none; border-radius: 8px;
-    font-size: 0.95rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s;
-  }
-  .btn-primary { background: var(--ssp-green); color: #1a1a1a; }
-  .btn-primary:hover { background: #b3d450; transform: translateY(-1px); }
-  .btn-outline { background: transparent; border: 1.5px solid var(--ssp-dark); color: var(--ssp-dark); }
-  .btn-outline:hover { background: var(--ssp-dark); color: #fff; }
-  .btn-sm { padding: 6px 14px; font-size: 0.82rem; border-radius: 6px; }
+/* Steps */
+.step-list { display:flex; flex-direction:column; gap:14px; }
+.step-item { padding:15px 20px; background:var(--ssp-light); border-radius:8px; border-left:3px solid var(--ssp-green); }
+.step-item strong { display:block; font-size:0.93rem; color:var(--ssp-dark); margin-bottom:4px; }
+.step-item p { font-size:0.88rem; color:#4a4a4a; margin:0; }
+.step-item .highlight { background:rgba(160,192,64,0.18); padding:2px 8px; border-radius:4px; font-weight:600; }
 
-  /* ── Results ── */
-  .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-  .result-box {
-    background: var(--ssp-light); border-radius: 10px; padding: 20px 24px;
-    text-align: center; border-left: 4px solid var(--ssp-green);
-  }
-  .result-box .label { font-size: 0.82rem; color: var(--ssp-muted); margin-bottom: 4px; }
-  .result-box .value { font-size: 1.8rem; font-weight: 700; color: var(--ssp-dark); }
-  .result-box .sub { font-size: 0.85rem; color: var(--ssp-muted); margin-top: 2px; }
+/* HRR */
+.hrr-form { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:16px; }
+.hrr-form .input-group { display:flex; flex-direction:column; gap:4px; }
+.hrr-form .input-group label { font-size:0.82rem; font-weight:600; color:var(--ssp-dark); }
 
-  .chart-wrap { position: relative; height: 320px; margin: 12px 0; }
-  .chart-wrap canvas { width: 100% !important; }
+/* Explain */
+.explain-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.explain-card { background:var(--ssp-light); border-radius:10px; padding:20px 22px; border-top:3px solid var(--ssp-green); }
+.explain-card .tag { display:inline-block; background:var(--ssp-dark); color:#fff; font-size:0.72rem; padding:3px 10px; border-radius:12px; margin-bottom:8px; }
+.explain-card h3 { margin-bottom:8px; }
+.explain-card p,.explain-card li { font-size:0.88rem; color:#4a4a4a; margin-bottom:5px; }
+.explain-card ul { padding-left:18px; }
+.explain-card .highlight { background:rgba(160,192,64,0.18); padding:2px 8px; border-radius:4px; font-weight:600; }
 
-  /* ── Tabs ── */
-  .tabs-container { border: 1px solid #e0e4db; border-radius: var(--radius); overflow: hidden; }
-  .tabs-nav {
-    display: flex; flex-wrap: wrap; gap: 0;
-    background: var(--tab-bg); border-bottom: 1px solid #d8dcd4;
-  }
-  .tab-btn {
-    padding: 13px 20px; border: none; background: transparent;
-    font-size: 0.88rem; font-weight: 600; font-family: inherit; cursor: pointer;
-    color: var(--ssp-muted); transition: all 0.2s;
-    border-bottom: 3px solid transparent;
-  }
-  .tab-btn:hover { color: var(--ssp-dark); background: rgba(160,192,64,0.08); }
-  .tab-btn.active { color: var(--ssp-dark); border-bottom-color: var(--ssp-green); background: #fff; }
-  .tab-panel { display: none; padding: 24px 28px; }
-  .tab-panel.active { display: block; }
+/* Quote */
+.quote-banner { background:var(--ssp-dark); color:#fff; text-align:center; padding:18px 24px; border-radius:var(--radius); margin-bottom:24px; font-size:0.95rem; }
+.quote-banner strong { color:var(--ssp-green); }
 
-  /* ── Protocol Steps ── */
-  .step-list { display: flex; flex-direction: column; gap: 16px; }
-  .step-item {
-    padding: 16px 20px; background: var(--ssp-light);
-    border-radius: 8px; border-left: 3px solid var(--ssp-green);
-  }
-  .step-item strong { display: block; font-size: 0.95rem; color: var(--ssp-dark); margin-bottom: 4px; }
-  .step-item p { font-size: 0.9rem; color: #4a4a4a; margin: 0; }
-  .step-item .highlight {
-    background: rgba(160,192,64,0.15); padding: 2px 8px; border-radius: 4px; font-weight: 600;
-  }
+table { width:100%; border-collapse:collapse; font-size:0.86rem; }
+thead th { background:var(--ssp-dark); color:#fff; padding:10px 12px; text-align:left; font-weight:600; }
+tbody td { padding:9px 12px; border-bottom:1px solid #e8ece6; }
+tbody tr:nth-child(even) { background:#fafbf9; }
+tbody tr:hover { background:rgba(160,192,64,0.06); }
 
-  /* ── HRR Calculator ── */
-  .hrr-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px; }
-  .hrr-form .input-group { display: flex; flex-direction: column; gap: 4px; }
-  .hrr-form .input-group label { font-size: 0.82rem; font-weight: 600; color: var(--ssp-dark); }
-  .hrr-form .input-group input {
-    padding: 9px 12px; border: 1.5px solid #d8dcd4; border-radius: 8px; font-size: 0.9rem;
-    font-family: inherit; background: #fafbf9;
-  }
+.tip { background:#fefdf5; border:1px solid #e8e0a0; border-radius:8px; padding:14px 18px; font-size:0.86rem; color:#6b6010; display:flex; align-items:flex-start; gap:8px; }
+.tip::before { content:'💡'; flex-shrink:0; font-size:1.1rem; }
 
-  /* ── Explain ── */
-  .explain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .explain-card {
-    background: var(--ssp-light); border-radius: 10px;
-    padding: 22px 24px; border-top: 3px solid var(--ssp-green);
-  }
-  .explain-card h3 { font-size: 1.05rem; color: var(--ssp-dark); margin-bottom: 10px; }
-  .explain-card p, .explain-card li { font-size: 0.9rem; color: #4a4a4a; margin-bottom: 6px; }
-  .explain-card ul { padding-left: 18px; }
-  .explain-card .highlight { background: rgba(160,192,64,0.15); padding: 2px 8px; border-radius: 4px; font-weight: 600; }
-  .explain-card .tag { display: inline-block; background: var(--ssp-dark); color: #fff; font-size: 0.75rem; padding: 3px 10px; border-radius: 12px; margin-bottom: 8px; }
+/* HYROX intro */
+.hyrox-intro { background:linear-gradient(135deg,#eef4e7 0%,#f8f9f7 100%); border-radius:var(--radius); padding:28px 30px; margin-bottom:24px; border:1px solid #dce4d4; }
+.hyrox-intro h2 { color:var(--ssp-dark); font-size:1.2rem; margin-bottom:14px; }
+.intro-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+.intro-card { background:#fff; border-radius:10px; padding:18px; box-shadow:0 1px 6px rgba(0,0,0,0.04); }
+.intro-card .emoji { font-size:1.6rem; margin-bottom:6px; }
+.intro-card h4 { font-size:0.95rem; color:var(--ssp-dark); margin-bottom:6px; }
+.intro-card p { font-size:0.84rem; color:#555; line-height:1.6; }
 
-  /* ── Quote banner ── */
-  .quote-banner {
-    background: var(--ssp-dark); color: #fff; text-align: center;
-    padding: 22px 24px; border-radius: var(--radius); margin-bottom: 24px;
-  }
-  .quote-banner p { font-size: 1rem; margin: 0; opacity: 0.9; }
-  .quote-banner p strong { color: var(--ssp-green); }
+.info-stripe { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:16px; }
+.info-item { text-align:center; padding:12px; background:rgba(160,192,64,0.06); border-radius:8px; }
+.info-item .num { font-size:1.4rem; font-weight:700; color:var(--ssp-green); }
+.info-item .txt { font-size:0.78rem; color:var(--ssp-muted); margin-top:2px; }
 
-  /* ── Table ── */
-  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-  thead th { background: var(--ssp-dark); color: #fff; padding: 11px 14px; text-align: left; font-weight: 600; }
-  tbody td { padding: 10px 14px; border-bottom: 1px solid #e8ece6; }
-  tbody tr:nth-child(even) { background: #fafbf9; }
-  tbody tr:hover { background: rgba(160,192,64,0.06); }
+.footer { text-align:center; padding:24px; color:var(--ssp-muted); font-size:0.8rem; border-top:1px solid #e8ece6; }
 
-  .tip {
-    background: #fefdf5; border: 1px solid #e8e0a0; border-radius: 8px;
-    padding: 14px 18px; font-size: 0.88rem; color: #6b6010;
-    display: flex; align-items: flex-start; gap: 8px;
-  }
-  .tip::before { content: '💡'; flex-shrink: 0; font-size: 1.1rem; }
-
-  .station-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .station-mini {
-    background: var(--ssp-light); border-radius: 8px; padding: 14px 16px;
-    border-left: 3px solid var(--ssp-green);
-  }
-  .station-mini strong { font-size: 0.9rem; color: var(--ssp-dark); display: block; margin-bottom: 3px; }
-  .station-mini p { font-size: 0.84rem; color: #4a4a4a; margin: 0; }
-
-  /* ── Info stripe ── */
-  .info-stripe {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px; margin-bottom: 20px;
-  }
-  .info-item {
-    text-align: center; padding: 14px; background: rgba(160,192,64,0.06);
-    border-radius: 8px;
-  }
-  .info-item .num { font-size: 1.5rem; font-weight: 700; color: var(--ssp-green); }
-  .info-item .txt { font-size: 0.8rem; color: var(--ssp-muted); margin-top: 2px; }
-
-  .footer { text-align: center; padding: 24px; color: var(--ssp-muted); font-size: 0.8rem; border-top: 1px solid #e8ece6; }
-
-  @media (max-width: 768px) {
-    .form-grid { grid-template-columns: 1fr; }
-    .explain-grid { grid-template-columns: 1fr; }
-    .station-grid { grid-template-columns: 1fr; }
-    .results-grid { grid-template-columns: 1fr 1fr; }
-    .header h1 { font-size: 1.5rem; }
-    .card { padding: 20px 18px; }
-    .tabs-nav { flex-direction: column; }
-    .tab-btn { text-align: left; }
-  }
+@media(max-width:768px) {
+  .form-grid { grid-template-columns:1fr; } .explain-grid { grid-template-columns:1fr; }
+  .results-grid { grid-template-columns:1fr 1fr; } .card { padding:18px 16px; }
+  .tabs-nav { flex-direction:column; } .tab-btn { text-align:left; }
+}
 </style>
 </head>
 <body>
 
-<!-- ═══════════ NAV ═══════════ -->
+<!-- ═══ NAV ═══ -->
 <nav class="top-nav">
-  <span class="brand">SSP DATA LAB</span>
+  <a href="#" class="nav-brand"><img src="LOGO_PLACEHOLDER" alt="SSP"><span>SSP DATA LAB</span></a>
+  <a href="#intro">小白入门</a>
   <a href="#calculator">计算器</a>
   <a href="#protocols">测试规范</a>
   <a href="#explainer">指标解读</a>
 </nav>
 
-<!-- ═══════════ HEADER ═══════════ -->
+<!-- ═══ HEADER ═══ -->
 <header class="header">
+  <img class="header-logo" src="LOGO_PLACEHOLDER" alt="SSP">
   <h1><span class="accent">SSP</span> 临界速度计算器</h1>
-  <p class="subtitle">从 CS / D' 到 HRR / LTHR — 一站式训练数据锚点</p>
+  <p class="subtitle">HYROX 运动员的数据锚点 — CS / D' / LTHR / HRR 一站搞定</p>
 </header>
 
 <div class="container">
 
-<!-- ═══════════ QUOTE ═══════════ -->
+<!-- ═══ QUOTE ═══ -->
 <div class="quote-banner">
-  <p>所有测试都服务于同一个问题：<strong>下一场比赛该用什么速度、什么心率、什么节奏进入每一站。</strong></p>
+  所有测试都服务于同一个问题：<strong>下一场比赛该用什么速度、什么心率、什么节奏进入每一站。</strong>
 </div>
 
-<!-- ═══════════ 输入区 ═══════════ -->
+<!-- ═══ HYROX 小白入门 ═══ -->
+<div class="hyrox-intro" id="intro">
+  <h2>📖 如果你是 HYROX 新手，先读这里（3 分钟搞懂你在算什么）</h2>
+  <div class="intro-grid">
+    <div class="intro-card">
+      <div class="emoji">🏃</div>
+      <h4>HYROX 的独特挑战</h4>
+      <p>HYROX 是 <strong>8 次 1km 跑步 + 8 个功能站点</strong> 交替进行。跑步段需要巡航能力（CS），站点消耗大量无氧能量（D'），然后你还得在站点后立刻回到跑步节奏。这不是纯跑比赛——你的配速必须为站点"留余量"。</p>
+    </div>
+    <div class="intro-card">
+      <div class="emoji">🔋</div>
+      <h4>CS = 你的巡航速度</h4>
+      <p>临界速度 (CS) 是你<b>永远不会累垮</b>的最高速度。在 CS 以下跑，乳酸不会堆积。但在 HYROX 里你<strong>不能一直跑 CS</strong>——因为站点也要消耗能量。所以我们用 <strong>CS × 0.95</strong> 作为你的"HYROX 巡航配速"。</p>
+    </div>
+    <div class="intro-card">
+      <div class="emoji">⚡</div>
+      <h4>D' = 你的冲刺电池</h4>
+      <p>无氧距离储备 (D') 是你<b>高于 CS 时能额外跑出的距离</b>。在每个站点后你需要加速回到配速——这就是消耗 D'。如果你的 D' 小，站点后就会掉速。D' 在低于 CS 跑时会慢慢恢复。</p>
+    </div>
+    <div class="intro-card">
+      <div class="emoji">❤️</div>
+      <h4>LTHR = 你的心率红线</h4>
+      <p>乳酸阈值心率 (LTHR) 是你能<b>维持约 60 分钟的最高心率</b>。比赛中超过这个心率 = 进入倒计时 = 你会在 30-60 分钟内"爆缸"。HYROX 比赛中，你的心率会因站点反复冲高——关键是在跑步段把它拉回 LTHR 以下。</p>
+    </div>
+  </div>
+  <div class="tip" style="margin-top:16px;">
+    举个例子：你的 CS 是 4:00/km，但你在 HYROX 里的跑步段目标是约 4:12/km (CS×0.95)。因为你必须为 SkiErg、Sled Push、Wall Balls 这些站点保留能量。同时你的心率不能一直超过 175 bpm（你的 LTHR）——否则在 Run 5 之后你就会严重掉速。
+  </div>
+</div>
+
+<!-- ═══ CS 计算器 ═══ -->
 <div class="card" id="calculator">
-  <h2><span class="dot"></span>输入 CS 测试数据</h2>
-  <p style="color:var(--ssp-muted);font-size:0.88rem;margin-bottom:16px;">
-    选择 2 或 3 个全力测试的距离和用时（建议覆盖 2-12 分钟区间）
+  <h2><span class="dot"></span>第一步：输入你的 CS 测试数据</h2>
+  <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:14px;">
+    在田径场完成 2-3 次全力跑测试，把距离和用时填入下方。<br>
+    <strong>小白提示：</strong>不知道怎么测？直接点「载入示例」看效果，然后翻到下方"测试规范"学怎么自己测。
   </p>
   <div class="form-grid" id="test-entries"></div>
   <div class="btn-row" style="justify-content:space-between;">
     <div style="display:flex;gap:8px;">
-      <button class="btn btn-sm btn-outline" onclick="addTest()">+ 添加测试</button>
+      <button class="btn btn-sm btn-outline" onclick="addTest()">+ 添加</button>
       <button class="btn btn-sm btn-outline" onclick="removeTest()" id="btn-remove" style="display:none;">− 移除</button>
       <button class="btn btn-sm btn-outline" onclick="loadExample()">📋 载入示例</button>
     </div>
-    <button class="btn btn-primary" onclick="calculate()">🔍 计算临界速度</button>
+    <button class="btn btn-primary" onclick="calculate()">🔍 计算</button>
   </div>
 </div>
 
-<!-- ═══════════ 结果区 ═══════════ -->
+<!-- ═══ 结果 ═══ -->
 <div class="card" id="results-card" style="display:none;">
-  <h2><span class="dot"></span>计算结果</h2>
+  <h2><span class="dot"></span>你的数据结果</h2>
   <div class="results-grid" id="results-grid"></div>
   <div class="chart-wrap"><canvas id="cs-chart"></canvas></div>
   <p id="regression-info" style="text-align:center;color:var(--ssp-muted);font-size:0.85rem;"></p>
 </div>
 
-<!-- ═══════════ 训练分区 ═══════════ -->
+<!-- ═══ 训练分区 ═══ -->
 <div class="card" id="zones-card" style="display:none;">
-  <h2><span class="dot"></span>基于 CS 的训练配速分区</h2>
-  <p style="color:var(--ssp-muted);font-size:0.88rem;margin-bottom:14px;">
-    以你的临界速度（CS）为基准 100%，不同训练强度的建议配速如下：
-  </p>
-  <div style="overflow-x:auto;">
-    <table id="zones-table">
-      <thead><tr><th>训练区间</th><th>%CS</th><th>配速 (/km)</th><th>速度 (m/s)</th><th>主观感受</th><th>主要收益</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <h2><span class="dot"></span>你的训练配速分区（基于 CS）</h2>
+  <div style="overflow-x:auto;"><table id="zones-table"><thead><tr><th>区间</th><th>%CS</th><th>配速</th><th>速度</th><th>感受</th><th>收益</th></tr></thead><tbody></tbody></table></div>
 </div>
 
-<!-- ═══════════ 测试规范 ═══════════ -->
+<!-- ═══ 测试规范 ═══ -->
 <div class="card" id="protocols">
   <h2><span class="dot"></span>关键指标测试完整规范</h2>
-  <p style="color:var(--ssp-muted);font-size:0.88rem;margin-bottom:18px;">
-    所有测试都服务于同一个问题：下一场比赛该用什么速度、什么心率、什么节奏进入每一站。
-  </p>
-
   <div class="tabs-container">
     <div class="tabs-nav">
-      <button class="tab-btn active" data-tab="tab-cs">临界速度 CS</button>
-      <button class="tab-btn" data-tab="tab-lthr">LTHR / MLSS</button>
-      <button class="tab-btn" data-tab="tab-hrr">储备心率 HRR</button>
-      <button class="tab-btn" data-tab="tab-hrrcalc">心率区间计算器</button>
-      <button class="tab-btn" data-tab="tab-race">比赛策略应用</button>
+      <button class="tab-btn active" data-tab="tab-cs">CS 测试</button>
+      <button class="tab-btn" data-tab="tab-lthr">LTHR 测试</button>
+      <button class="tab-btn" data-tab="tab-hrr">HRR 心率区间</button>
+      <button class="tab-btn" data-tab="tab-hrrcalc">💓 心率计算器</button>
+      <button class="tab-btn" data-tab="tab-race">🏁 比赛策略</button>
     </div>
 
-    <!-- Tab 1: CS -->
+    <!-- CS -->
     <div class="tab-panel active" id="tab-cs">
-      <h3>临界速度 CS / D' 田径场测试</h3>
+      <h3>CS / D' 田径场测试（5 天计划）</h3>
       <div class="info-stripe">
-        <div class="info-item"><div class="num">3-5</div><div class="txt">天测试周期</div></div>
-        <div class="info-item"><div class="num">2-15</div><div class="txt">分钟力竭时间</div></div>
+        <div class="info-item"><div class="num">5</div><div class="txt">天</div></div>
+        <div class="info-item"><div class="num">3</div><div class="txt">次测试</div></div>
+        <div class="info-item"><div class="num">48h</div><div class="txt">间隔休息</div></div>
         <div class="info-item"><div class="num">0.1s</div><div class="txt">计时精度</div></div>
-        <div class="info-item"><div class="num">48h</div><div class="txt">高强度间隔</div></div>
       </div>
       <div class="step-list">
-        <div class="step-item">
-          <strong>1. 前置条件</strong>
-          <p>48 小时内不做高强度腿部训练；测试场地固定；鞋、天气、热身流程保持一致。每次都必须<span class="highlight">全力完成</span>，误差记录到 0.1 秒。</p>
-        </div>
-        <div class="step-item">
-          <strong>2. 距离与日程安排</strong>
-          <p><strong>Day 1：</strong>1200m 全力（约 3-5 分钟）；<strong>Day 2：</strong>休息或极低强度恢复；<strong>Day 3：</strong>2400m 全力（约 6-10 分钟）；<strong>Day 4：</strong>休息；<strong>Day 5：</strong>3600m 或 5000m 全力（约 11-20 分钟）。单次力竭时间优先落在 2-15 分钟。</p>
-        </div>
-        <div class="step-item">
-          <strong>3. 计算方式</strong>
-          <p>用 <span class="highlight">距离作为 y、完成时间作为 x</span> 做线性回归。斜率是 CS（m/s），截距是 D'（m）。示例：1200m 3:45、2400m 7:50、3600m 12:00 —— CS 约 4.84 m/s，配速约 3:27/km，D' 约 112m。</p>
-        </div>
-        <div class="step-item">
-          <strong>4. HYROX / 比赛转译</strong>
-          <p>CS 不是整场巡航速度。对于多站混合赛（如 HYROX），模型默认用 <span class="highlight">CS × 0.95</span> 估算巡航速度，再结合 LTHR 和站点后恢复窗口微调。纯跑项目直接用 CS 作为起点配速。</p>
-        </div>
+        <div class="step-item"><strong>Day 1：1200m 全力</strong><p>充分热身后在田径场全力跑 1200m（约 3-5 分钟）。记录精确到 0.1 秒。这是你的最短测试点。</p></div>
+        <div class="step-item"><strong>Day 2：完全休息或极轻恢复</strong><p>不要做任何高强度训练。散步、拉伸即可。给神经系统和肌肉充分恢复。</p></div>
+        <div class="step-item"><strong>Day 3：2400m 全力</strong><p>同样场地、同样鞋子。全力跑 2400m（约 6-10 分钟）。记录时间。</p></div>
+        <div class="step-item"><strong>Day 4：休息</strong><p>再次恢复。</p></div>
+        <div class="step-item"><strong>Day 5：3600m 全力</strong><p>第三个测试点（约 11-15 分钟）。三个点覆盖 2-15 分钟区间，回归结果最稳定。</p></div>
+        <div class="step-item"><strong>⚠️ 关键规则</strong><p>① 每次必须<span class="highlight">全力完成</span>不能留力 ② 48h 内不做高强度腿训 ③ 场地/鞋/天气/热身保持一致 ④ 如果 R² &lt; 0.95，说明某次未全力或条件不一致，重新测。</p></div>
       </div>
     </div>
 
-    <!-- Tab 2: LTHR -->
+    <!-- LTHR -->
     <div class="tab-panel" id="tab-lthr">
-      <h3>LTHR / MLSS 阈值心率测试</h3>
-      <div class="info-stripe">
-        <div class="info-item"><div class="num">30min</div><div class="txt">场地法测试时长</div></div>
-        <div class="info-item"><div class="num">3min</div><div class="txt">实验室递增步长</div></div>
-        <div class="info-item"><div class="num">-5</div><div class="txt">划船/滑雪下调 bpm</div></div>
-      </div>
+      <h3>LTHR 阈值心率测试</h3>
       <div class="step-list">
-        <div class="step-item">
-          <strong>实验室递增测试（金标准）</strong>
-          <p>跑台从低强度开始（如 8km/h）；每 <span class="highlight">3 分钟增加 1-1.5km/h</span>；每级负荷结束前 10 秒采血并记录心率；直到血乳酸明显上升或力竭。LT2/MLSS 对应心率用于设定<span class="highlight">比赛红线</span>——超过此心率乳酸将快速累积，只能维持 30-60 分钟。</p>
-        </div>
-        <div class="step-item">
-          <strong>30 分钟场地法（实用替代）</strong>
-          <p>充分热身后进行 <span class="highlight">30 分钟全力均速跑</span>。取后 20 分钟平均心率作为 LTHR 近似值。注意：短于 20 分钟容易受无氧供能干扰，长于 60 分钟会被肌肉疲劳污染。测试应在田径场或稳定路线上完成。</p>
-        </div>
-        <div class="step-item">
-          <strong>器械修正</strong>
-          <p>Row / Ski 的 LTHR 通常可按跑步 LTHR <span class="highlight">下调 3-5 bpm</span>。示例：若跑步 LTHR 为 175 bpm，划船超过 170 bpm 就应视为红线附近。不同器械涉及不同肌群和体位，心率-负荷关系存在差异。</p>
-        </div>
-        <div class="step-item">
-          <strong>安全与质量控制</strong>
-          <p>同一设备、同一热身、同一补给状态；测试中出现<span class="highlight">胸痛、明显眩晕、异常心律或无法维持动作安全</span>时立即终止。静息心率连续 3+ 天升高超过 5 bpm 时推迟测试。</p>
-        </div>
+        <div class="step-item"><strong>方法一：30 分钟场地法（无需设备，最实用）</strong><p>充分热身后，进行 <span class="highlight">30 分钟全力均速跑</span>。取后 20 分钟的平均心率，这就是你的 LTHR 近似值。例：后 20 分钟心率在 172-178 → LTHR ≈ 175。</p></div>
+        <div class="step-item"><strong>方法二：实验室递增测试（金标准）</strong><p>跑台从 8km/h 起，每 3 分钟 +1km/h。每级末采血测乳酸。乳酸明显上升的点对应的心率 = LTHR。这是最精确但需要设备。</p></div>
+        <div class="step-item"><strong>器械修正</strong><p>划船 / SkiErg 的 LTHR 通常比跑步低 <span class="highlight">3-5 bpm</span>。如跑步 LTHR=175，划船时超过 170 就应警戒。</p></div>
+        <div class="step-item"><strong>⚠️ 安全红线</strong><p>测试中出现胸痛、晕眩、异常心律 → 立即停止。静息心率连续 3 天偏高超过 5 bpm → 推迟测试。</p></div>
       </div>
     </div>
 
-    <!-- Tab 3: HRR -->
+    <!-- HRR -->
     <div class="tab-panel" id="tab-hrr">
-      <h3>储备心率 HRR 与训练区间</h3>
-      <div class="info-stripe">
-        <div class="info-item"><div class="num">3-5</div><div class="txt">天测静息心率取均值</div></div>
-        <div class="info-item"><div class="num">208−0.7×Age</div><div class="txt">最大心率估算公式</div></div>
-        <div class="info-item"><div class="num">HRR</div><div class="txt">Karvonen 模型</div></div>
-      </div>
+      <h3>储备心率 HRR（个性化训练区间）</h3>
       <div class="step-list">
-        <div class="step-item">
-          <strong>静息心率（RHR）</strong>
-          <p>连续 <span class="highlight">3-5 天</span>起床后、未下床前测量，取稳定均值。睡眠不足、饮酒、发热和高压日的数据应剔除。波动超过 ±3 bpm 时延长采集天数。</p>
-        </div>
-        <div class="step-item">
-          <strong>最大心率（MHR）</strong>
-          <p>优先使用<span class="highlight">真实递增测试结果</span>（推荐方案）。没有实测值时，用 <span class="highlight">208 − 0.7 × 年龄</span> 作为临时估算——这比传统的 220 − 年龄更适合健康成人，但<span class="highlight">不替代实测</span>。实测方式：充分热身后 3-4 次 2 分钟最大上坡冲刺，取出现过的最高心率。</p>
-        </div>
-        <div class="step-item">
-          <strong>Karvonen 公式（储备心率法）</strong>
-          <p>目标心率 = 静息心率 + (最大心率 − 静息心率) × 强度百分比。Z2、阈值、红区暴露都应回到这个公式，而不是只看最大心率百分比。HRR 法比单纯 %MHR 更准确。</p>
-        </div>
-        <div class="step-item">
-          <strong>三线交叉定位</strong>
-          <p><span class="highlight">HRR</span> 给训练课强度 → <span class="highlight">LTHR</span> 给比赛红线 → <span class="highlight">CS</span> 给速度锚点。三者交叉后，才能判断是"配速错"还是"站点动作代价太高"。下一节的心率区间计算器可直接帮你算。</p>
-        </div>
+        <div class="step-item"><strong>静息心率 (RHR)</strong><p>连续 3-5 天早晨醒来未起床时测量，取均值。剔除喝酒、失眠、发烧日的数据。低于往常 = 恢复良好；偏高 >5bpm = 疲劳/生病。</p></div>
+        <div class="step-item"><strong>最大心率 (MHR)</strong><p>公式：<span class="highlight">208 − 0.7 × 年龄</span>（比 220−年龄 更准，但仍是估算）。最佳：做递增测试测出真实最大值。</p></div>
+        <div class="step-item"><strong>Karvonen 公式</strong><p>目标心率 = <span class="highlight">RHR + (MHR − RHR) × 强度%</span>。这比直接用 %MHR 更个性化——静息心率越低，训练窗口越宽。</p></div>
+        <div class="step-item"><strong>三线交叉法</strong><p>HRR → 训练课强度 | LTHR → 比赛心率红线 | CS → 速度锚点。三者交叉才能准确判断你的瓶颈在哪。</p></div>
       </div>
     </div>
 
-    <!-- Tab 4: HRR Calculator -->
+    <!-- HRR Calculator -->
     <div class="tab-panel" id="tab-hrrcalc">
-      <h3>储备心率区间计算器</h3>
-      <p style="color:var(--ssp-muted);font-size:0.88rem;margin-bottom:16px;">输入你的静息心率、最大心率和 LTHR，自动生成基于 Karvonen 公式的训练区间。</p>
+      <h3>💓 储备心率区间计算器</h3>
       <div class="hrr-form">
         <div class="input-group"><label>年龄</label><input id="hrr-age" type="number" value="30" min="16" max="80"></div>
-        <div class="input-group"><label>静息心率 (bpm)</label><input id="hrr-rest" type="number" value="52" min="35" max="100"></div>
-        <div class="input-group"><label>最大心率 (bpm)</label><input id="hrr-max" type="number" value="190" min="130" max="220"></div>
-        <div class="input-group"><label>LTHR (bpm)</label><input id="hrr-lthr" type="number" value="175" min="100" max="210"></div>
+        <div class="input-group"><label>静息心率</label><input id="hrr-rest" type="number" value="52" min="35" max="100"></div>
+        <div class="input-group"><label>最大心率</label><input id="hrr-max" type="number" value="190" min="130" max="220"></div>
+        <div class="input-group"><label>LTHR</label><input id="hrr-lthr" type="number" value="175" min="100" max="210"></div>
       </div>
-      <button class="btn btn-primary btn-sm" onclick="calcHRR()" style="margin-bottom:16px;">计算心率区间</button>
-      <div style="overflow-x:auto;"><table id="hrr-table"><thead><tr><th>区间</th><th>%HRR</th><th>心率范围 (bpm)</th><th>训练用途</th><th>对应感觉</th></tr></thead><tbody></tbody></table></div>
-      <p style="text-align:center;color:var(--ssp-muted);font-size:0.82rem;margin-top:10px;">LTHR 红线 = <span id="hrr-lthr-display">--</span> bpm | 公式：目标心率 = RHR + (MHR − RHR) × 强度%</p>
+      <button class="btn btn-primary btn-sm" onclick="calcHRR()" style="margin-bottom:14px;">计算心率区间</button>
+      <div style="overflow-x:auto;"><table id="hrr-table"><thead><tr><th>区间</th><th>%HRR</th><th>心率</th><th>用途</th><th>感受</th></tr></thead><tbody></tbody></table></div>
+      <p style="text-align:center;color:var(--ssp-muted);font-size:0.82rem;margin-top:10px;">LTHR 红线 = <span id="hrr-lthr-display">--</span> | 公式：RHR + (MHR−RHR) × %</p>
     </div>
 
-    <!-- Tab 5: Race Strategy -->
+    <!-- Race Strategy -->
     <div class="tab-panel" id="tab-race">
-      <h3>比赛策略：从数据到每一站的决策</h3>
+      <h3>🏁 HYROX 比赛策略：用数据代替感觉</h3>
       <div class="step-list">
-        <div class="step-item">
-          <strong>核心技术问题</strong>
-          <p>通过 CS 确定<span class="highlight">配速锚点</span>，通过 LTHR 确定<span class="highlight">心率封顶</span>（比赛中不超过此值），通过 HRR 确定<span class="highlight">恢复心率窗口</span>（站点后应回到哪个区间）。三者整合后，每一站的策略就有了数据依据而不是"凭感觉"。</p>
-        </div>
-        <div class="step-item">
-          <strong>配速策略模板（以 HYROX 8×1km 为例）</strong>
-          <p><strong>Run 1：</strong>CS × 0.90-0.93（保守开局，心率建仓）；<strong>Run 2-3：</strong>CS × 0.93-0.96（找到巡航节奏）；<strong>Run 4-6：</strong>CS × 0.95-1.00（核心巡航段）；<strong>Run 7-8：</strong>视 D' 剩余量和心率状态决定是否提速。站点后 200m <span class="highlight">用小步频恢复跑姿</span>，不要急于回到目标配速。</p>
-        </div>
-        <div class="step-item">
-          <strong>站点→跑步过渡判断</strong>
-          <p>Ski 后看 Run 2 的踏空感（心率高但动作轻飘）；Sled Push 后看 Run 3 步频是否骤降（股四头肌疲劳）；Sled Pull 后站直看是否眩晕（体位性低血压）；Row 后看 Run 6 大腿再灌注；Farmers Carry 后看呼吸和步频是否脱节（膈肌疲劳）。如果站点后 400m 跑步段 CV > 6%，说明策略或动作效率有问题。</p>
-        </div>
-        <div class="step-item">
-          <strong>D' 实时管理</strong>
-          <p>高于 CS 的每一秒都在消耗 D'。比赛初期不要挥霍 D'（开局压速），中期可适度提取（追上目标时间），末期清空 D'（全力冲线）。低于 CS 跑时 D' 会缓慢恢复——站点和恢复跑都是 D' 的充电机会。</p>
-        </div>
+        <div class="step-item"><strong>配速模板（8×1km）</strong><p>Run 1：CS×0.90（保守开局，心率建仓）→ Run 2-3：CS×0.93（找巡航节奏）→ Run 4-6：CS×0.95（核心巡航）→ Run 7-8：视 D' 余量决定是否提速。站点后 200m 用小步频恢复跑姿，不急于回到目标配速。</p></div>
+        <div class="step-item"><strong>站点→跑步过渡诊断</strong><p>Ski 后看踏空感（心率高但腿不酸→心率封顶问题）| Sled Push 后看步频是否骤降（股四头肌疲劳）| Sled Pull 后站直是否眩晕（体位性低血压）| Row 后看大腿再灌注 | Wall Balls 后看 Run 8 是否失去跑步刚性。</p></div>
+        <div class="step-item"><strong>D' 的实时管理</strong><p>高于 CS 的每一秒都在消耗 D'。初期压速（存 D'），中期可适度提取（追上目标时间），末期清空 D'（冲刺）。低于 CS 跑时 D' 缓慢恢复——站点和恢复跑段都是充电机会。</p></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ 指标解释 ═══════════ -->
+<!-- ═══ 指标解读 ═══ -->
 <div class="card" id="explainer">
-  <h2><span class="dot"></span>各指标含义详解（新手必读）</h2>
+  <h2><span class="dot"></span>各指标含义（每次比赛前回来看一眼）</h2>
   <div class="explain-grid">
-    <div class="explain-card">
-      <span class="tag">核心指标</span>
-      <h3>CS — 临界速度 (Critical Speed)</h3>
-      <p><strong>定义：</strong>你能<span class="highlight">理论上无限维持</span>的最高跑步速度。</p>
-      <p><strong>生理本质：</strong>此时身体<span class="highlight">产生乳酸 = 清除乳酸</span>，乳酸不再累积，是可持续跑的边界线。</p>
-      <ul><li>CS ≈ 最大乳酸稳态 (MLSS)</li><li>CS ≈ 马拉松/半马比赛配速</li><li>CS ≈ 最大心率 88-92%</li></ul>
-      <p><strong>怎么提升：</strong>慢跑堆量（线粒体↑）+ 节奏跑（乳酸清除↑）+ 长距离</p>
-    </div>
-    <div class="explain-card">
-      <span class="tag">核心指标</span>
-      <h3>D' — 无氧距离储备</h3>
-      <p><strong>定义：</strong>高于 CS 时你能额外跑出的<span class="highlight">总距离</span>，像一块"无氧电池"。</p>
-      <p><strong>生理本质：</strong>磷酸原 + 糖酵解系统的总容量。速度超出 CS 越多，电池消耗越快。</p>
-      <ul><li>耗尽时间 t = D' / (当前速度 − CS)</li><li>低于 CS 跑时，D' 缓慢恢复</li><li>800/1500m 选手 D' 通常很大</li></ul>
-      <p><strong>怎么提升：</strong>短间歇冲刺 + 力量训练 + 高强度间歇</p>
-    </div>
-    <div class="explain-card">
-      <span class="tag">教练必读</span>
-      <h3>CS 与 D' 的权衡关系</h3>
-      <p>同一个运动员，<span class="highlight">CS 和 D' 往往负相关</span>——你很难同时拥有极高的 CS 和极大的 D'。</p>
-      <ul><li><strong>耐力型</strong>（如马拉松选手）：CS↑↑↑ / D'↓</li><li><strong>速度型</strong>（如 800m 选手）：CS↓ / D'↑↑↑</li><li><strong>全能型</strong>（极罕见）：CS↑ / D'↑</li></ul>
-      <p>训练必须根据项目距离权衡二者投入比例。</p>
-    </div>
-    <div class="explain-card">
-      <span class="tag">质量控制</span>
-      <h3>R² — 拟合优度</h3>
-      <p><strong>定义：</strong>测试数据的线性拟合程度，范围 0-1。越接近 1 说明数据越可信。</p>
-      <ul><li><strong>R² ≥ 0.98</strong>：数据非常可靠，CS/D' 精确</li><li><strong>0.95 ≤ R² &lt; 0.98</strong>：可用，有小波动</li><li><strong>R² &lt; 0.95</strong>：数据不稳定，建议重新测试</li></ul>
-      <p>不稳定的原因：距离太接近、未全力跑、或测试间隔过短。</p>
-    </div>
-    <div class="explain-card">
-      <span class="tag">心率指标</span>
-      <h3>LTHR — 乳酸阈值心率</h3>
-      <p><strong>定义：</strong>乳酸开始快速累积时的心率，约为你<span class="highlight">全力维持 60 分钟的最高心率</span>。</p>
-      <ul><li>比赛红线：超过 LTHR = 进入倒计时</li><li>30 分钟场地法：后 20 分钟均值</li><li>划船/滑雪 LTHR ≈ 跑步 LTHR − 5</li></ul>
-      <p><strong>用途：</strong>比赛中用 LTHR 封顶，不超此心率就不会提前"爆缸"。</p>
-    </div>
-    <div class="explain-card">
-      <span class="tag">心率指标</span>
-      <h3>HRR — 储备心率 (Karvonen)</h3>
-      <p><strong>定义：</strong>考虑静息心率的个性化强度计算方式。</p>
-      <p>公式：<span class="highlight">目标心率 = RHR + (MHR − RHR) × 强度%</span></p>
-      <ul><li>比单纯 %MHR 更准确</li><li>静息心率越低，训练窗口越宽</li><li>Z2 训练对此公式尤其敏感</li></ul>
-      <p><strong>用途：</strong>训练课强度设定（不像 LTHR 那样用于比赛红线）。</p>
-    </div>
+    <div class="explain-card"><span class="tag">核心</span><h3>CS — 临界速度</h3><p>你能<span class="highlight">无限维持</span>的最高速度。CS 以下 = 不累垮。HYROX 里不能全程跑 CS——站点也需要能量。</p><ul><li>CS ≈ 最大乳酸稳态</li><li>HYROX 巡航 ≈ CS × 0.95</li><li>慢跑堆量 + 节奏跑 → CS↑</li></ul></div>
+    <div class="explain-card"><span class="tag">核心</span><h3>D' — 无氧电池</h3><p>高于 CS 时能额外跑的距离。站点后加速回配速就耗 D'。电池耗尽→掉速。</p><ul><li>耗尽时间 = D'/(速度−CS)</li><li>低于 CS 跑 → D' 慢慢恢复</li><li>短间歇 + 力量 → D'↑</li></ul></div>
+    <div class="explain-card"><span class="tag">心率</span><h3>LTHR — 心率红线</h3><p>约 60 分钟的最高心率。超过 = 进入倒计时。HYROX 里站点推高心率后，跑步段必须拉回 LTHR 以下。</p><ul><li>30 分钟法：后 20 分钟均值</li><li>划船 LTHR ≈ 跑步 LTHR − 5</li></ul></div>
+    <div class="explain-card"><span class="tag">心率</span><h3>HRR — 储备心率</h3><p>考虑你个人静息心率的强度计算。公式：<span class="highlight">RHR + (MHR−RHR) × %</span>。比单纯 % 最大心率更准。</p><ul><li>静息心率越低 → 窗口越宽</li><li>Z2 训练对此公式最敏感</li></ul></div>
+    <div class="explain-card"><span class="tag">权衡</span><h3>CS vs D' 取舍</h3><p>CS 和 D' 通常负相关——耐力型 CS↑/D'↓，冲刺型 CS↓/D'↑。训练需按项目距离分配比例。</p></div>
+    <div class="explain-card"><span class="tag">质控</span><h3>R² — 可信度</h3><p>测试点拟合程度。≥0.98=可靠，0.95-0.98=可用，&lt;0.95=重测。不稳定的原因：未全力跑 / 疲劳 / 条件不一致。</p></div>
   </div>
 </div>
 
-</div><!-- /.container -->
+</div>
 
 <footer class="footer">2026 SteelBull Sport Performance (铁牛运动表现)</footer>
 
 <script>
-// ═══════════ TAB SWITCHING ═══════════
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+// ═══ LOGO ═══
+var LOGO_B64 = "data:image/png;base64,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";
+document.querySelectorAll('img[src="LOGO_PLACEHOLDER"]').forEach(function(img) {
+  img.src = LOGO_B64;
+  img.style.height = img.classList.contains('header-logo') ? '52px' : '32px';
+  img.style.width = 'auto';
+});
+
+// ═══ TABS ═══
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
     btn.classList.add('active');
     document.getElementById(btn.dataset.tab).classList.add('active');
   });
 });
 
-// ═══════════ HRR Calculator ═══════════
+// ═══ HRR ═══
 function calcHRR() {
-  const age = parseInt(document.getElementById('hrr-age').value) || 30;
-  const rhr = parseInt(document.getElementById('hrr-rest').value) || 52;
-  const mhr = parseInt(document.getElementById('hrr-max').value) || 190;
-  const lthr = parseInt(document.getElementById('hrr-lthr').value) || 175;
-  const hrr = mhr - rhr;
-
-  document.getElementById('hrr-lthr-display').textContent = lthr;
-
-  const zones = [
-    { name: 'Z1 恢复', pct: '50-60%', lo: 0.50, hi: 0.60, use: '积极恢复、热身、放松', feel: '极轻松，能自由聊天' },
-    { name: 'Z2 有氧基础', pct: '60-70%', lo: 0.60, hi: 0.70, use: '长慢跑、脂肪代谢、线粒体发展', feel: '轻松，能完整对话' },
-    { name: 'Z3 有氧耐力', pct: '70-80%', lo: 0.70, hi: 0.80, use: '节奏基础、有氧耐力', feel: '中等，说短句' },
-    { name: 'Z4 阈值区', pct: '80-90%', lo: 0.80, hi: 0.90, use: 'TEMPO / 阈值跑、乳酸清除', feel: '费力，能说 1-2 个字' },
-    { name: 'Z5a 超阈值', pct: '90-95%', lo: 0.90, hi: 0.95, use: '比赛配速、临界速度训练', feel: '很费力，接近最大' },
-    { name: 'Z5b 红区', pct: '95-100%', lo: 0.95, hi: 1.00, use: 'VO2max 间歇、比赛冲刺', feel: '极困难' },
+  var rhr = parseInt(document.getElementById('hrr-rest').value) || 52;
+  var mhr = parseInt(document.getElementById('hrr-max').value) || 190;
+  var lthr = parseInt(document.getElementById('hrr-lthr').value) || 175;
+  var hrr = mhr - rhr;
+  document.getElementById('hrr-lthr-display').textContent = lthr + ' bpm';
+  var zones = [
+    { name: 'Z1 恢复', pct: '50-60%', lo: 0.50, hi: 0.60, use: '积极恢复、热身', feel: '极轻松' },
+    { name: 'Z2 有氧基础', pct: '60-70%', lo: 0.60, hi: 0.70, use: 'LSD、脂肪代谢', feel: '轻松聊天' },
+    { name: 'Z3 有氧耐力', pct: '70-80%', lo: 0.70, hi: 0.80, use: '有氧耐力基础', feel: '说短句' },
+    { name: 'Z4 阈值区', pct: '80-90%', lo: 0.80, hi: 0.90, use: 'TEMPO、乳酸清除', feel: '费力' },
+    { name: 'Z5a 超阈值', pct: '90-95%', lo: 0.90, hi: 0.95, use: 'CS 训练、比赛配速', feel: '很费力' },
+    { name: 'Z5b 红区', pct: '95-100%', lo: 0.95, hi: 1.00, use: 'VO₂max、冲刺', feel: '极困难' },
   ];
-
-  const tbody = document.querySelector('#hrr-table tbody');
-  tbody.innerHTML = zones.map(z => {
-    const lo = Math.round(rhr + hrr * z.lo);
-    const hi = Math.round(rhr + hrr * z.hi);
-    const isLthr = lthr >= lo && lthr <= hi;
-    return `<tr${isLthr ? ' style="background:rgba(160,192,64,0.1);font-weight:600"' : ''}>
-      <td>${z.name}</td><td>${z.pct}</td><td>${lo} – ${hi} bpm</td><td>${z.use}</td><td>${z.feel}</td>
-    </tr>`;
-  }).join('');
+  var html = '';
+  zones.forEach(function(z) {
+    var lo = Math.round(rhr + hrr * z.lo);
+    var hi = Math.round(rhr + hrr * z.hi);
+    var isLthr = lthr >= lo && lthr <= hi;
+    html += '<tr' + (isLthr ? ' style="background:rgba(160,192,64,0.12);font-weight:600"' : '') + '><td>' + z.name + '</td><td>' + z.pct + '</td><td>' + lo + ' – ' + hi + ' bpm</td><td>' + z.use + '</td><td>' + z.feel + '</td></tr>';
+  });
+  document.querySelector('#hrr-table tbody').innerHTML = html;
 }
+calcHRR();
 
-// Auto-calc HRR on load
-document.addEventListener('DOMContentLoaded', () => { calcHRR(); });
-
-// ═══════════ CS State ═══════════
-let tests = [
-  { id: 1, dist: 1200, min: 3, sec: 45 },
-  { id: 2, dist: 2400, min: 7, sec: 50 },
-  { id: 3, dist: 3600, min: 12, sec: 0 },
-];
-let nextId = 4;
-let chartInstance = null;
+// ═══ CS ═══
+var tests = [{ id: 1, dist: 1200, min: 3, sec: 45 },{ id: 2, dist: 2400, min: 7, sec: 50 },{ id: 3, dist: 3600, min: 12, sec: 0 }];
+var nextId = 4, chartInstance = null;
 
 function renderTests() {
-  const el = document.getElementById('test-entries');
-  el.innerHTML = tests.map((t, i) => `
-    <div class="form-row">
-      <label>测试 ${i + 1}</label>
-      <div class="input-group">
-        <span style="font-size:0.85rem;flex-shrink:0;color:var(--ssp-muted);">距离</span>
-        <input type="number" class="dist" value="${t.dist}" min="100" max="10000" step="100"
-               onchange="updateTest(${t.id},'dist',this.value)" placeholder="米">
-        <span class="unit">m</span>
-        <span style="font-size:0.85rem;flex-shrink:0;color:var(--ssp-muted);margin-left:8px;">用时</span>
-        <input type="number" class="time-min" value="${t.min}" min="0" max="60"
-               onchange="updateTest(${t.id},'min',this.value)" placeholder="分">
-        <span class="unit">:</span>
-        <input type="number" class="time-sec" value="${t.sec}" min="0" max="59"
-               onchange="updateTest(${t.id},'sec',this.value)" placeholder="秒">
-      </div>
-    </div>
-  `).join('');
+  var el = document.getElementById('test-entries');
+  el.innerHTML = tests.map(function(t, i) {
+    return '<div class="form-row"><label>测试 ' + (i+1) + '</label><div class="input-group"><span style="font-size:0.85rem;flex-shrink:0;color:var(--ssp-muted);">距离</span><input type="number" class="dist" value="' + t.dist + '" min="100" max="10000" step="100" onchange="updateTest(' + t.id + ',\'dist\',this.value)" placeholder="米"><span class="unit">m</span><span style="font-size:0.85rem;flex-shrink:0;color:var(--ssp-muted);margin-left:8px;">用时</span><input type="number" class="time-min" value="' + t.min + '" min="0" max="60" onchange="updateTest(' + t.id + ',\'min\',this.value)" placeholder="分"><span class="unit">:</span><input type="number" class="time-sec" value="' + t.sec + '" min="0" max="59" onchange="updateTest(' + t.id + ',\'sec\',this.value)" placeholder="秒"></div></div>';
+  }).join('');
   document.getElementById('btn-remove').style.display = tests.length > 2 ? 'inline-block' : 'none';
 }
-
-function updateTest(id, field, val) {
-  const t = tests.find(x => x.id === id);
-  if (!t) return;
-  t[field] = parseInt(val) || 0;
-}
-
+function updateTest(id, field, val) { var t = tests.find(function(x) { return x.id === id; }); if (!t) return; t[field] = parseInt(val) || 0; }
 function addTest() { if (tests.length >= 5) return; tests.push({ id: nextId++, dist: 5000, min: 17, sec: 0 }); renderTests(); }
 function removeTest() { if (tests.length <= 2) return; tests.pop(); renderTests(); }
-function loadExample() {
-  tests = [
-    { id: nextId++, dist: 1200, min: 3, sec: 45 },
-    { id: nextId++, dist: 2400, min: 7, sec: 50 },
-    { id: nextId++, dist: 3600, min: 12, sec: 0 },
-  ];
-  renderTests();
-}
+function loadExample() { tests = [{ id: nextId++, dist: 1200, min: 3, sec: 45 },{ id: nextId++, dist: 2400, min: 7, sec: 50 },{ id: nextId++, dist: 3600, min: 12, sec: 0 }]; renderTests(); }
 
 function calculate() {
-  const pts = tests.map(t => ({ dist: t.dist, time: t.min * 60 + t.sec })).filter(p => p.dist > 0 && p.time > 0);
-  if (pts.length < 2) { alert('请至少填写 2 个有效测试（距离 > 0，用时 > 0）'); return; }
-
-  const n = pts.length;
-  const sumX = pts.reduce((s, p) => s + p.time, 0);
-  const sumY = pts.reduce((s, p) => s + p.dist, 0);
-  const sumXY = pts.reduce((s, p) => s + p.time * p.dist, 0);
-  const sumX2 = pts.reduce((s, p) => s + p.time * p.time, 0);
-  const denom = n * sumX2 - sumX * sumX;
-
-  let CS, Dprime;
-  if (Math.abs(denom) < 1e-10) {
-    CS = (pts[pts.length - 1].dist - pts[0].dist) / (pts[pts.length - 1].time - pts[0].time || 1);
-    Dprime = pts[0].dist - CS * pts[0].time;
-  } else {
-    CS = (n * sumXY - sumX * sumY) / denom;
-    Dprime = (sumY - CS * sumX) / n;
-  }
-
-  const meanY = sumY / n;
-  const ssRes = pts.reduce((s, p) => { const e = p.dist - (CS * p.time + Dprime); return s + e * e; }, 0);
-  const ssTot = pts.reduce((s, p) => { const d = p.dist - meanY; return s + d * d; }, 0);
-  const rSquared = ssTot > 0 ? 1 - ssRes / ssTot : 1;
-
-  const pacePerKm = CS > 0 ? 1000 / CS : 0;
-  const paceMin = Math.floor(pacePerKm / 60);
-  const paceSec = Math.round(pacePerKm % 60);
+  var pts = tests.map(function(t) { return { dist: t.dist, time: t.min * 60 + t.sec }; }).filter(function(p) { return p.dist > 0 && p.time > 0; });
+  if (pts.length < 2) { alert('请至少填写 2 个有效测试'); return; }
+  var n = pts.length, sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+  pts.forEach(function(p) { sumX += p.time; sumY += p.dist; sumXY += p.time * p.dist; sumX2 += p.time * p.time; });
+  var denom = n * sumX2 - sumX * sumX;
+  var CS, Dprime;
+  if (Math.abs(denom) < 1e-10) { CS = (pts[n-1].dist - pts[0].dist) / (pts[n-1].time - pts[0].time || 1); Dprime = pts[0].dist - CS * pts[0].time; }
+  else { CS = (n * sumXY - sumX * sumY) / denom; Dprime = (sumY - CS * sumX) / n; }
+  var meanY = sumY / n, ssRes = 0, ssTot = 0;
+  pts.forEach(function(p) { var e = p.dist - (CS * p.time + Dprime); ssRes += e * e; var d = p.dist - meanY; ssTot += d * d; });
+  var rSquared = ssTot > 0 ? 1 - ssRes / ssTot : 1;
+  var ppk = CS > 0 ? 1000 / CS : 0, pMin = Math.floor(ppk / 60), pSec = Math.round(ppk % 60);
+  var ck = CS * 0.95 > 0 ? 1000 / (CS * 0.95) : 0, cMin = Math.floor(ck / 60), cSec = Math.round(ck % 60);
 
   document.getElementById('results-card').style.display = 'block';
   document.getElementById('zones-card').style.display = 'block';
+  document.getElementById('results-grid').innerHTML =
+    '<div class="result-box"><div class="label">CS 临界速度</div><div class="value">' + CS.toFixed(2) + '</div><div class="sub">m/s</div></div>' +
+    '<div class="result-box"><div class="label">CS 配速</div><div class="value">' + pMin + ':' + String(pSec).padStart(2,'0') + '</div><div class="sub">/km（纯跑上限）</div></div>' +
+    '<div class="result-box"><div class="label">D\' 无氧电池</div><div class="value">' + Dprime.toFixed(0) + '</div><div class="sub">米</div></div>' +
+    '<div class="result-box"><div class="label">R² 可信度</div><div class="value">' + rSquared.toFixed(4) + '</div><div class="sub">' + (rSquared >= 0.98 ? '✅ 可靠' : rSquared >= 0.95 ? '⚠️ 可用' : '❌ 重测') + '</div></div>' +
+    '<div class="result-box" style="border-left-color:var(--ssp-gold);"><div class="label">🏁 HYROX 巡航配速</div><div class="value">' + cMin + ':' + String(cSec).padStart(2,'0') + '</div><div class="sub">CS×0.95 含站点缓冲</div></div>';
+  document.getElementById('regression-info').textContent = '回归方程：距离 = ' + CS.toFixed(2) + ' × 时间 + ' + Dprime.toFixed(0) + ' | ' + n + ' 个数据点';
 
-  const grid = document.getElementById('results-grid');
-  const cruiseKm = CS * 0.95 > 0 ? 1000 / (CS * 0.95) : 0;
-  const cruiseMin = Math.floor(cruiseKm / 60);
-  const cruiseSec = Math.round(cruiseKm % 60);
-
-  grid.innerHTML = `
-    <div class="result-box">
-      <div class="label">CS 临界速度</div><div class="value">${CS.toFixed(2)}</div><div class="sub">m/s</div>
-    </div>
-    <div class="result-box">
-      <div class="label">CS 对应配速</div><div class="value">${paceMin}:${String(paceSec).padStart(2, '0')}</div><div class="sub">/km</div>
-    </div>
-    <div class="result-box">
-      <div class="label">D' 无氧距离储备</div><div class="value">${Dprime.toFixed(0)}</div><div class="sub">米</div>
-    </div>
-    <div class="result-box">
-      <div class="label">R² 拟合优度</div><div class="value">${rSquared.toFixed(4)}</div>
-      <div class="sub">${rSquared >= 0.98 ? '✅ 非常可靠' : rSquared >= 0.95 ? '⚠️ 可用' : '❌ 建议重测'}</div>
-    </div>
-    <div class="result-box" style="border-left-color: var(--ssp-gold);">
-      <div class="label">HYROX 巡航配速 (CS×0.95)</div><div class="value">${cruiseMin}:${String(cruiseSec).padStart(2, '0')}</div><div class="sub">/km · 含站点恢复</div>
-    </div>
-  `;
-
-  document.getElementById('regression-info').textContent =
-    `回归方程：距离 = ${CS.toFixed(2)} × 时间 + ${Dprime.toFixed(0)}　|　基于 ${n} 个数据点`;
-
-  drawChart(pts, CS, Dprime);
-  buildZoneTable(CS);
-  document.getElementById('results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function drawChart(pts, CS, Dprime) {
   if (chartInstance) chartInstance.destroy();
-  const ctx = document.getElementById('cs-chart').getContext('2d');
-  const tMin = Math.min(...pts.map(p => p.time));
-  const tMax = Math.max(...pts.map(p => p.time));
-  const pad = (tMax - tMin) * 0.15;
-  const xMin = Math.max(0, tMin - pad);
-  const xMax = tMax + pad;
-
+  var ctx = document.getElementById('cs-chart').getContext('2d');
+  var tMin = Math.min.apply(null, pts.map(function(p){return p.time;})), tMax = Math.max.apply(null, pts.map(function(p){return p.time;}));
+  var pad = (tMax - tMin) * 0.15, xMin = Math.max(0, tMin - pad), xMax = tMax + pad;
   chartInstance = new Chart(ctx, {
     type: 'scatter',
-    data: {
-      datasets: [
-        { label: '实测数据', data: pts.map(p => ({ x: p.time, y: p.dist })), backgroundColor: '#204040', pointRadius: 7, pointHoverRadius: 9, order: 1 },
-        { label: 'CS 回归线', data: [{ x: xMin, y: CS * xMin + Dprime }, { x: xMax, y: CS * xMax + Dprime }], type: 'line', borderColor: '#a0c040', borderWidth: 2.5, borderDash: [6, 3], pointRadius: 0, fill: false, order: 0 },
-      ],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { usePointStyle: true, padding: 20, font: { family: 'Microsoft YaHei, sans-serif', size: 13 } } }, tooltip: { callbacks: { label: ctx => ctx.dataset.label === '实测数据' ? `距离: ${ctx.parsed.y}m | 用时: ${Math.floor(ctx.parsed.x / 60)}:${String(Math.round(ctx.parsed.x % 60)).padStart(2, '0')}` : `回归 D = ${CS.toFixed(2)}t + ${Dprime.toFixed(0)}` } } },
-      scales: { x: { title: { display: true, text: '时间 (秒)', font: { size: 13 } }, min: xMin }, y: { title: { display: true, text: '距离 (米)', font: { size: 13 } } } },
-    },
+    data: { datasets: [
+      { label: '实测', data: pts.map(function(p){return {x:p.time,y:p.dist};}), backgroundColor: '#204040', pointRadius: 7, pointHoverRadius: 9, order: 1 },
+      { label: 'CS 回归线', data: [{x:xMin,y:CS*xMin+Dprime},{x:xMax,y:CS*xMax+Dprime}], type: 'line', borderColor: '#a0c040', borderWidth: 2.5, borderDash: [6,3], pointRadius: 0, fill: false, order: 0 }
+    ]},
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { usePointStyle: true, padding: 20 } } },
+      scales: { x: { title: { display: true, text: '时间 (秒)' }, min: xMin }, y: { title: { display: true, text: '距离 (米)' } } }
+    }
   });
-}
 
-function buildZoneTable(CS) {
-  const zones = [
-    { name: '恢复跑 (Recovery)', pct: '60-70%', low: 0.60, high: 0.70, feel: '能轻松聊天', benefit: '促进恢复、脂肪代谢' },
-    { name: '有氧基础 (Easy/LSD)', pct: '70-80%', low: 0.70, high: 0.80, feel: '可持续对话', benefit: '线粒体密度↑、毛细血管↑' },
-    { name: '有氧耐力 (Moderate)', pct: '80-88%', low: 0.80, high: 0.88, feel: '说短句', benefit: '乳酸阈值↑、脂肪糖类混合供能' },
-    { name: '节奏跑 / 阈值跑', pct: '92-97%', low: 0.92, high: 0.97, feel: '能说 1-2 个字', benefit: '乳酸清除率↑、比赛配速感' },
-    { name: '临界速度 (CS)', pct: '100%', low: 1.00, high: 1.00, feel: '艰难但可控', benefit: 'MLSS 适应、半马/全马配速' },
-    { name: '间歇跑 (VO₂max)', pct: '103-110%', low: 1.03, high: 1.10, feel: '很困难, 2-5 分钟', benefit: 'VO₂max↑、D\' 消耗训练' },
-    { name: '重复冲刺 (Anaerobic)', pct: '115-130%', low: 1.15, high: 1.30, feel: '极困难, 30-90 秒', benefit: 'D\' 容量↑、磷酸原系统↑' },
-    { name: '最大冲刺 (Sprint)', pct: '>140%', low: 1.40, high: 1.80, feel: '全速, <30 秒', benefit: '神经肌肉招募↑、最大速度↑' },
+  var zones = [
+    { name: '恢复跑', pct: '60-70%', l:0.60, h:0.70, feel: '轻松聊天', benefit: '恢复、脂肪代谢' },
+    { name: '有氧基础', pct: '70-80%', l:0.70, h:0.80, feel: '持续对话', benefit: '线粒体↑' },
+    { name: '有氧耐力', pct: '80-88%', l:0.80, h:0.88, feel: '说短句', benefit: '乳酸阈值↑' },
+    { name: '阈值跑', pct: '92-97%', l:0.92, h:0.97, feel: '1-2个字', benefit: '乳酸清除↑' },
+    { name: 'CS 临界速度', pct: '100%', l:1.00, h:1.00, feel: '艰难可控', benefit: 'MLSS 适应' },
+    { name: '间歇跑', pct: '103-110%', l:1.03, h:1.10, feel: '2-5分钟', benefit: 'VO₂max↑' },
+    { name: '重复冲刺', pct: '115-130%', l:1.15, h:1.30, feel: '30-90秒', benefit: 'D\'↑' },
+    { name: '最大冲刺', pct: '>140%', l:1.40, h:1.80, feel: '<30秒', benefit: '最大速度↑' },
   ];
-
-  function fmt(spd) {
-    if (spd <= 0) return '—';
-    const s = 1000 / spd; const m = Math.floor(s / 60); const sec = Math.round(s % 60);
-    return `${m}:${String(sec).padStart(2, '0')}`;
-  }
-
-  const tbody = document.querySelector('#zones-table tbody');
-  tbody.innerHTML = zones.map(z => {
-    const lo = CS * z.low, hi = CS * z.high;
-    const pLo = fmt(hi), pHi = fmt(lo);
-    const paceStr = z.low === z.high ? fmt(lo) : `${pHi} – ${pLo}`;
-    const spdStr = z.low === z.high ? lo.toFixed(1) : `${lo.toFixed(1)} – ${hi.toFixed(1)}`;
-    return `<tr><td><strong>${z.name}</strong></td><td>${z.pct}</td><td>${paceStr}</td><td>${spdStr}</td><td>${z.feel}</td><td>${z.benefit}</td></tr>`;
+  function fmt(spd) { if(spd<=0) return '—'; var s=1000/spd; return Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0'); }
+  var tbody = document.querySelector('#zones-table tbody');
+  tbody.innerHTML = zones.map(function(z) {
+    var lo = CS*z.l, hi = CS*z.h, pLo = fmt(hi), pHi = fmt(lo);
+    var ps = z.l===z.h ? fmt(lo) : pHi+' – '+pLo;
+    var ss = z.l===z.h ? lo.toFixed(1) : lo.toFixed(1)+' – '+hi.toFixed(1);
+    return '<tr><td><strong>'+z.name+'</strong></td><td>'+z.pct+'</td><td>'+ps+'</td><td>'+ss+'</td><td>'+z.feel+'</td><td>'+z.benefit+'</td></tr>';
   }).join('');
+  document.getElementById('results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
-
-// Init
 renderTests();
 </script>
-
 </body>
 </html>
