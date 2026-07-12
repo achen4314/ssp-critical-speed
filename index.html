@@ -419,33 +419,55 @@ tbody tr:hover { background:rgba(182,211,80,0.06); }
     </div>
 
     <!-- 🏃 HYROX 配速计算器 -->
+    <div class="tab-panel"     <!-- 🏃 HYROX 配速计算器（详细版） -->
     <div class="tab-panel" id="tab-pace">
-      <h3>🏃 HYROX 8段跑配速计算器（含站点耗能修正）</h3>
+      <h3>🏃 HYROX 8段跑详细配速方案</h3>
       <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
-        每个站点消耗不同的能量系统，站点后的跑段必须据此调整配速。以下是基于你的 CS 和 D' 的个性化配速建议。
+        这不是简单的8个配速数字——是包含站点耗时估算、D'逐站追踪、心率靶点、配速上下限、以及每段过渡策略的完整比赛执行方案。
       </p>
 
       <div class="hrr-form">
-        <div class="input-group"><label>你的 CS 配速 (/km)</label><div style="display:flex;gap:4px;align-items:center;"><input id="pace-cs-pace-min" type="number" value="4" min="2" max="8" style="width:60px;"><span>:</span><input id="pace-cs-pace-sec" type="number" value="00" min="0" max="59" style="width:60px;"></div></div>
-        <div class="input-group"><label>你的 D' (米)</label><input id="pace-dprime" type="number" value="200" min="50" max="500"></div>
-        <div class="input-group"><label>目标完赛 (分:秒)</label><div style="display:flex;gap:4px;align-items:center;"><input id="pace-target-min" type="number" value="70" min="40" max="150" style="width:60px;"><span>:</span><input id="pace-target-sec" type="number" value="00" min="0" max="59" style="width:60px;"></div></div>
+        <div class="input-group"><label>CS 配速 (/km)</label><div style="display:flex;gap:4px;align-items:center;"><input id="pace-cs-min" type="number" value="4" min="2" max="8" style="width:55px;"><span>:</span><input id="pace-cs-sec" type="number" value="00" min="0" max="59" style="width:55px;"></div></div>
+        <div class="input-group"><label>D' (米)</label><input id="pace-dprime" type="number" value="200" min="50" max="500"></div>
+        <div class="input-group"><label>LTHR (bpm)</label><input id="pace-lthr" type="number" value="175" min="120" max="210"></div>
+        <div class="input-group"><label>年龄</label><input id="pace-age" type="number" value="30" min="18" max="65"></div>
       </div>
-      <button class="btn btn-primary btn-sm" onclick="calcHyroxPace()" style="margin-bottom:14px;">计算各段配速</button>
+      <button class="btn btn-primary btn-sm" onclick="calcHyroxPace()" style="margin-bottom:16px;">生成详细配速方案</button>
 
-      <div style="overflow-x:auto;" id="pace-table-wrap">
-        <table id="pace-table">
-          <thead><tr><th>跑段</th><th>前站点</th><th>站点耗能类型</th><th>%CS</th><th>目标配速</th><th>D'余量</th><th>心率目标</th><th>策略要点</th></tr></thead>
+      <!-- Race phase summary cards -->
+      <div class="info-stripe" id="pace-phase-summary" style="display:none;">
+        <div class="info-item"><div class="num" id="pace-total-run">--</div><div class="txt">8km跑段总计</div></div>
+        <div class="info-item"><div class="num" id="pace-avg-pace">--</div><div class="txt">平均配速</div></div>
+        <div class="info-item"><div class="num" id="pace-station-est">--</div><div class="txt">站点估算</div></div>
+        <div class="info-item"><div class="num" id="pace-est-finish">--</div><div class="txt">预估完赛</div></div>
+        <div class="info-item"><div class="num" id="pace-d-final">--</div><div class="txt">终点D'余量</div></div>
+      </div>
+
+      <!-- Main detailed table -->
+      <div style="overflow-x:auto;">
+        <table id="pace-table" style="font-size:0.82rem;">
+          <thead><tr>
+            <th>阶段</th><th>跑段</th><th>前站点</th><th>站点<br>估算</th>
+            <th>D'进站</th><th>D'出站</th><th>D'跑后</th>
+            <th>保守配速</th><th>激进配速</th><th>%CS</th>
+            <th>心率靶</th><th>累计</th><th>过渡策略</th>
+          </tr></thead>
           <tbody id="pace-tbody"></tbody>
         </table>
       </div>
-      <p id="pace-summary" style="text-align:center;color:var(--ssp-muted);font-size:0.84rem;margin-top:12px;"></p>
-      <div class="tip" style="margin-top:12px;">
-        <strong>使用说明：</strong>配速越保守（%CS越低），D'恢复越多，但总时间越长。HYROX精英选手在Run 1-3用CS×0.92-0.95巡航，Run 5主动降速恢复D'，Run 8根据剩余D'决定是否冲刺。如果你的D' &lt; 150m，建议全程保守配速。
+
+      <!-- Phase-by-phase commentary -->
+      <div id="pace-commentary" style="display:none;margin-top:16px;">
+        <div class="step-list" id="pace-commentary-list"></div>
+      </div>
+
+      <div class="tip" style="margin-top:14px;">
+        <strong>怎么用这张表：</strong>比赛前打印或截图。每跑完一个1km跑段+一个站点，就在对应行打勾。保守配速=最安全完成比赛的配速，激进配速=状态极好时的上限（超过它大概率后面崩）。心率靶=bpm单位，如果你有心率表直接对数字。
       </div>
     </div>
 
-    <!-- ⚡ 站点能量消耗对照表 -->
-    <div class="tab-panel" id="tab-station">
+
+    <!-- ⚡ 站点能量消耗对照表 -->>
       <h3>⚡ 8个站点能量消耗对照表</h3>
       <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
         每个HYROX站点对不同能量系统的消耗完全不同。理解这一点，你才知道为什么有些站点后还能加速，有些站点后只能保命。
@@ -680,91 +702,187 @@ function calculate() {
   document.getElementById('results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 // ═══ HYROX Pacing Calculator ═══
+// ═══ HYROX Detailed Pacing Calculator ═══
 function calcHyroxPace() {
-  var csMin = parseInt(document.getElementById('pace-cs-pace-min').value) || 4;
-  var csSec = parseInt(document.getElementById('pace-cs-pace-sec').value) || 0;
+  var csMin = parseInt(document.getElementById('pace-cs-min').value) || 4;
+  var csSec = parseInt(document.getElementById('pace-cs-sec').value) || 0;
   var dprime = parseInt(document.getElementById('pace-dprime').value) || 200;
-  
+  var lthr = parseInt(document.getElementById('pace-lthr').value) || 175;
+  var age = parseInt(document.getElementById('pace-age').value) || 30;
+  var mhr = 208 - Math.round(0.7 * age);
+
   var csPaceSec = csMin * 60 + csSec;
   var csSpeed = 1000 / csPaceSec;
+
+  // Station data with estimated times (elite ~60min, competitive ~75min, novice ~90min)
+  // Times scaled based on D' (lower D' = less anaerobic power = slower stations)
+  var stationTimeScale = dprime < 120 ? 1.25 : dprime < 180 ? 1.10 : 1.0;
   
   var stations = [
-    { name: 'SkiErg', drain: 0.17, muscle: '上肢+核心' },
-    { name: 'Sled Push', drain: 0.27, muscle: '股四头肌+臀' },
-    { name: 'Sled Pull', drain: 0.23, muscle: '后链+握力' },
-    { name: 'BBJ', drain: 0.32, muscle: '全身爆发' },
-    { name: 'Row', drain: 0.22, muscle: '腿+背' },
-    { name: 'Farmers Carry', drain: 0.13, muscle: '握力+核心' },
-    { name: 'Lunges', drain: 0.22, muscle: '股四头肌+臀' },
-    { name: 'Wall Balls', drain: 0.30, muscle: '全身协调' },
+    { name: 'SkiErg',       baseTime: 260, drainPct: 0.17, hrSpike: 8,  muscle: '上肢+核心',   energyType: '有氧+磷酸原' },
+    { name: 'Sled Push',    baseTime: 180, drainPct: 0.27, hrSpike: 12, muscle: '股四头肌+臀',  energyType: '磷酸原+糖酵解' },
+    { name: 'Sled Pull',    baseTime: 200, drainPct: 0.23, hrSpike: 10, muscle: '后链+握力',    energyType: '磷酸原+糖酵解' },
+    { name: 'BBJ',          baseTime: 280, drainPct: 0.32, hrSpike: 15, muscle: '全身爆发',     energyType: '糖酵解为主' },
+    { name: 'Row',          baseTime: 250, drainPct: 0.22, hrSpike: 9,  muscle: '腿+背',        energyType: '有氧+糖酵解' },
+    { name: 'Farmers Carry',baseTime: 160, drainPct: 0.13, hrSpike: 6,  muscle: '握力+核心',    energyType: '等长+有氧' },
+    { name: 'Lunges',       baseTime: 220, drainPct: 0.22, hrSpike: 10, muscle: '股四头肌+臀',  energyType: '离心+糖酵解' },
+    { name: 'Wall Balls',   baseTime: 240, drainPct: 0.30, hrSpike: 14, muscle: '全身协调',     energyType: '糖酵解+全身' },
   ];
-  
-  var baseFactors = [0.92, 0.93, 0.90, 0.93, 0.80, 0.93, 0.88, 0.90];
-  var hrTargets = ['<LTHR-5', '<LTHR', '<LTHR+3', '<LTHR', '<LTHR+5', '<LTHR', '<LTHR+3', '<LTHR+5'];
+
+  // Phase definitions
+  var phases = ['开局', '开局', '建立', '建立', '中盘', '中盘', '收尾', '收尾'];
+  var phaseColors = ['#3a4840', '#3a4840', '#7c802e', '#7c802e', '#b6d350', '#b6d350', '#3a4840', '#3a4840'];
+
+  // Conservative vs aggressive pace factors
+  var consFactors = [0.88, 0.90, 0.85, 0.90, 0.75, 0.90, 0.83, 0.85];
+  var aggrFactors = [0.95, 0.96, 0.93, 0.96, 0.85, 0.96, 0.92, 0.95];
+
+  // HR targets in bpm (based on LTHR)
+  var hrTargetsBpm = [
+    Math.round(lthr - 8),   // Run 1: well below LTHR
+    Math.round(lthr - 3),   // Run 2: approaching LTHR
+    Math.round(lthr),       // Run 3: at LTHR
+    Math.round(lthr - 2),   // Run 4: slight recovery
+    Math.round(lthr + 3),   // Run 5: may exceed (active recovery in pace, not HR)
+    Math.round(lthr - 1),   // Run 6: back to LTHR
+    Math.round(lthr + 2),   // Run 7: pushing
+    Math.round(lthr + 5),   // Run 8: max effort if D' allows
+  ];
+
+  // Transition strategies
+  var transitions = [
+    '前500m压速·鼻吸口呼·心率<'+hrTargetsBpm[0],
+    '找巡航节奏·稳定步频·不追前面的人',
+    '前200m小步高频(200spm)·不追配速·等腿回来',
+    '保持节律·心率上限'+Math.round(lthr+2),
+    '主动降速·缩小步幅·4步1呼吸·这是恢复段',
+    '前200m极短步幅·给大腿30s再灌注·别被骗',
+    '高步频滑步(220spm)·恢复膈肌·不看配速表',
+    '看D\'余量决定：>30m冲刺·<10m保命完成',
+  ];
+
   var dprimeRemaining = dprime;
-  
-  var html = '';
   var totalRunSec = 0;
+  var cumulativeSec = 0;
+  var totalStationSec = 0;
   
-  var strategies = [
-    '0-500m不超速，给心率建仓留空间',
-    '找到巡航节奏，稳定呼吸',
-    '前200m小步高频过渡(200+spm)，不追配速',
-    '保持节律，心率控制在LTHR',
-    '主动降速段！牺牲这里换Run 6-8',
-    '前200m极短步幅等大腿再灌注',
-    '高步频滑步过渡(220spm)，恢复呼吸',
-    '根据D\'余量决定是否冲刺'
-  ];
-  
+  var phaseCommentary = {
+    '开局': { runs: [], note: '' },
+    '建立': { runs: [], note: '' },
+    '中盘': { runs: [], note: '' },
+    '收尾': { runs: [], note: '' }
+  };
+
+  var tbodyHtml = '';
+
   for (var i = 0; i < 8; i++) {
     var st = stations[i];
-    var factor = baseFactors[i];
-    var pace = csPaceSec / factor;
-    var pMin = Math.floor(pace / 60);
-    var pSec = Math.round(pace % 60);
-    var paceStr = pMin + ':' + String(pSec).padStart(2, '0');
+    var phase = phases[i];
+    var consFactor = consFactors[i];
+    var aggrFactor = aggrFactors[i];
     
-    var drainAmount = st.drain * dprime;
-    dprimeRemaining -= drainAmount;
-    var runTimeSec = pace;
-    var recoveryRate = (csSpeed * factor < csSpeed) ? (1 - factor) * 0.4 : 0;
-    var recoveryAmount = recoveryRate * runTimeSec * 0.3;
-    dprimeRemaining = Math.min(dprime, dprimeRemaining + recoveryAmount);
+    // Station time estimate
+    var stationSec = Math.round(st.baseTime * stationTimeScale);
+    totalStationSec += stationSec;
     
-    var dprimeDisplay = dprimeRemaining > 10 ? Math.round(dprimeRemaining) + 'm' : '<span style="color:#e07060;font-weight:700;">\u26a0 ' + Math.max(0, Math.round(dprimeRemaining)) + 'm \u5371\u9669</span>';
+    // D' before station
+    var dBefore = Math.round(Math.max(0, dprimeRemaining));
     
-    var rowStyle = '';
-    if (i === 4) rowStyle = ' style="background:rgba(124,128,46,0.1);font-weight:600;"';
-    if (dprimeRemaining < dprime * 0.2) rowStyle = ' style="background:rgba(224,112,96,0.1);"';
+    // D' drain during station
+    var drainMeters = Math.round(st.drainPct * dprime);
+    dprimeRemaining = Math.max(0, dprimeRemaining - drainMeters);
+    var dAfterStation = Math.round(dprimeRemaining);
     
-    html += '<tr' + rowStyle + '>' +
-      '<td><strong>Run ' + (i+1) + '</strong></td>' +
-      '<td>' + st.name + '</td>' +
-      '<td>' + st.muscle + ' (' + Math.round(st.drain*100) + '% D\')</td>' +
-      '<td>' + Math.round(factor*100) + '%</td>' +
-      '<td><strong>' + paceStr + '</strong>/km</td>' +
-      '<td>' + dprimeDisplay + '</td>' +
-      '<td>' + hrTargets[i] + '</td>' +
-      '<td style="font-size:0.8rem;">' + strategies[i] + '</td>' +
+    // Pace calculations
+    var consPace = csPaceSec / consFactor;
+    var aggrPace = csPaceSec / aggrFactor;
+    var avgFactor = (consFactor + aggrFactor) / 2;
+    var avgPace = csPaceSec / avgFactor;
+    
+    // D' recovery during run (recover more when running below CS)
+    var runSec = avgPace; // 1km at average pace
+    var belowCS = csSpeed - (1000 / avgPace);
+    if (belowCS > 0 && dprimeRemaining < dprime) {
+      var recoveryRate = (1 - avgFactor) * 0.35;
+      var recovered = Math.round(recoveryRate * runSec * 0.25);
+      dprimeRemaining = Math.min(dprime, dprimeRemaining + recovered);
+    }
+    var dAfterRun = Math.round(dprimeRemaining);
+    
+    totalRunSec += runSec;
+    cumulativeSec += runSec + stationSec;
+    
+    // Format
+    var fmtPace = function(s) { var m=Math.floor(s/60); var sec=Math.round(s%60); return m+':'+String(sec).padStart(2,'0'); };
+    var fmtTime = function(s) { var m=Math.floor(s/60); var sec=Math.round(s%60); return m+'分'+sec+'秒'; };
+    var fmtCum = function(s) { var m=Math.floor(s/60); var sec=Math.round(s%60); return m+'\':'+String(sec).padStart(2,'0')+'"'; };
+    
+    // Row styling
+    var rowClass = '';
+    if (phase === '中盘' && i === 4) rowClass = ' style="background:rgba(124,128,46,0.08);"';
+    if (dAfterRun < dprime * 0.15) rowClass = ' style="background:rgba(224,112,96,0.08);"';
+    
+    // HR target
+    var hrStr = hrTargetsBpm[i] + ' bpm';
+    var hrPct = Math.round(hrTargetsBpm[i] / mhr * 100);
+    hrStr += ' (' + hrPct + '% MHR)';
+    if (hrTargetsBpm[i] > lthr) hrStr += ' ⚠';
+    
+    tbodyHtml += '<tr' + rowClass + '>' +
+      '<td style="color:' + phaseColors[i] + ';font-weight:700;font-size:0.78rem;">' + phase + '</td>' +
+      '<td><strong>R' + (i+1) + '</strong></td>' +
+      '<td>' + st.name + '<br><span style="font-size:0.7rem;color:var(--ssp-muted);">' + st.energyType + '</span></td>' +
+      '<td style="font-size:0.78rem;">~' + fmtTime(stationSec) + '</td>' +
+      '<td>' + dBefore + 'm</td>' +
+      '<td style="color:#e07060;">' + dAfterStation + 'm <span style="font-size:0.7rem;">(-' + drainMeters + ')</span></td>' +
+      '<td style="font-weight:600;">' + dAfterRun + 'm</td>' +
+      '<td style="color:var(--ssp-dark);font-weight:600;">' + fmtPace(consPace) + '</td>' +
+      '<td style="color:#e07060;">' + fmtPace(aggrPace) + '</td>' +
+      '<td>' + Math.round(avgFactor*100) + '%</td>' +
+      '<td style="font-size:0.78rem;">' + hrStr + '</td>' +
+      '<td style="font-size:0.78rem;font-weight:600;">' + fmtCum(cumulativeSec) + '</td>' +
+      '<td style="font-size:0.74rem;">' + transitions[i] + '</td>' +
       '</tr>';
     
-    totalRunSec += pace;
+    // Build phase commentary
+    phaseCommentary[phase].runs.push(i+1);
   }
   
-  document.getElementById('pace-tbody').innerHTML = html;
+  document.getElementById('pace-tbody').innerHTML = tbodyHtml;
   
-  var totalMin = Math.floor(totalRunSec / 60);
-  var totalSec = Math.round(totalRunSec % 60);
+  // Phase summary cards
   var avgPaceSec = totalRunSec / 8;
-  var apMin = Math.floor(avgPaceSec / 60);
-  var apSec = Math.round(avgPaceSec % 60);
+  var stationTotalMin = Math.floor(totalStationSec / 60);
+  var stationTotalSecR = Math.round(totalStationSec % 60);
+  var estFinishSec = totalRunSec + totalStationSec + 480; // ~8min Roxzone
+  var finMin = Math.floor(estFinishSec / 60);
+  var finSec = Math.round(estFinishSec % 60);
   
-  document.getElementById('pace-summary').innerHTML = 
-    '<strong>跑段总计：</strong>' + totalMin + ':' + String(totalSec).padStart(2, '0') + 
-    ' (8\u00d71km平均配速 ' + apMin + ':' + String(apSec).padStart(2, '0') + '/km) | ' +
-    '<strong>D\'余量：</strong>' + Math.round(Math.max(0, dprimeRemaining)) + 'm' +
-    ' | <span style="color:var(--ssp-muted);">剩余时间给8个站点 + Roxzone</span>';
+  document.getElementById('pace-total-run').textContent = Math.floor(totalRunSec/60)+':'+String(Math.round(totalRunSec%60)).padStart(2,'0');
+  document.getElementById('pace-avg-pace').textContent = Math.floor(avgPaceSec/60)+':'+String(Math.round(avgPaceSec%60)).padStart(2,'0');
+  document.getElementById('pace-station-est').textContent = stationTotalMin+'分'+stationTotalSecR+'秒';
+  document.getElementById('pace-est-finish').textContent = finMin+':'+String(finSec).padStart(2,'0');
+  document.getElementById('pace-d-final').textContent = Math.round(Math.max(0, dprimeRemaining)) + 'm';
+  document.getElementById('pace-phase-summary').style.display = 'grid';
+  
+  // Phase commentary
+  phaseCommentary['开局'].note = '开局两段的核心：建立心率基线，不点燃D\'。R1用鼻吸口呼检测强度——如果需要嘴呼吸说明超速了。R2找到巡航节奏后锁住步频，不看配速看心率。';
+  phaseCommentary['建立'].note = 'R3是最容易步频崩溃的跑段（Sled Push后股四头肌离心疲劳）。前200m的过渡决定了整个中盘的质量。R4是BBJ前最后一个正常跑段——保持节奏，不要因为"感觉还行"就加速。';
+  phaseCommentary['中盘'].note = 'R5是全场唯一应该主动降配速的跑段。BBJ消耗了D\'的30%+，此时强行维持配速会让R6-8崩盘。R6的"大腿再灌注"是生理现象不是能力问题——前200m的耐心=后800m的速度。';
+  phaseCommentary['收尾'].note = 'R7膈肌疲劳是真正限制因素——用220spm高步频滑步让腿带着呼吸走，不要用呼吸带着腿走。R8的配速完全取决于D\'余量：>30m可以冲刺(CS×1.05)，10-30m用CS巡航，<10m保命完成。';
+  
+  var commHtml = '';
+  for (var phaseName of ['开局', '建立', '中盘', '收尾']) {
+    var pc = phaseCommentary[phaseName];
+    commHtml += '<div class="step-item" style="border-left-color:' + phaseColors[pc.runs[0]-1] + ';">' +
+      '<strong>' + phaseName + '阶段 (Run ' + pc.runs.join('+') + ')</strong>' +
+      '<p>' + pc.note + '</p></div>';
+  }
+  document.getElementById('pace-commentary-list').innerHTML = commHtml;
+  document.getElementById('pace-commentary').style.display = 'block';
+  
+  // Scroll to results
+  document.getElementById('pace-phase-summary').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 
