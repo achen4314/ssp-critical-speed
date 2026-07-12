@@ -232,6 +232,9 @@ tbody tr:hover { background:rgba(182,211,80,0.06); }
       <button class="tab-btn" data-tab="tab-vt">VT1/VT2</button>
       <button class="tab-btn" data-tab="tab-race">🏁 8段策略</button>
       <button class="tab-btn" data-tab="tab-sim">📋 全流程模拟</button>
+      <button class="tab-btn" data-tab="tab-pace">🏃 配速计算</button>
+      <button class="tab-btn" data-tab="tab-station">⚡ 站点能耗</button>
+      <button class="tab-btn" data-tab="tab-mistakes">🚨 翻车诊断</button>
     </div>
 
     <!-- CS -->
@@ -494,9 +497,276 @@ function renderTests() {
   document.getElementById('btn-remove').style.display = tests.length > 2 ? 'inline-block' : 'none';
 }
 function updateTest(id, field, val) { var t = tests.find(function(x) { return x.id === id; }); if (!t) return; t[field] = parseInt(val) || 0; }
-function addTest() { if (tests.length >= 5) return; tests.push({ id: nextId++, dist: 5000, min: 17, sec: 0 }); renderTests(); }
-function removeTest() { if (tests.length <= 2) return; tests.pop(); renderTests(); }
-function loadExample() { tests = [{ id: nextId++, dist: 1200, min: 3, sec: 45 },{ id: nextId++, dist: 2400, min: 7, sec: 50 },{ id: nextId++, dist: 3600, min: 12, sec: 0 }]; renderTests(); }
+function addTest() { if (tests.length >= 5) return; tests.push({ id: nextId++, dist: 5000, min: 17, sec: 0 }); // ═══ HYROX Pacing Calculator ═══
+function calcHyroxPace() {
+  var csMin = parseInt(document.getElementById('pace-cs-pace-min').value) || 4;
+  var csSec = parseInt(document.getElementById('pace-cs-pace-sec').value) || 0;
+  var dprime = parseInt(document.getElementById('pace-dprime').value) || 200;
+  
+  var csPaceSec = csMin * 60 + csSec;
+  var csSpeed = 1000 / csPaceSec;
+  
+  var stations = [
+    { name: 'SkiErg', drain: 0.17, muscle: '上肢+核心' },
+    { name: 'Sled Push', drain: 0.27, muscle: '股四头肌+臀' },
+    { name: 'Sled Pull', drain: 0.23, muscle: '后链+握力' },
+    { name: 'BBJ', drain: 0.32, muscle: '全身爆发' },
+    { name: 'Row', drain: 0.22, muscle: '腿+背' },
+    { name: 'Farmers Carry', drain: 0.13, muscle: '握力+核心' },
+    { name: 'Lunges', drain: 0.22, muscle: '股四头肌+臀' },
+    { name: 'Wall Balls', drain: 0.30, muscle: '全身协调' },
+  ];
+  
+  var baseFactors = [0.92, 0.93, 0.90, 0.93, 0.80, 0.93, 0.88, 0.90];
+  var hrTargets = ['<LTHR-5', '<LTHR', '<LTHR+3', '<LTHR', '<LTHR+5', '<LTHR', '<LTHR+3', '<LTHR+5'];
+  var dprimeRemaining = dprime;
+  
+  var html = '';
+  var totalRunSec = 0;
+  
+  var strategies = [
+    '0-500m不超速，给心率建仓留空间',
+    '找到巡航节奏，稳定呼吸',
+    '前200m小步高频过渡(200+spm)，不追配速',
+    '保持节律，心率控制在LTHR',
+    '主动降速段！牺牲这里换Run 6-8',
+    '前200m极短步幅等大腿再灌注',
+    '高步频滑步过渡(220spm)，恢复呼吸',
+    '根据D\'余量决定是否冲刺'
+  ];
+  
+  for (var i = 0; i < 8; i++) {
+    var st = stations[i];
+    var factor = baseFactors[i];
+    var pace = csPaceSec / factor;
+    var pMin = Math.floor(pace / 60);
+    var pSec = Math.round(pace % 60);
+    var paceStr = pMin + ':' + String(pSec).padStart(2, '0');
+    
+    var drainAmount = st.drain * dprime;
+    dprimeRemaining -= drainAmount;
+    var runTimeSec = pace;
+    var recoveryRate = (csSpeed * factor < csSpeed) ? (1 - factor) * 0.4 : 0;
+    var recoveryAmount = recoveryRate * runTimeSec * 0.3;
+    dprimeRemaining = Math.min(dprime, dprimeRemaining + recoveryAmount);
+    
+    var dprimeDisplay = dprimeRemaining > 10 ? Math.round(dprimeRemaining) + 'm' : '<span style="color:#e07060;font-weight:700;">\u26a0 ' + Math.max(0, Math.round(dprimeRemaining)) + 'm \u5371\u9669</span>';
+    
+    var rowStyle = '';
+    if (i === 4) rowStyle = ' style="background:rgba(124,128,46,0.1);font-weight:600;"';
+    if (dprimeRemaining < dprime * 0.2) rowStyle = ' style="background:rgba(224,112,96,0.1);"';
+    
+    html += '<tr' + rowStyle + '>' +
+      '<td><strong>Run ' + (i+1) + '</strong></td>' +
+      '<td>' + st.name + '</td>' +
+      '<td>' + st.muscle + ' (' + Math.round(st.drain*100) + '% D\')</td>' +
+      '<td>' + Math.round(factor*100) + '%</td>' +
+      '<td><strong>' + paceStr + '</strong>/km</td>' +
+      '<td>' + dprimeDisplay + '</td>' +
+      '<td>' + hrTargets[i] + '</td>' +
+      '<td style="font-size:0.8rem;">' + strategies[i] + '</td>' +
+      '</tr>';
+    
+    totalRunSec += pace;
+  }
+  
+  document.getElementById('pace-tbody').innerHTML = html;
+  
+  var totalMin = Math.floor(totalRunSec / 60);
+  var totalSec = Math.round(totalRunSec % 60);
+  var avgPaceSec = totalRunSec / 8;
+  var apMin = Math.floor(avgPaceSec / 60);
+  var apSec = Math.round(avgPaceSec % 60);
+  
+  document.getElementById('pace-summary').innerHTML = 
+    '<strong>跑段总计：</strong>' + totalMin + ':' + String(totalSec).padStart(2, '0') + 
+    ' (8\u00d71km平均配速 ' + apMin + ':' + String(apSec).padStart(2, '0') + '/km) | ' +
+    '<strong>D\'余量：</strong>' + Math.round(Math.max(0, dprimeRemaining)) + 'm' +
+    ' | <span style="color:var(--ssp-muted);">剩余时间给8个站点 + Roxzone</span>';
+}
+
+
+renderTests(); }
+function removeTest() { if (tests.length <= 2) return; tests.pop(); // ═══ HYROX Pacing Calculator ═══
+function calcHyroxPace() {
+  var csMin = parseInt(document.getElementById('pace-cs-pace-min').value) || 4;
+  var csSec = parseInt(document.getElementById('pace-cs-pace-sec').value) || 0;
+  var dprime = parseInt(document.getElementById('pace-dprime').value) || 200;
+  
+  var csPaceSec = csMin * 60 + csSec;
+  var csSpeed = 1000 / csPaceSec;
+  
+  var stations = [
+    { name: 'SkiErg', drain: 0.17, muscle: '上肢+核心' },
+    { name: 'Sled Push', drain: 0.27, muscle: '股四头肌+臀' },
+    { name: 'Sled Pull', drain: 0.23, muscle: '后链+握力' },
+    { name: 'BBJ', drain: 0.32, muscle: '全身爆发' },
+    { name: 'Row', drain: 0.22, muscle: '腿+背' },
+    { name: 'Farmers Carry', drain: 0.13, muscle: '握力+核心' },
+    { name: 'Lunges', drain: 0.22, muscle: '股四头肌+臀' },
+    { name: 'Wall Balls', drain: 0.30, muscle: '全身协调' },
+  ];
+  
+  var baseFactors = [0.92, 0.93, 0.90, 0.93, 0.80, 0.93, 0.88, 0.90];
+  var hrTargets = ['<LTHR-5', '<LTHR', '<LTHR+3', '<LTHR', '<LTHR+5', '<LTHR', '<LTHR+3', '<LTHR+5'];
+  var dprimeRemaining = dprime;
+  
+  var html = '';
+  var totalRunSec = 0;
+  
+  var strategies = [
+    '0-500m不超速，给心率建仓留空间',
+    '找到巡航节奏，稳定呼吸',
+    '前200m小步高频过渡(200+spm)，不追配速',
+    '保持节律，心率控制在LTHR',
+    '主动降速段！牺牲这里换Run 6-8',
+    '前200m极短步幅等大腿再灌注',
+    '高步频滑步过渡(220spm)，恢复呼吸',
+    '根据D\'余量决定是否冲刺'
+  ];
+  
+  for (var i = 0; i < 8; i++) {
+    var st = stations[i];
+    var factor = baseFactors[i];
+    var pace = csPaceSec / factor;
+    var pMin = Math.floor(pace / 60);
+    var pSec = Math.round(pace % 60);
+    var paceStr = pMin + ':' + String(pSec).padStart(2, '0');
+    
+    var drainAmount = st.drain * dprime;
+    dprimeRemaining -= drainAmount;
+    var runTimeSec = pace;
+    var recoveryRate = (csSpeed * factor < csSpeed) ? (1 - factor) * 0.4 : 0;
+    var recoveryAmount = recoveryRate * runTimeSec * 0.3;
+    dprimeRemaining = Math.min(dprime, dprimeRemaining + recoveryAmount);
+    
+    var dprimeDisplay = dprimeRemaining > 10 ? Math.round(dprimeRemaining) + 'm' : '<span style="color:#e07060;font-weight:700;">\u26a0 ' + Math.max(0, Math.round(dprimeRemaining)) + 'm \u5371\u9669</span>';
+    
+    var rowStyle = '';
+    if (i === 4) rowStyle = ' style="background:rgba(124,128,46,0.1);font-weight:600;"';
+    if (dprimeRemaining < dprime * 0.2) rowStyle = ' style="background:rgba(224,112,96,0.1);"';
+    
+    html += '<tr' + rowStyle + '>' +
+      '<td><strong>Run ' + (i+1) + '</strong></td>' +
+      '<td>' + st.name + '</td>' +
+      '<td>' + st.muscle + ' (' + Math.round(st.drain*100) + '% D\')</td>' +
+      '<td>' + Math.round(factor*100) + '%</td>' +
+      '<td><strong>' + paceStr + '</strong>/km</td>' +
+      '<td>' + dprimeDisplay + '</td>' +
+      '<td>' + hrTargets[i] + '</td>' +
+      '<td style="font-size:0.8rem;">' + strategies[i] + '</td>' +
+      '</tr>';
+    
+    totalRunSec += pace;
+  }
+  
+  document.getElementById('pace-tbody').innerHTML = html;
+  
+  var totalMin = Math.floor(totalRunSec / 60);
+  var totalSec = Math.round(totalRunSec % 60);
+  var avgPaceSec = totalRunSec / 8;
+  var apMin = Math.floor(avgPaceSec / 60);
+  var apSec = Math.round(avgPaceSec % 60);
+  
+  document.getElementById('pace-summary').innerHTML = 
+    '<strong>跑段总计：</strong>' + totalMin + ':' + String(totalSec).padStart(2, '0') + 
+    ' (8\u00d71km平均配速 ' + apMin + ':' + String(apSec).padStart(2, '0') + '/km) | ' +
+    '<strong>D\'余量：</strong>' + Math.round(Math.max(0, dprimeRemaining)) + 'm' +
+    ' | <span style="color:var(--ssp-muted);">剩余时间给8个站点 + Roxzone</span>';
+}
+
+
+renderTests(); }
+function loadExample() { tests = [{ id: nextId++, dist: 1200, min: 3, sec: 45 },{ id: nextId++, dist: 2400, min: 7, sec: 50 },{ id: nextId++, dist: 3600, min: 12, sec: 0 }]; // ═══ HYROX Pacing Calculator ═══
+function calcHyroxPace() {
+  var csMin = parseInt(document.getElementById('pace-cs-pace-min').value) || 4;
+  var csSec = parseInt(document.getElementById('pace-cs-pace-sec').value) || 0;
+  var dprime = parseInt(document.getElementById('pace-dprime').value) || 200;
+  
+  var csPaceSec = csMin * 60 + csSec;
+  var csSpeed = 1000 / csPaceSec;
+  
+  var stations = [
+    { name: 'SkiErg', drain: 0.17, muscle: '上肢+核心' },
+    { name: 'Sled Push', drain: 0.27, muscle: '股四头肌+臀' },
+    { name: 'Sled Pull', drain: 0.23, muscle: '后链+握力' },
+    { name: 'BBJ', drain: 0.32, muscle: '全身爆发' },
+    { name: 'Row', drain: 0.22, muscle: '腿+背' },
+    { name: 'Farmers Carry', drain: 0.13, muscle: '握力+核心' },
+    { name: 'Lunges', drain: 0.22, muscle: '股四头肌+臀' },
+    { name: 'Wall Balls', drain: 0.30, muscle: '全身协调' },
+  ];
+  
+  var baseFactors = [0.92, 0.93, 0.90, 0.93, 0.80, 0.93, 0.88, 0.90];
+  var hrTargets = ['<LTHR-5', '<LTHR', '<LTHR+3', '<LTHR', '<LTHR+5', '<LTHR', '<LTHR+3', '<LTHR+5'];
+  var dprimeRemaining = dprime;
+  
+  var html = '';
+  var totalRunSec = 0;
+  
+  var strategies = [
+    '0-500m不超速，给心率建仓留空间',
+    '找到巡航节奏，稳定呼吸',
+    '前200m小步高频过渡(200+spm)，不追配速',
+    '保持节律，心率控制在LTHR',
+    '主动降速段！牺牲这里换Run 6-8',
+    '前200m极短步幅等大腿再灌注',
+    '高步频滑步过渡(220spm)，恢复呼吸',
+    '根据D\'余量决定是否冲刺'
+  ];
+  
+  for (var i = 0; i < 8; i++) {
+    var st = stations[i];
+    var factor = baseFactors[i];
+    var pace = csPaceSec / factor;
+    var pMin = Math.floor(pace / 60);
+    var pSec = Math.round(pace % 60);
+    var paceStr = pMin + ':' + String(pSec).padStart(2, '0');
+    
+    var drainAmount = st.drain * dprime;
+    dprimeRemaining -= drainAmount;
+    var runTimeSec = pace;
+    var recoveryRate = (csSpeed * factor < csSpeed) ? (1 - factor) * 0.4 : 0;
+    var recoveryAmount = recoveryRate * runTimeSec * 0.3;
+    dprimeRemaining = Math.min(dprime, dprimeRemaining + recoveryAmount);
+    
+    var dprimeDisplay = dprimeRemaining > 10 ? Math.round(dprimeRemaining) + 'm' : '<span style="color:#e07060;font-weight:700;">\u26a0 ' + Math.max(0, Math.round(dprimeRemaining)) + 'm \u5371\u9669</span>';
+    
+    var rowStyle = '';
+    if (i === 4) rowStyle = ' style="background:rgba(124,128,46,0.1);font-weight:600;"';
+    if (dprimeRemaining < dprime * 0.2) rowStyle = ' style="background:rgba(224,112,96,0.1);"';
+    
+    html += '<tr' + rowStyle + '>' +
+      '<td><strong>Run ' + (i+1) + '</strong></td>' +
+      '<td>' + st.name + '</td>' +
+      '<td>' + st.muscle + ' (' + Math.round(st.drain*100) + '% D\')</td>' +
+      '<td>' + Math.round(factor*100) + '%</td>' +
+      '<td><strong>' + paceStr + '</strong>/km</td>' +
+      '<td>' + dprimeDisplay + '</td>' +
+      '<td>' + hrTargets[i] + '</td>' +
+      '<td style="font-size:0.8rem;">' + strategies[i] + '</td>' +
+      '</tr>';
+    
+    totalRunSec += pace;
+  }
+  
+  document.getElementById('pace-tbody').innerHTML = html;
+  
+  var totalMin = Math.floor(totalRunSec / 60);
+  var totalSec = Math.round(totalRunSec % 60);
+  var avgPaceSec = totalRunSec / 8;
+  var apMin = Math.floor(avgPaceSec / 60);
+  var apSec = Math.round(avgPaceSec % 60);
+  
+  document.getElementById('pace-summary').innerHTML = 
+    '<strong>跑段总计：</strong>' + totalMin + ':' + String(totalSec).padStart(2, '0') + 
+    ' (8\u00d71km平均配速 ' + apMin + ':' + String(apSec).padStart(2, '0') + '/km) | ' +
+    '<strong>D\'余量：</strong>' + Math.round(Math.max(0, dprimeRemaining)) + 'm' +
+    ' | <span style="color:var(--ssp-muted);">剩余时间给8个站点 + Roxzone</span>';
+}
+
+
+renderTests(); }
 
 function calculate() {
   var pts = tests.map(function(t) { return { dist: t.dist, time: t.min * 60 + t.sec }; }).filter(function(p) { return p.dist > 0 && p.time > 0; });
@@ -559,6 +829,95 @@ function calculate() {
   }).join('');
   document.getElementById('results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+// ═══ HYROX Pacing Calculator ═══
+function calcHyroxPace() {
+  var csMin = parseInt(document.getElementById('pace-cs-pace-min').value) || 4;
+  var csSec = parseInt(document.getElementById('pace-cs-pace-sec').value) || 0;
+  var dprime = parseInt(document.getElementById('pace-dprime').value) || 200;
+  
+  var csPaceSec = csMin * 60 + csSec;
+  var csSpeed = 1000 / csPaceSec;
+  
+  var stations = [
+    { name: 'SkiErg', drain: 0.17, muscle: '上肢+核心' },
+    { name: 'Sled Push', drain: 0.27, muscle: '股四头肌+臀' },
+    { name: 'Sled Pull', drain: 0.23, muscle: '后链+握力' },
+    { name: 'BBJ', drain: 0.32, muscle: '全身爆发' },
+    { name: 'Row', drain: 0.22, muscle: '腿+背' },
+    { name: 'Farmers Carry', drain: 0.13, muscle: '握力+核心' },
+    { name: 'Lunges', drain: 0.22, muscle: '股四头肌+臀' },
+    { name: 'Wall Balls', drain: 0.30, muscle: '全身协调' },
+  ];
+  
+  var baseFactors = [0.92, 0.93, 0.90, 0.93, 0.80, 0.93, 0.88, 0.90];
+  var hrTargets = ['<LTHR-5', '<LTHR', '<LTHR+3', '<LTHR', '<LTHR+5', '<LTHR', '<LTHR+3', '<LTHR+5'];
+  var dprimeRemaining = dprime;
+  
+  var html = '';
+  var totalRunSec = 0;
+  
+  var strategies = [
+    '0-500m不超速，给心率建仓留空间',
+    '找到巡航节奏，稳定呼吸',
+    '前200m小步高频过渡(200+spm)，不追配速',
+    '保持节律，心率控制在LTHR',
+    '主动降速段！牺牲这里换Run 6-8',
+    '前200m极短步幅等大腿再灌注',
+    '高步频滑步过渡(220spm)，恢复呼吸',
+    '根据D\'余量决定是否冲刺'
+  ];
+  
+  for (var i = 0; i < 8; i++) {
+    var st = stations[i];
+    var factor = baseFactors[i];
+    var pace = csPaceSec / factor;
+    var pMin = Math.floor(pace / 60);
+    var pSec = Math.round(pace % 60);
+    var paceStr = pMin + ':' + String(pSec).padStart(2, '0');
+    
+    var drainAmount = st.drain * dprime;
+    dprimeRemaining -= drainAmount;
+    var runTimeSec = pace;
+    var recoveryRate = (csSpeed * factor < csSpeed) ? (1 - factor) * 0.4 : 0;
+    var recoveryAmount = recoveryRate * runTimeSec * 0.3;
+    dprimeRemaining = Math.min(dprime, dprimeRemaining + recoveryAmount);
+    
+    var dprimeDisplay = dprimeRemaining > 10 ? Math.round(dprimeRemaining) + 'm' : '<span style="color:#e07060;font-weight:700;">\u26a0 ' + Math.max(0, Math.round(dprimeRemaining)) + 'm \u5371\u9669</span>';
+    
+    var rowStyle = '';
+    if (i === 4) rowStyle = ' style="background:rgba(124,128,46,0.1);font-weight:600;"';
+    if (dprimeRemaining < dprime * 0.2) rowStyle = ' style="background:rgba(224,112,96,0.1);"';
+    
+    html += '<tr' + rowStyle + '>' +
+      '<td><strong>Run ' + (i+1) + '</strong></td>' +
+      '<td>' + st.name + '</td>' +
+      '<td>' + st.muscle + ' (' + Math.round(st.drain*100) + '% D\')</td>' +
+      '<td>' + Math.round(factor*100) + '%</td>' +
+      '<td><strong>' + paceStr + '</strong>/km</td>' +
+      '<td>' + dprimeDisplay + '</td>' +
+      '<td>' + hrTargets[i] + '</td>' +
+      '<td style="font-size:0.8rem;">' + strategies[i] + '</td>' +
+      '</tr>';
+    
+    totalRunSec += pace;
+  }
+  
+  document.getElementById('pace-tbody').innerHTML = html;
+  
+  var totalMin = Math.floor(totalRunSec / 60);
+  var totalSec = Math.round(totalRunSec % 60);
+  var avgPaceSec = totalRunSec / 8;
+  var apMin = Math.floor(avgPaceSec / 60);
+  var apSec = Math.round(avgPaceSec % 60);
+  
+  document.getElementById('pace-summary').innerHTML = 
+    '<strong>跑段总计：</strong>' + totalMin + ':' + String(totalSec).padStart(2, '0') + 
+    ' (8\u00d71km平均配速 ' + apMin + ':' + String(apSec).padStart(2, '0') + '/km) | ' +
+    '<strong>D\'余量：</strong>' + Math.round(Math.max(0, dprimeRemaining)) + 'm' +
+    ' | <span style="color:var(--ssp-muted);">剩余时间给8个站点 + Roxzone</span>';
+}
+
+
 renderTests();
 </script>
 </body>
