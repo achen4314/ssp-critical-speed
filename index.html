@@ -414,9 +414,120 @@ tbody tr:hover { background:rgba(182,211,80,0.06); }
           <p>① <span class="highlight">速度靶点：</span>下个训练周期的每段配速目标（精确到 ±3 秒/km）；② <span class="highlight">心率封顶：</span>各站点的出站心率上限 + 跑步段恢复目标心率；③ <span class="highlight">站点动作节奏：</span>每个功能站点的分段策略和中断容忍上限。公开课现场用这三类靶点反推训练模块设计。</p>
         </div>
       </div>
+        </div>
+      </div>
     </div>
+
+    <!-- 🏃 HYROX 配速计算器 -->
+    <div class="tab-panel" id="tab-pace">
+      <h3>🏃 HYROX 8段跑配速计算器（含站点耗能修正）</h3>
+      <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
+        每个站点消耗不同的能量系统，站点后的跑段必须据此调整配速。以下是基于你的 CS 和 D' 的个性化配速建议。
+      </p>
+
+      <div class="hrr-form">
+        <div class="input-group"><label>你的 CS 配速 (/km)</label><div style="display:flex;gap:4px;align-items:center;"><input id="pace-cs-pace-min" type="number" value="4" min="2" max="8" style="width:60px;"><span>:</span><input id="pace-cs-pace-sec" type="number" value="00" min="0" max="59" style="width:60px;"></div></div>
+        <div class="input-group"><label>你的 D' (米)</label><input id="pace-dprime" type="number" value="200" min="50" max="500"></div>
+        <div class="input-group"><label>目标完赛 (分:秒)</label><div style="display:flex;gap:4px;align-items:center;"><input id="pace-target-min" type="number" value="70" min="40" max="150" style="width:60px;"><span>:</span><input id="pace-target-sec" type="number" value="00" min="0" max="59" style="width:60px;"></div></div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="calcHyroxPace()" style="margin-bottom:14px;">计算各段配速</button>
+
+      <div style="overflow-x:auto;" id="pace-table-wrap">
+        <table id="pace-table">
+          <thead><tr><th>跑段</th><th>前站点</th><th>站点耗能类型</th><th>%CS</th><th>目标配速</th><th>D'余量</th><th>心率目标</th><th>策略要点</th></tr></thead>
+          <tbody id="pace-tbody"></tbody>
+        </table>
+      </div>
+      <p id="pace-summary" style="text-align:center;color:var(--ssp-muted);font-size:0.84rem;margin-top:12px;"></p>
+      <div class="tip" style="margin-top:12px;">
+        <strong>使用说明：</strong>配速越保守（%CS越低），D'恢复越多，但总时间越长。HYROX精英选手在Run 1-3用CS×0.92-0.95巡航，Run 5主动降速恢复D'，Run 8根据剩余D'决定是否冲刺。如果你的D' &lt; 150m，建议全程保守配速。
+      </div>
+    </div>
+
+    <!-- ⚡ 站点能量消耗对照表 -->
+    <div class="tab-panel" id="tab-station">
+      <h3>⚡ 8个站点能量消耗对照表</h3>
+      <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
+        每个HYROX站点对不同能量系统的消耗完全不同。理解这一点，你才知道为什么有些站点后还能加速，有些站点后只能保命。
+      </p>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>站点</th><th>主要代谢</th><th>D'消耗</th><th>心率冲击</th><th>恢复需求</th><th>主要肌群</th><th>技术节能要点</th></tr></thead>
+          <tbody>
+            <tr style="background:rgba(182,211,80,0.06);"><td><strong>SkiErg</strong></td><td>有氧+上肢磷酸原</td><td>⭐⭐ 15-20%</td><td>↑↑↑ 高心率但腿新鲜</td><td>1-2min跑步恢复</td><td>背阔肌·三头·核心</td><td>用髋驱动非纯手臂；60%髋+40%臂发力比例</td></tr>
+            <tr><td><strong>Sled Push</strong></td><td>磷酸原+糖酵解</td><td>⭐⭐⭐ 25-30%</td><td>↑↑↑↑ 极高（全身紧绷）</td><td>2-3min+跑步段前200m慢</td><td>股四头肌·臀·核心</td><td>低姿短步·保持脊柱中立·手臂仅传导不主动发力</td></tr>
+            <tr style="background:rgba(182,211,80,0.06);"><td><strong>Sled Pull</strong></td><td>磷酸原+糖酵解</td><td>⭐⭐⭐ 20-25%</td><td>↑↑↑+体位性低血压风险</td><td>2-3min·站直后头晕需注意</td><td>腘绳肌·背·二头·握力</td><td>每次发力配合呼气·松手后视线平视远处</td></tr>
+            <tr><td><strong>Burpee Broad Jump</strong></td><td>糖酵解为主</td><td>⭐⭐⭐⭐ 30-35%</td><td>↑↑↑↑↑ 最高之一</td><td>3-4min·Run 5主动降速</td><td>全身·髋·核心·肩</td><td>每5m检查节律；单次耗时波动>0.5s=崩</td></tr>
+            <tr style="background:rgba(182,211,80,0.06);"><td><strong>Row</strong></td><td>有氧+糖酵解混合</td><td>⭐⭐⭐ 20-25%</td><td>↑↑↑ 大腿血流竞争</td><td>2-3min·Run 6前200m高步频</td><td>股四头肌·背·核心</td><td>腿:背:臂=60:30:10发力比；低s/m高功率</td></tr>
+            <tr><td><strong>Farmers Carry</strong></td><td>等长收缩+有氧</td><td>⭐⭐ 10-15%</td><td>↑↑ 但膈肌疲劳是关键</td><td>1-2min·恢复呼吸节律</td><td>握力·斜方肌·核心</td><td>短步·220+spm滑步走法·4步1呼吸</td></tr>
+            <tr style="background:rgba(182,211,80,0.06);"><td><strong>Lunges</strong></td><td>离心负荷+糖酵解</td><td>⭐⭐⭐ 20-25%</td><td>↑↑↑ 离心损伤累积</td><td>2-3min·Run 8配速保守</td><td>股四头肌·臀·核心</td><td>膝盖最后5cm减速·避免砸地离心损伤</td></tr>
+            <tr><td><strong>Wall Balls</strong></td><td>糖酵解+全身协调</td><td>⭐⭐⭐⭐ 25-35%</td><td>↑↑↑↑ 最终考验</td><td>3-4min·终点前冲刺</td><td>腿·髋·核心·肩</td><td>用腿-髋-核心-手的动量链·手臂仅顶点推出</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tip" style="margin-top:14px;">
+        <strong>D' 总量管理：</strong>如果你D'=200m，8站累计消耗≈170-210m。当你D'耗尽时心率会失控、配速暴跌。关键策略：前4站不把D'用超50%，在Run 5-6利用低于CS的配速让D'恢复。
+      </div>
+    </div>
+
+    <!-- 🚨 常见比赛翻车场景 -->
+    <div class="tab-panel" id="tab-mistakes">
+      <h3>🚨 HYROX 最常见的5个翻车场景 + 补救策略</h3>
+      <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
+        以下场景来自真实比赛数据和运动员反馈。提前知道这些坑，比赛时就能第一时间识别并补救。
+      </p>
+      <div class="step-list">
+
+        <div class="step-item" style="border-left-color:#e07060;">
+          <strong>🚨 翻车 #1：Run 1 超速（"比赛兴奋症"）</strong>
+          <p><span class="highlight">症状：</span>跑完Run 1感觉很轻松，配速比计划快10-15s/km。心跳高但不觉得累。</p>
+          <p><span class="highlight">后果：</span>D'在Run 1-3就被提前消耗40%+，到Run 5-6出现"突然的墙"，配速暴跌30s+/km。</p>
+          <p><span class="highlight">数据信号：</span>Run 1-2配速 vs CS配速差异 >8% = 超速警告。Run 1心率 > LTHR − 10bpm = 开局过激。</p>
+          <p><span class="highlight">补救（如果已经超了）：</span>Run 2立刻降速到CS×0.85，Run 3再降回CS×0.82，牺牲2-3分钟换后面不崩。不要在Run 2继续"找节奏"。</p>
+        </div>
+
+        <div class="step-item" style="border-left-color:#e07060;">
+          <strong>🚨 翻车 #2：Sled Push 后 Run 3 步频崩溃</strong>
+          <p><span class="highlight">症状：</span>推完雪橇后站起来觉得还行，但跑200m后步频从180骤降到160以下，觉得"腿灌了铅"。</p>
+          <p><span class="highlight">后果：</span>股四头肌离心疲劳导致跑步刚性丧失，跟腱弹性回馈消失，每一步都在"砸地"而非"弹地"。</p>
+          <p><span class="highlight">数据信号：</span>Run 3步频 &lt; Run 1步频×0.9。Run 3平均配速 > Run 1配速 +20s/km。</p>
+          <p><span class="highlight">补救：</span>Run 3前200m故意用小步高频（200+spm）过渡，不追求配速。心率封顶LTHR+3bpm。如果步频不恢复，立刻切换为"生存模式"：CS×0.80，等Run 4恢复。</p>
+        </div>
+
+        <div class="step-item" style="border-left-color:#e07060;">
+          <strong>🚨 翻车 #3：BBJ 站点动作崩盘 → Run 5 "死亡跑"</strong>
+          <p><span class="highlight">症状：</span>Burpee到第40-50m时单次耗时从4s变成6-7s，动作变形，站起时头晕。跑Run 5时感觉"每一步都在挣扎"。</p>
+          <p><span class="highlight">后果：</span>BBJ是所有站点中D'消耗最大的（30-35%），且直立性血压波动让Run 5变成整场比赛最难受的跑段。</p>
+          <p><span class="highlight">数据信号：</span>BBJ单次耗时波动 >0.5s = 动作崩。Run 5心率持续 >LTHR+5bpm = D'即将耗尽。</p>
+          <p><span class="highlight">补救：</span>BBJ站点不要追求速度——追求节律（保持3.5-4s/次均速）。如果已经崩了，Run 5主动降为CS×0.75-0.80，<strong>这是整场比赛唯一应该主动降配速的跑段。</strong>在这里牺牲的时间会在Run 6-8全部拿回来。</p>
+        </div>
+
+        <div class="step-item" style="border-left-color:#e07060;">
+          <strong>🚨 翻车 #4：Row 后 Run 6 "大腿再灌注"踏空</strong>
+          <p><span class="highlight">症状：</span>划船时大腿剧烈充血，站起来跑Run 6时感觉"腿不是自己的"，前200m像踩棉花。</p>
+          <p><span class="highlight">后果：</span>血流竞争（划船时血液集中在大腿 → 站起来跑步时血液重新分配到全身）导致暂时的"假性无力"——不是真的没力，是血液还没回流。</p>
+          <p><span class="highlight">数据信号：</span>Run 6前200m配速比整段平均慢15s+/km = 再灌注延迟。心率在Run 6前400m异常高 = 心脏在补偿血液重新分布。</p>
+          <p><span class="highlight">补救：</span>Row 最后10次降低功率做"冲洗"。Run 6前200m用极短步幅（高步频180spm但不追求速度），给大腿30-45秒的再灌注时间。不要被"假性无力"骗了——2分钟后腿会回来。</p>
+        </div>
+
+        <div class="step-item" style="border-left-color:#e07060;">
+          <strong>🚨 翻车 #5：Wall Balls 中断 → Run 8 冲刺变保命</strong>
+          <p><span class="highlight">症状：</span>墙球做到第60-75个时，手臂无法持续推出，开始频繁中断（每5-8个停一次）。跑Run 8时本该冲刺但配速反而比Run 7还慢。</p>
+          <p><span class="highlight">后果：</span>墙球的中断不是体能问题——是技术崩盘。当腿-髋-核心-手的动量链断裂后，手臂单独发力推球=极低效率=急速衰竭。</p>
+          <p><span class="highlight">数据信号：</span>墙球中断次数 >5次。最后20个墙球用时 > 前20个用时×1.5 = 崩盘。Run 8配速 &lt; Run 7配速 = D'已耗尽。</p>
+          <p><span class="highlight">补救：</span>墙球崩了不要硬撑——每组10个后站直深呼吸2次（2秒），中断5-6次比连续崩更好。Run 8如果D'耗尽：不要冲刺，用CS×0.90完成。如果D'还有余量（>30m），冲刺到CS×1.05-1.10。</p>
+        </div>
+
+      </div>
+
+      <div class="tip" style="margin-top:18px;">
+        <strong>比赛中三问决策法：</strong>每完成一个站点后，在跑段前200m内问自己——① 配速是否在目标区间？② 心率是否被拉回LTHR以下？③ D'余量是否够完成剩余站点？任一个答案"否"→立刻调整。HYROX不是拼谁跑得快，是拼谁<strong>在最后3段仍然能跑</strong>。
+      </div>
+    </div>
+
   </div>
 </div>
+
 
 <!-- ═══ 指标解读 ═══ -->
 <div class="card" id="explainer">
@@ -497,274 +608,13 @@ function renderTests() {
   document.getElementById('btn-remove').style.display = tests.length > 2 ? 'inline-block' : 'none';
 }
 function updateTest(id, field, val) { var t = tests.find(function(x) { return x.id === id; }); if (!t) return; t[field] = parseInt(val) || 0; }
-function addTest() { if (tests.length >= 5) return; tests.push({ id: nextId++, dist: 5000, min: 17, sec: 0 }); // ═══ HYROX Pacing Calculator ═══
-function calcHyroxPace() {
-  var csMin = parseInt(document.getElementById('pace-cs-pace-min').value) || 4;
-  var csSec = parseInt(document.getElementById('pace-cs-pace-sec').value) || 0;
-  var dprime = parseInt(document.getElementById('pace-dprime').value) || 200;
-  
-  var csPaceSec = csMin * 60 + csSec;
-  var csSpeed = 1000 / csPaceSec;
-  
-  var stations = [
-    { name: 'SkiErg', drain: 0.17, muscle: '上肢+核心' },
-    { name: 'Sled Push', drain: 0.27, muscle: '股四头肌+臀' },
-    { name: 'Sled Pull', drain: 0.23, muscle: '后链+握力' },
-    { name: 'BBJ', drain: 0.32, muscle: '全身爆发' },
-    { name: 'Row', drain: 0.22, muscle: '腿+背' },
-    { name: 'Farmers Carry', drain: 0.13, muscle: '握力+核心' },
-    { name: 'Lunges', drain: 0.22, muscle: '股四头肌+臀' },
-    { name: 'Wall Balls', drain: 0.30, muscle: '全身协调' },
-  ];
-  
-  var baseFactors = [0.92, 0.93, 0.90, 0.93, 0.80, 0.93, 0.88, 0.90];
-  var hrTargets = ['<LTHR-5', '<LTHR', '<LTHR+3', '<LTHR', '<LTHR+5', '<LTHR', '<LTHR+3', '<LTHR+5'];
-  var dprimeRemaining = dprime;
-  
-  var html = '';
-  var totalRunSec = 0;
-  
-  var strategies = [
-    '0-500m不超速，给心率建仓留空间',
-    '找到巡航节奏，稳定呼吸',
-    '前200m小步高频过渡(200+spm)，不追配速',
-    '保持节律，心率控制在LTHR',
-    '主动降速段！牺牲这里换Run 6-8',
-    '前200m极短步幅等大腿再灌注',
-    '高步频滑步过渡(220spm)，恢复呼吸',
-    '根据D\'余量决定是否冲刺'
-  ];
-  
-  for (var i = 0; i < 8; i++) {
-    var st = stations[i];
-    var factor = baseFactors[i];
-    var pace = csPaceSec / factor;
-    var pMin = Math.floor(pace / 60);
-    var pSec = Math.round(pace % 60);
-    var paceStr = pMin + ':' + String(pSec).padStart(2, '0');
-    
-    var drainAmount = st.drain * dprime;
-    dprimeRemaining -= drainAmount;
-    var runTimeSec = pace;
-    var recoveryRate = (csSpeed * factor < csSpeed) ? (1 - factor) * 0.4 : 0;
-    var recoveryAmount = recoveryRate * runTimeSec * 0.3;
-    dprimeRemaining = Math.min(dprime, dprimeRemaining + recoveryAmount);
-    
-    var dprimeDisplay = dprimeRemaining > 10 ? Math.round(dprimeRemaining) + 'm' : '<span style="color:#e07060;font-weight:700;">\u26a0 ' + Math.max(0, Math.round(dprimeRemaining)) + 'm \u5371\u9669</span>';
-    
-    var rowStyle = '';
-    if (i === 4) rowStyle = ' style="background:rgba(124,128,46,0.1);font-weight:600;"';
-    if (dprimeRemaining < dprime * 0.2) rowStyle = ' style="background:rgba(224,112,96,0.1);"';
-    
-    html += '<tr' + rowStyle + '>' +
-      '<td><strong>Run ' + (i+1) + '</strong></td>' +
-      '<td>' + st.name + '</td>' +
-      '<td>' + st.muscle + ' (' + Math.round(st.drain*100) + '% D\')</td>' +
-      '<td>' + Math.round(factor*100) + '%</td>' +
-      '<td><strong>' + paceStr + '</strong>/km</td>' +
-      '<td>' + dprimeDisplay + '</td>' +
-      '<td>' + hrTargets[i] + '</td>' +
-      '<td style="font-size:0.8rem;">' + strategies[i] + '</td>' +
-      '</tr>';
-    
-    totalRunSec += pace;
-  }
-  
-  document.getElementById('pace-tbody').innerHTML = html;
-  
-  var totalMin = Math.floor(totalRunSec / 60);
-  var totalSec = Math.round(totalRunSec % 60);
-  var avgPaceSec = totalRunSec / 8;
-  var apMin = Math.floor(avgPaceSec / 60);
-  var apSec = Math.round(avgPaceSec % 60);
-  
-  document.getElementById('pace-summary').innerHTML = 
-    '<strong>跑段总计：</strong>' + totalMin + ':' + String(totalSec).padStart(2, '0') + 
-    ' (8\u00d71km平均配速 ' + apMin + ':' + String(apSec).padStart(2, '0') + '/km) | ' +
-    '<strong>D\'余量：</strong>' + Math.round(Math.max(0, dprimeRemaining)) + 'm' +
-    ' | <span style="color:var(--ssp-muted);">剩余时间给8个站点 + Roxzone</span>';
-}
-
+function addTest() { if (tests.length >= 5) return; tests.push({ id: nextId++, dist: 5000, min: 17, sec: 0 }); 
 
 renderTests(); }
-function removeTest() { if (tests.length <= 2) return; tests.pop(); // ═══ HYROX Pacing Calculator ═══
-function calcHyroxPace() {
-  var csMin = parseInt(document.getElementById('pace-cs-pace-min').value) || 4;
-  var csSec = parseInt(document.getElementById('pace-cs-pace-sec').value) || 0;
-  var dprime = parseInt(document.getElementById('pace-dprime').value) || 200;
-  
-  var csPaceSec = csMin * 60 + csSec;
-  var csSpeed = 1000 / csPaceSec;
-  
-  var stations = [
-    { name: 'SkiErg', drain: 0.17, muscle: '上肢+核心' },
-    { name: 'Sled Push', drain: 0.27, muscle: '股四头肌+臀' },
-    { name: 'Sled Pull', drain: 0.23, muscle: '后链+握力' },
-    { name: 'BBJ', drain: 0.32, muscle: '全身爆发' },
-    { name: 'Row', drain: 0.22, muscle: '腿+背' },
-    { name: 'Farmers Carry', drain: 0.13, muscle: '握力+核心' },
-    { name: 'Lunges', drain: 0.22, muscle: '股四头肌+臀' },
-    { name: 'Wall Balls', drain: 0.30, muscle: '全身协调' },
-  ];
-  
-  var baseFactors = [0.92, 0.93, 0.90, 0.93, 0.80, 0.93, 0.88, 0.90];
-  var hrTargets = ['<LTHR-5', '<LTHR', '<LTHR+3', '<LTHR', '<LTHR+5', '<LTHR', '<LTHR+3', '<LTHR+5'];
-  var dprimeRemaining = dprime;
-  
-  var html = '';
-  var totalRunSec = 0;
-  
-  var strategies = [
-    '0-500m不超速，给心率建仓留空间',
-    '找到巡航节奏，稳定呼吸',
-    '前200m小步高频过渡(200+spm)，不追配速',
-    '保持节律，心率控制在LTHR',
-    '主动降速段！牺牲这里换Run 6-8',
-    '前200m极短步幅等大腿再灌注',
-    '高步频滑步过渡(220spm)，恢复呼吸',
-    '根据D\'余量决定是否冲刺'
-  ];
-  
-  for (var i = 0; i < 8; i++) {
-    var st = stations[i];
-    var factor = baseFactors[i];
-    var pace = csPaceSec / factor;
-    var pMin = Math.floor(pace / 60);
-    var pSec = Math.round(pace % 60);
-    var paceStr = pMin + ':' + String(pSec).padStart(2, '0');
-    
-    var drainAmount = st.drain * dprime;
-    dprimeRemaining -= drainAmount;
-    var runTimeSec = pace;
-    var recoveryRate = (csSpeed * factor < csSpeed) ? (1 - factor) * 0.4 : 0;
-    var recoveryAmount = recoveryRate * runTimeSec * 0.3;
-    dprimeRemaining = Math.min(dprime, dprimeRemaining + recoveryAmount);
-    
-    var dprimeDisplay = dprimeRemaining > 10 ? Math.round(dprimeRemaining) + 'm' : '<span style="color:#e07060;font-weight:700;">\u26a0 ' + Math.max(0, Math.round(dprimeRemaining)) + 'm \u5371\u9669</span>';
-    
-    var rowStyle = '';
-    if (i === 4) rowStyle = ' style="background:rgba(124,128,46,0.1);font-weight:600;"';
-    if (dprimeRemaining < dprime * 0.2) rowStyle = ' style="background:rgba(224,112,96,0.1);"';
-    
-    html += '<tr' + rowStyle + '>' +
-      '<td><strong>Run ' + (i+1) + '</strong></td>' +
-      '<td>' + st.name + '</td>' +
-      '<td>' + st.muscle + ' (' + Math.round(st.drain*100) + '% D\')</td>' +
-      '<td>' + Math.round(factor*100) + '%</td>' +
-      '<td><strong>' + paceStr + '</strong>/km</td>' +
-      '<td>' + dprimeDisplay + '</td>' +
-      '<td>' + hrTargets[i] + '</td>' +
-      '<td style="font-size:0.8rem;">' + strategies[i] + '</td>' +
-      '</tr>';
-    
-    totalRunSec += pace;
-  }
-  
-  document.getElementById('pace-tbody').innerHTML = html;
-  
-  var totalMin = Math.floor(totalRunSec / 60);
-  var totalSec = Math.round(totalRunSec % 60);
-  var avgPaceSec = totalRunSec / 8;
-  var apMin = Math.floor(avgPaceSec / 60);
-  var apSec = Math.round(avgPaceSec % 60);
-  
-  document.getElementById('pace-summary').innerHTML = 
-    '<strong>跑段总计：</strong>' + totalMin + ':' + String(totalSec).padStart(2, '0') + 
-    ' (8\u00d71km平均配速 ' + apMin + ':' + String(apSec).padStart(2, '0') + '/km) | ' +
-    '<strong>D\'余量：</strong>' + Math.round(Math.max(0, dprimeRemaining)) + 'm' +
-    ' | <span style="color:var(--ssp-muted);">剩余时间给8个站点 + Roxzone</span>';
-}
-
+function removeTest() { if (tests.length <= 2) return; tests.pop(); 
 
 renderTests(); }
-function loadExample() { tests = [{ id: nextId++, dist: 1200, min: 3, sec: 45 },{ id: nextId++, dist: 2400, min: 7, sec: 50 },{ id: nextId++, dist: 3600, min: 12, sec: 0 }]; // ═══ HYROX Pacing Calculator ═══
-function calcHyroxPace() {
-  var csMin = parseInt(document.getElementById('pace-cs-pace-min').value) || 4;
-  var csSec = parseInt(document.getElementById('pace-cs-pace-sec').value) || 0;
-  var dprime = parseInt(document.getElementById('pace-dprime').value) || 200;
-  
-  var csPaceSec = csMin * 60 + csSec;
-  var csSpeed = 1000 / csPaceSec;
-  
-  var stations = [
-    { name: 'SkiErg', drain: 0.17, muscle: '上肢+核心' },
-    { name: 'Sled Push', drain: 0.27, muscle: '股四头肌+臀' },
-    { name: 'Sled Pull', drain: 0.23, muscle: '后链+握力' },
-    { name: 'BBJ', drain: 0.32, muscle: '全身爆发' },
-    { name: 'Row', drain: 0.22, muscle: '腿+背' },
-    { name: 'Farmers Carry', drain: 0.13, muscle: '握力+核心' },
-    { name: 'Lunges', drain: 0.22, muscle: '股四头肌+臀' },
-    { name: 'Wall Balls', drain: 0.30, muscle: '全身协调' },
-  ];
-  
-  var baseFactors = [0.92, 0.93, 0.90, 0.93, 0.80, 0.93, 0.88, 0.90];
-  var hrTargets = ['<LTHR-5', '<LTHR', '<LTHR+3', '<LTHR', '<LTHR+5', '<LTHR', '<LTHR+3', '<LTHR+5'];
-  var dprimeRemaining = dprime;
-  
-  var html = '';
-  var totalRunSec = 0;
-  
-  var strategies = [
-    '0-500m不超速，给心率建仓留空间',
-    '找到巡航节奏，稳定呼吸',
-    '前200m小步高频过渡(200+spm)，不追配速',
-    '保持节律，心率控制在LTHR',
-    '主动降速段！牺牲这里换Run 6-8',
-    '前200m极短步幅等大腿再灌注',
-    '高步频滑步过渡(220spm)，恢复呼吸',
-    '根据D\'余量决定是否冲刺'
-  ];
-  
-  for (var i = 0; i < 8; i++) {
-    var st = stations[i];
-    var factor = baseFactors[i];
-    var pace = csPaceSec / factor;
-    var pMin = Math.floor(pace / 60);
-    var pSec = Math.round(pace % 60);
-    var paceStr = pMin + ':' + String(pSec).padStart(2, '0');
-    
-    var drainAmount = st.drain * dprime;
-    dprimeRemaining -= drainAmount;
-    var runTimeSec = pace;
-    var recoveryRate = (csSpeed * factor < csSpeed) ? (1 - factor) * 0.4 : 0;
-    var recoveryAmount = recoveryRate * runTimeSec * 0.3;
-    dprimeRemaining = Math.min(dprime, dprimeRemaining + recoveryAmount);
-    
-    var dprimeDisplay = dprimeRemaining > 10 ? Math.round(dprimeRemaining) + 'm' : '<span style="color:#e07060;font-weight:700;">\u26a0 ' + Math.max(0, Math.round(dprimeRemaining)) + 'm \u5371\u9669</span>';
-    
-    var rowStyle = '';
-    if (i === 4) rowStyle = ' style="background:rgba(124,128,46,0.1);font-weight:600;"';
-    if (dprimeRemaining < dprime * 0.2) rowStyle = ' style="background:rgba(224,112,96,0.1);"';
-    
-    html += '<tr' + rowStyle + '>' +
-      '<td><strong>Run ' + (i+1) + '</strong></td>' +
-      '<td>' + st.name + '</td>' +
-      '<td>' + st.muscle + ' (' + Math.round(st.drain*100) + '% D\')</td>' +
-      '<td>' + Math.round(factor*100) + '%</td>' +
-      '<td><strong>' + paceStr + '</strong>/km</td>' +
-      '<td>' + dprimeDisplay + '</td>' +
-      '<td>' + hrTargets[i] + '</td>' +
-      '<td style="font-size:0.8rem;">' + strategies[i] + '</td>' +
-      '</tr>';
-    
-    totalRunSec += pace;
-  }
-  
-  document.getElementById('pace-tbody').innerHTML = html;
-  
-  var totalMin = Math.floor(totalRunSec / 60);
-  var totalSec = Math.round(totalRunSec % 60);
-  var avgPaceSec = totalRunSec / 8;
-  var apMin = Math.floor(avgPaceSec / 60);
-  var apSec = Math.round(avgPaceSec % 60);
-  
-  document.getElementById('pace-summary').innerHTML = 
-    '<strong>跑段总计：</strong>' + totalMin + ':' + String(totalSec).padStart(2, '0') + 
-    ' (8\u00d71km平均配速 ' + apMin + ':' + String(apSec).padStart(2, '0') + '/km) | ' +
-    '<strong>D\'余量：</strong>' + Math.round(Math.max(0, dprimeRemaining)) + 'm' +
-    ' | <span style="color:var(--ssp-muted);">剩余时间给8个站点 + Roxzone</span>';
-}
-
+function loadExample() { tests = [{ id: nextId++, dist: 1200, min: 3, sec: 45 },{ id: nextId++, dist: 2400, min: 7, sec: 50 },{ id: nextId++, dist: 3600, min: 12, sec: 0 }]; 
 
 renderTests(); }
 
