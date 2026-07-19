@@ -1000,6 +1000,132 @@ tbody tr:hover { background: rgba(182,211,80,0.10); }
   line-height: 1.6;
 }
 .method-note a { color: var(--ssp-gold); font-weight: 750; }
+
+/* Review context and report actions */
+.report-context-grid {
+  display: grid;
+  grid-template-columns: 1.2fr .9fr .95fr .9fr;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 16px;
+  border: 1px solid rgba(58,72,64,.11);
+  border-radius: 13px;
+  background: linear-gradient(145deg, rgba(242,244,240,.78), #fff);
+}
+.report-context-field { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
+.report-context-field label {
+  color: var(--ssp-muted);
+  font-size: .69rem;
+  font-weight: 800;
+  letter-spacing: .035em;
+}
+.report-context-field input,
+.report-context-field select { width: 100%; min-width: 0; }
+.report-privacy {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  color: var(--ssp-muted);
+  font-size: .72rem;
+}
+.report-output-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(58,72,64,.12);
+  border-radius: 12px;
+  background: #fff;
+}
+.coverage-group { display: flex; flex-wrap: wrap; gap: 7px; }
+.coverage-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  padding: 4px 10px;
+  color: var(--ssp-dark);
+  border-radius: 999px;
+  background: rgba(183,212,80,.18);
+  font-size: .72rem;
+  font-weight: 850;
+}
+.report-output-toolbar .btn-row { justify-content: flex-end; margin: 0; }
+.report-feedback { min-height: 1.2em; margin: 8px 0 0; color: var(--ssp-gold); font-size: .76rem; font-weight: 750; }
+.print-report-heading { display: none; }
+.loss-results.is-stale {
+  padding: 12px;
+  border: 2px solid rgba(198,92,75,.28);
+  border-radius: 14px;
+  background: rgba(198,92,75,.035);
+}
+.loss-results.is-stale .report-feedback { color: #a54337; }
+
+/* Field physiology: recovery and durability */
+.physio-lead {
+  margin-bottom: 18px;
+  padding: 16px 18px;
+  color: #4d5953;
+  border: 1px solid rgba(183,212,80,.28);
+  border-left: 4px solid var(--ssp-green);
+  border-radius: 11px;
+  background: linear-gradient(135deg, rgba(183,212,80,.10), #fff);
+  font-size: .86rem;
+}
+.physio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.physio-card {
+  min-width: 0;
+  padding: 21px;
+  border: 1px solid rgba(58,72,64,.12);
+  border-radius: 14px;
+  background: linear-gradient(150deg, #f5f7f0, #fff 64%);
+  box-shadow: 0 8px 24px rgba(31,41,36,.055);
+}
+.physio-card h4 { margin: 0 0 6px; color: var(--ssp-ink); font-size: .98rem; }
+.physio-card > p { margin: 0 0 14px; color: var(--ssp-muted); font-size: .78rem; line-height: 1.55; }
+.physio-card .hrr-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.physio-output {
+  display: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.physio-output.visible { display: grid; }
+.physio-metric {
+  padding: 14px;
+  text-align: center;
+  border: 1px solid rgba(58,72,64,.10);
+  border-radius: 11px;
+  background: #fff;
+}
+.physio-metric .label { color: var(--ssp-muted); font-size: .7rem; font-weight: 750; }
+.physio-metric .value { color: var(--ssp-ink); font-size: 1.55rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+.physio-metric .sub { color: var(--ssp-muted); font-size: .68rem; }
+.physio-advice {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 13px 15px;
+  color: #4d5953;
+  border-radius: 10px;
+  background: rgba(183,212,80,.12);
+  font-size: .78rem;
+  line-height: 1.6;
+}
+.physio-error { display: none; margin: 10px 0 0; color: #a54337; font-size: .76rem; font-weight: 750; }
+.test-cadence { margin-top: 18px; }
+.test-cadence h4 { margin: 0 0 10px; color: var(--ssp-ink); }
+.evidence-note {
+  margin: 14px 0 0;
+  color: var(--ssp-muted);
+  font-size: .72rem;
+  line-height: 1.65;
+}
+.evidence-note a { color: var(--ssp-gold); font-weight: 750; }
 .visually-hidden {
   position: absolute !important;
   width: 1px !important;
@@ -1062,6 +1188,7 @@ select:focus-visible {
   .header::before { inset: -25% -28% -35% 38%; background-size: 360px auto; }
   .analysis-intro,
   .loss-table-grid { grid-template-columns: 1fr; }
+  .report-context-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 768px) {
@@ -1100,8 +1227,10 @@ select:focus-visible {
   table { display: block; overflow-x: auto; white-space: nowrap; }
   .split-entry-grid,
   .loss-panel-grid,
-  .training-rec-grid { grid-template-columns: 1fr; }
+  .training-rec-grid,
+  .physio-grid { grid-template-columns: 1fr; }
   .analysis-status { width: 100%; text-align: left; }
+  .report-output-toolbar .btn-row { width: 100%; justify-content: flex-start; }
 }
 
 @media (max-width: 480px) {
@@ -1114,11 +1243,68 @@ select:focus-visible {
   .info-stripe { grid-template-columns: 1fr; }
   .btn { width: 100%; }
   .btn-sm { width: auto; flex: 1 1 42%; }
+  .physio-card .btn-sm,
+  .report-output-toolbar .btn-sm { min-height: 44px; }
   .split-entry-card { padding: 16px 14px 16px 17px; }
   .split-entry-fields { grid-template-columns: 1fr 1fr; }
+  .report-context-grid { grid-template-columns: 1fr; }
+  .physio-card .hrr-form,
+  .physio-output { grid-template-columns: 1fr; }
+  .physio-advice { grid-column: auto; }
   .loss-panel,
   .training-plan { padding: 20px 18px; }
   .loss-actions .btn { width: 100%; }
+}
+
+@media print {
+  body.print-report { background: #fff !important; }
+  body.print-report::before,
+  body.print-report::after,
+  body.print-report .top-nav,
+  body.print-report .header,
+  body.print-report .footer,
+  body.print-report .container > * { display: none !important; }
+  body.print-report .container { max-width: none; padding: 0; }
+  body.print-report #race-analysis {
+    display: block !important;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+  body.print-report #race-analysis > .analysis-intro,
+  body.print-report #race-analysis > h2,
+  body.print-report #race-analysis > .report-context-grid,
+  body.print-report #race-analysis > .analysis-toolbar,
+  body.print-report #race-analysis > .split-entry-grid,
+  body.print-report #race-analysis > .loss-actions,
+  body.print-report #race-analysis > #loss-input-error,
+  body.print-report .report-output-toolbar .btn-row,
+  body.print-report .report-feedback { display: none !important; }
+  body.print-report .loss-results { display: block !important; margin-top: 12px; }
+  body.print-report .print-report-heading {
+    display: flex !important;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--ssp-green);
+  }
+  body.print-report .print-report-heading img { width: 62px; height: auto; }
+  body.print-report .print-report-heading h1 { margin: 0; color: var(--ssp-ink); font-size: 1.35rem; }
+  body.print-report .print-report-heading p { margin: 3px 0 0; color: var(--ssp-muted); font-size: .78rem; }
+  body.print-report .loss-panel,
+  body.print-report thead th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body.print-report .loss-table-grid { grid-template-columns: 1fr; }
+  body.print-report .training-rec-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.print-report table { display: table; width: 100%; min-width: 0 !important; overflow: visible; white-space: normal; }
+  body.print-report .loss-table-wrap { overflow: visible; }
+  body.print-report .loss-table-card,
+  body.print-report .training-plan,
+  body.print-report .loss-panel { break-inside: avoid; box-shadow: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1147,7 +1333,7 @@ select:focus-visible {
 <header class="header">
   <img class="header-logo" src="assets/ssp-mark.svg" alt="SSP">
   <h1><span class="accent">SSP</span> 临界速度计算器</h1>
-  <p class="subtitle">HYROX 运动员的数据锚点 — CS / D' / LTHR / HRR 一站搞定</p>
+  <p class="subtitle">HYROX 运动员的数据锚点 — CS / D′ / LTHR / HR Reserve / HRR1–2</p>
 </header>
 
 <div class="container">
@@ -1164,26 +1350,26 @@ select:focus-visible {
     <div class="intro-card">
       <div class="emoji">🏃</div>
       <h4>HYROX 的独特挑战</h4>
-      <p>HYROX 是 <strong>8 次 1km 跑步 + 8 个功能站点</strong> 交替进行。跑步段需要巡航能力（CS），站点消耗大量无氧能量（D'），然后你还得在站点后立刻回到跑步节奏。这不是纯跑比赛——你的配速必须为站点"留余量"。</p>
+      <p>HYROX 是 <strong>8 次 1km 跑步 + 8 个功能站点</strong> 交替进行。跑步段需要巡航能力，站点会改变代谢、局部肌肉和动作成本，然后你还得立刻重建跑步节奏。这不是纯跑比赛——配速必须为后续站点和转换留余量。</p>
     </div>
     <div class="intro-card">
       <div class="emoji">🔋</div>
-      <h4>CS = 你的巡航速度</h4>
-      <p>临界速度 (CS) 是你<b>永远不会累垮</b>的最高速度。在 CS 以下跑，乳酸不会堆积。但在 HYROX 里你<strong>不能一直跑 CS</strong>——因为站点也要消耗能量。所以我们用 <strong>CS × 0.95</strong> 作为你的"HYROX 巡航配速"。</p>
+      <h4>CS = 速度模型锚点</h4>
+      <p>临界速度 (CS) 是由多距离极限成绩拟合出的速度—时间模型边界，仍然只可有限维持。在 HYROX 中，站点会改变后续跑步成本；本站用 <strong>CS 的一定比例</strong>给出巡航建议起点，再由完整模拟校准。</p>
     </div>
     <div class="intro-card">
       <div class="emoji">⚡</div>
-      <h4>D' = 你的冲刺电池</h4>
-      <p>无氧距离储备 (D') 是你<b>高于 CS 时能额外跑出的距离</b>。在每个站点后你需要加速回到配速——这就是消耗 D'。如果你的 D' 小，站点后就会掉速。D' 在低于 CS 跑时会慢慢恢复。</p>
+      <h4>D′ = CS 以上模型容量</h4>
+      <p>无氧距离储备 (D′) 是速度—时间模型中 CS 以上的有限距离容量，可作为“冲刺电池”的沟通比喻，但不等同于一块可直接测量的无氧能量。恢复速度受低于 CS 的强度、持续时间和疲劳背景影响。</p>
     </div>
     <div class="intro-card">
       <div class="emoji">❤️</div>
-      <h4>LTHR = 你的心率红线</h4>
-      <p>乳酸阈值心率 (LTHR) 是你能<b>维持约 60 分钟的最高心率</b>。比赛中超过这个心率 = 进入倒计时 = 你会在 30-60 分钟内"爆缸"。HYROX 比赛中，你的心率会因站点反复冲高——关键是在跑步段把它拉回 LTHR 以下。</p>
+      <h4>LTHR = 场地阈值心率锚点</h4>
+      <p>LTHR 是特定测试协议下的阈值心率近似，不是一次越过就必然“爆缸”的绝对红线。HYROX 中可用它限制长时间高强度暴露，并结合配速、RPE、动作质量和后程掉速判断策略。</p>
     </div>
   </div>
   <div class="tip" style="margin-top:16px;">
-    举个例子：你的 CS 是 4:00/km，但你在 HYROX 里的跑步段目标是约 4:12/km (CS×0.95)。因为你必须为 SkiErg、Sled Push、Wall Balls 这些站点保留能量。同时你的心率不能一直超过 175 bpm（你的 LTHR）——否则在 Run 5 之后你就会严重掉速。
+    举个例子：你的 CS 是 4:00/km，模型可先给出约 4:12/km (CS×0.95) 的跑段建议起点；再用全流程模拟检查站点后掉速、心率走势和动作质量，决定是否需要继续下调或分段调整。
   </div>
 </div>
 
@@ -1228,13 +1414,42 @@ select:focus-visible {
       <p><strong>逐段填写目标与实际时间：</strong>跑步损耗累计每个 Run 超出目标巡航 / 恢复配速的时间；站点损耗累计每个站点超出个人目标的时间。快于目标的段落会保留为“优于目标”，不会掩盖其他段的超时。</p>
     </div>
     <div class="analysis-guide">
-      <p><strong>课程内部判定线</strong><br>损耗率只用于同一运动员、同一口径复测；训练建议优先抓最大的 1–2 个变量。</p>
+      <p><strong>SSP 课程内部观察线</strong><br>先确认目标、计时、负重、场地与动作标准一致，再用损耗率做同一运动员的趋势复盘。</p>
       <div class="thresholds" aria-label="损耗率判定线">
         <span class="threshold-chip">&lt;5% 可控</span>
         <span class="threshold-chip">5–10% 中度</span>
         <span class="threshold-chip">&gt;10% 明显</span>
       </div>
     </div>
+  </div>
+
+  <div class="report-context-grid" aria-label="复盘基本信息">
+    <div class="report-context-field">
+      <label for="loss-athlete">运动员 / 编号（可选）</label>
+      <input data-loss-meta id="loss-athlete" type="text" maxlength="40" autocomplete="off" placeholder="例如 SSP-014">
+    </div>
+    <div class="report-context-field">
+      <label for="loss-date">测试日期</label>
+      <input data-loss-meta id="loss-date" type="date">
+    </div>
+    <div class="report-context-field">
+      <label for="loss-session">记录类型</label>
+      <select data-loss-meta id="loss-session">
+        <option value="全流程模拟">全流程模拟</option>
+        <option value="正式比赛">正式比赛</option>
+        <option value="站跑专项">站跑专项</option>
+      </select>
+    </div>
+    <div class="report-context-field">
+      <label for="loss-division">组别</label>
+      <select data-loss-meta id="loss-division">
+        <option value="Open">Open</option>
+        <option value="Pro">Pro</option>
+        <option value="Doubles">Doubles</option>
+        <option value="Relay">Relay</option>
+      </select>
+    </div>
+    <p class="report-privacy">运动员编号与分段只保存在当前浏览器的本地存储，不会由本站上传；共享设备使用后可清空实际成绩并自行清除浏览器站点数据。</p>
   </div>
 
   <div class="analysis-toolbar">
@@ -1249,12 +1464,30 @@ select:focus-visible {
   <div class="split-entry-grid" id="split-entry-grid"></div>
 
   <div class="loss-actions">
-    <p>时间格式：<strong>分:秒</strong>（例如 4:12）；站点目标应尽量来自同组别、同负重、同场地的个人基准。</p>
+    <p>时间格式：<strong>分:秒</strong>（4:12 或快捷输入 412）；站点目标应尽量来自同组别、同负重、同场地的个人基准。</p>
     <button class="btn btn-primary" type="button" onclick="analyzeRaceLosses(true)">生成损耗与训练建议</button>
   </div>
   <p id="loss-input-error" role="alert" style="display:none;margin-top:12px;color:#a54337;font-size:.82rem;font-weight:700;"></p>
 
   <div class="loss-results" id="loss-results" style="display:none;">
+    <div class="print-report-heading">
+      <img src="assets/ssp-mark.svg" alt="SSP">
+      <div><h1>SSP · HYROX 分段复盘</h1><p id="print-report-meta">内部教练复盘</p></div>
+    </div>
+    <div class="report-output-toolbar">
+      <div>
+        <div class="coverage-group" aria-label="分析数据覆盖率">
+          <span class="coverage-chip" id="run-coverage-chip">Run 0/8</span>
+          <span class="coverage-chip" id="station-coverage-chip">Station 0/8</span>
+        </div>
+        <p class="report-feedback" id="report-feedback" role="status"></p>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-sm btn-outline" type="button" onclick="copyLossReport('summary')">复制复盘摘要</button>
+        <button class="btn btn-sm btn-outline" type="button" onclick="copyLossReport('full')">复制完整分段</button>
+        <button class="btn btn-sm btn-outline" type="button" onclick="printLossReport()">打印 / 保存 PDF</button>
+      </div>
+    </div>
     <div class="loss-panel-grid">
       <article class="loss-panel" aria-labelledby="run-loss-title">
         <div class="loss-panel-head">
@@ -1289,10 +1522,10 @@ select:focus-visible {
         </div>
       </section>
       <section class="loss-table-card">
-        <h3>8 个站点损耗与后遗症</h3>
+        <h3>8 个站点损耗与站后关联</h3>
         <div class="loss-table-wrap">
           <table>
-            <thead><tr><th>站点</th><th>目标</th><th>实际</th><th>差值</th><th>下一跑拖累*</th></tr></thead>
+            <thead><tr><th>站点</th><th>目标</th><th>实际</th><th>差值</th><th>站后下一跑偏差*</th></tr></thead>
             <tbody id="station-loss-tbody"></tbody>
           </table>
         </div>
@@ -1308,9 +1541,9 @@ select:focus-visible {
     </section>
 
     <p class="method-note">
-      *“下一跑拖累”把 Station 1–7 后的下一公里超时归因显示，但不重复计入站点损耗；Wall Balls 后无跑段。目标差损耗与课件 F1/F2 的新鲜 / 疲劳复测干扰率是两种不同口径。站点顺序依据
+      *“站后下一跑偏差”只显示相邻时间关系，不证明由该站点造成，也不重复计入站点损耗；Wall Balls 后无跑段。累计超目标时间是差值合计，不代表可直接兑现的完赛提升。目标差损耗与课件 F1/F2 的新鲜 / 疲劳复测干扰率是两种不同口径。站点顺序依据
       <a href="https://hyrox.com/wp-content/uploads/2025/07/25_26_HYROX_RulebookSingles_EN.pdf" target="_blank" rel="noopener">HYROX 25/26 单人规则</a>；训练方向参考
-      <a href="https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2025.1519240/full" target="_blank" rel="noopener">Brandt 等（2025）</a>及本次公开课材料。建议为教练启发式，不替代医学诊断。
+      <a href="https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2025.1519240/full" target="_blank" rel="noopener">Brandt 等（2025）</a>及本次公开课材料。SSP 内部复盘，不是 HYROX 官方评分、比赛预测或医学诊断。
     </p>
   </div>
   <div class="visually-hidden" id="loss-live" aria-live="polite"></div>
@@ -1323,8 +1556,9 @@ select:focus-visible {
     <div class="tabs-nav">
       <button class="tab-btn active" data-tab="tab-cs">CS 测试</button>
       <button class="tab-btn" data-tab="tab-lthr">LTHR 测试</button>
-      <button class="tab-btn" data-tab="tab-hrr">HRR 心率区间</button>
-      <button class="tab-btn" data-tab="tab-hrrcalc">💓 心率计算器</button>
+      <button class="tab-btn" data-tab="tab-hrr">HR Reserve 区间</button>
+      <button class="tab-btn" data-tab="tab-hrrcalc">💓 区间计算器</button>
+      <button class="tab-btn" data-tab="tab-durability">恢复 / 耐久</button>
       <button class="tab-btn" data-tab="tab-vt">VT1/VT2</button>
       <button class="tab-btn" data-tab="tab-race">🏁 8段策略</button>
       <button class="tab-btn" data-tab="tab-sim">📋 全流程模拟</button>
@@ -1357,78 +1591,151 @@ select:focus-visible {
       <h3>LTHR 阈值心率测试</h3>
       <div class="step-list">
         <div class="step-item"><strong>方法一：30 分钟场地法（无需设备，最实用）</strong><p>充分热身后，进行 <span class="highlight">30 分钟全力均速跑</span>。取后 20 分钟的平均心率，这就是你的 LTHR 近似值。例：后 20 分钟心率在 172-178 → LTHR ≈ 175。</p></div>
-        <div class="step-item"><strong>方法二：实验室递增测试（金标准）</strong><p>跑台从 8km/h 起，每 3 分钟 +1km/h。每级末采血测乳酸。乳酸明显上升的点对应的心率 = LTHR。这是最精确但需要设备。</p></div>
-        <div class="step-item"><strong>器械修正</strong><p>划船 / SkiErg 的 LTHR 通常比跑步低 <span class="highlight">3-5 bpm</span>。如跑步 LTHR=175，划船时超过 170 就应警戒。</p></div>
-        <div class="step-item"><strong>⚠️ 安全红线</strong><p>测试中出现胸痛、晕眩、异常心律 → 立即停止。静息心率连续 3 天偏高超过 5 bpm → 推迟测试。</p></div>
+        <div class="step-item"><strong>方法二：实验室乳酸 / 气体交换测试</strong><p>采用与能力匹配的递增协议，在各级记录心率、气体交换，并按预先选定的方法采血分析乳酸曲线。不同阈值判定法可能给出不同结果，因此报告中要保留协议与判定标准，而不是把某个“明显上升点”直接等同 LTHR。</p></div>
+        <div class="step-item"><strong>专项差异</strong><p>跑步、划船和 SkiErg 的参与肌群与姿势不同，心率锚点可能不同。不要套用固定 bpm 修正；如需跨器械处方，应分别完成标准化测试。</p></div>
+        <div class="step-item"><strong>⚠️ 安全边界</strong><p>测试中出现胸痛、晕眩、近乎晕厥或异常心悸 → 立即停止并根据情况寻求医疗评估。若晨起心率、睡眠、主观疲劳或感染症状连续异常，先推迟最大测试并复核。</p></div>
       </div>
     </div>
 
-    <!-- HRR -->
+    <!-- Heart-rate reserve -->
     <div class="tab-panel" id="tab-hrr">
-      <h3>储备心率 HRR（个性化训练区间）</h3>
+      <h3>心率储备 HR Reserve（个性化训练区间）</h3>
       <div class="step-list">
-        <div class="step-item"><strong>静息心率 (RHR)</strong><p>连续 3-5 天早晨醒来未起床时测量，取均值。剔除喝酒、失眠、发烧日的数据。低于往常 = 恢复良好；偏高 >5bpm = 疲劳/生病。</p></div>
-        <div class="step-item"><strong>最大心率 (MHR)</strong><p>公式：<span class="highlight">208 − 0.7 × 年龄</span>（比 220−年龄 更准，但仍是估算）。最佳：做递增测试测出真实最大值。</p></div>
+        <div class="step-item"><strong>静息心率 (RHR)</strong><p>连续 3–5 天早晨醒来未起床时测量，建立个人均值。酒精、失眠、感染、训练负荷和测量姿势都会影响结果；单日高低不等同于“恢复好坏”，应结合主观状态看趋势。</p></div>
+        <div class="step-item"><strong>最大心率 (MHR)</strong><p>公式：<span class="highlight">208 − 0.7 × 年龄</span>是人群层面的年龄估算，个体误差可能较大；有合适测试条件时优先使用专项递增测试中的实测峰值。</p></div>
         <div class="step-item"><strong>Karvonen 公式</strong><p>目标心率 = <span class="highlight">RHR + (MHR − RHR) × 强度%</span>。这比直接用 %MHR 更个性化——静息心率越低，训练窗口越宽。</p></div>
-        <div class="step-item"><strong>三线交叉法</strong><p>HRR → 训练课强度 | LTHR → 比赛心率红线 | CS → 速度锚点。三者交叉才能准确判断你的瓶颈在哪。</p></div>
+        <div class="step-item"><strong>不要与 HR Recovery 混淆</strong><p><span class="highlight">HR Reserve</span> 用于估算训练区间；<span class="highlight">HR Recovery</span> 是停止运动后 1–2 分钟的心率下降。中文都常简称“HRR”，本站后者统一写作 HRR1 / HRR2。</p></div>
       </div>
     </div>
 
-    <!-- HRR Calculator -->
+    <!-- Heart-rate reserve calculator -->
     <div class="tab-panel" id="tab-hrrcalc">
-      <h3>💓 储备心率区间计算器</h3>
+      <h3>💓 心率储备区间计算器</h3>
       <div class="hrr-form">
-        <div class="input-group"><label>年龄</label><input id="hrr-age" type="number" value="30" min="16" max="80"></div>
+        <div class="input-group"><label>年龄（MHR 留空时使用）</label><input id="hrr-age" type="number" value="30" min="16" max="80"></div>
         <div class="input-group"><label>静息心率</label><input id="hrr-rest" type="number" value="52" min="35" max="100"></div>
-        <div class="input-group"><label>最大心率</label><input id="hrr-max" type="number" value="190" min="130" max="220"></div>
+        <div class="input-group"><label>实测最大心率（可选）</label><input id="hrr-max" type="number" placeholder="留空则按年龄估算" min="130" max="220"></div>
         <div class="input-group"><label>LTHR</label><input id="hrr-lthr" type="number" value="175" min="100" max="210"></div>
       </div>
       <button class="btn btn-primary btn-sm" onclick="calcHRR()" style="margin-bottom:14px;">计算心率区间</button>
       <div style="overflow-x:auto;"><table id="hrr-table"><thead><tr><th>区间</th><th>%HRR</th><th>心率</th><th>用途</th><th>感受</th></tr></thead><tbody></tbody></table></div>
-      <p style="text-align:center;color:var(--ssp-muted);font-size:0.82rem;margin-top:10px;">LTHR 红线 = <span id="hrr-lthr-display">--</span> | 公式：RHR + (MHR−RHR) × %</p>
+      <p style="text-align:center;color:var(--ssp-muted);font-size:0.82rem;margin-top:10px;">LTHR 参考线 = <span id="hrr-lthr-display">--</span> | <span id="hrr-mhr-source">MHR --</span> | 公式：RHR + (MHR−RHR) × %</p>
+    </div>
+
+    <!-- Recovery and durability -->
+    <div class="tab-panel" id="tab-durability">
+      <h3>恢复速度与有氧耐久（便捷复测）</h3>
+      <div class="physio-lead">
+        <strong>这两个指标适合 HYROX 的原因：</strong>HRR1 / HRR2 看标准化运动后的心率回落；有氧解耦看同一稳态跑中“速度—心率效率”是否下滑。它们适合追踪个人趋势，但都不能单次诊断疲劳、VT1 或疾病。
+      </div>
+
+      <div class="physio-grid">
+        <section class="physio-card" aria-labelledby="recovery-card-title">
+          <h4 id="recovery-card-title">A · 运动后心率恢复 HRR1 / HRR2</h4>
+          <p>建议起点：固定热身后做 6–10 分钟同配速 / 同功率次极量段；记录负荷结束当刻心率，再用始终相同的站立或慢走方式恢复 60 秒、120 秒。</p>
+          <div class="hrr-form">
+            <div class="input-group"><label for="recovery-end">结束心率</label><input id="recovery-end" type="number" value="176" min="60" max="230" inputmode="numeric"></div>
+            <div class="input-group"><label for="recovery-60">60 秒心率</label><input id="recovery-60" type="number" value="145" min="40" max="220" inputmode="numeric"></div>
+            <div class="input-group"><label for="recovery-120">120 秒心率</label><input id="recovery-120" type="number" value="128" min="35" max="210" inputmode="numeric"></div>
+            <div class="input-group"><label for="recovery-baseline">个人 HRR1 基线（可选）</label><input id="recovery-baseline" type="number" placeholder="例如 30" min="1" max="100" inputmode="numeric"></div>
+          </div>
+          <button class="btn btn-primary btn-sm" type="button" onclick="calcHeartRateRecovery()">计算恢复幅度</button>
+          <p class="physio-error" id="recovery-error" role="alert"></p>
+          <div class="physio-output" id="recovery-output" role="status" aria-live="polite">
+            <div class="physio-metric"><div class="label">HRR1 · 60 秒下降</div><div class="value" id="recovery-hrr1">--</div><div class="sub">bpm</div></div>
+            <div class="physio-metric"><div class="label">HRR2 · 120 秒下降</div><div class="value" id="recovery-hrr2">--</div><div class="sub">bpm</div></div>
+            <p class="physio-advice" id="recovery-advice"></p>
+          </div>
+        </section>
+
+        <section class="physio-card" aria-labelledby="drift-card-title">
+          <h4 id="drift-card-title">B · 有氧解耦（速度—心率效率）</h4>
+          <p>建议起点：热身后连续 30–45 分钟轻松稳态跑，分成等长两半。分别填写两半的平均配速与平均心率；算法比较速度 ÷ 心率的效率变化。</p>
+          <div class="hrr-form">
+            <div class="input-group"><label for="drift-p1-min">前半配速 · 分/km</label><input id="drift-p1-min" type="number" value="5" min="2" max="15" inputmode="numeric"></div>
+            <div class="input-group"><label for="drift-p1-sec">前半配速 · 秒</label><input id="drift-p1-sec" type="number" value="20" min="0" max="59" inputmode="numeric"></div>
+            <div class="input-group"><label for="drift-hr1">前半平均心率</label><input id="drift-hr1" type="number" value="148" min="60" max="220" inputmode="numeric"></div>
+            <div class="input-group"><label for="drift-p2-min">后半配速 · 分/km</label><input id="drift-p2-min" type="number" value="5" min="2" max="15" inputmode="numeric"></div>
+            <div class="input-group"><label for="drift-p2-sec">后半配速 · 秒</label><input id="drift-p2-sec" type="number" value="22" min="0" max="59" inputmode="numeric"></div>
+            <div class="input-group"><label for="drift-hr2">后半平均心率</label><input id="drift-hr2" type="number" value="155" min="60" max="220" inputmode="numeric"></div>
+          </div>
+          <button class="btn btn-primary btn-sm" type="button" onclick="calcAerobicDrift()">计算有氧解耦</button>
+          <p class="physio-error" id="drift-error" role="alert"></p>
+          <div class="physio-output" id="drift-output" role="status" aria-live="polite">
+            <div class="physio-metric"><div class="label">效率解耦</div><div class="value" id="drift-percent">--</div><div class="sub">速度 / 心率 · 前半 vs 后半</div></div>
+            <div class="physio-metric"><div class="label">配速 / 心率变化</div><div class="value" id="drift-change">--</div><div class="sub">后半相对前半</div></div>
+            <p class="physio-advice" id="drift-advice"></p>
+          </div>
+        </section>
+      </div>
+
+      <section class="test-cadence">
+        <h4>SSP 建议的低门槛测试节奏</h4>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>层级</th><th>指标</th><th>建议起点</th><th>用于回答</th></tr></thead>
+            <tbody>
+              <tr><td>日常</td><td>静息心率 + 睡眠 / 肌肉酸痛 / 主观准备度</td><td>训练日上午，同姿势同设备</td><td>今天是否需要进一步检查或调整</td></tr>
+              <tr><td>短周期</td><td>标准化 HRR1 / HRR2</td><td>每 1–2 周</td><td>同负荷后的恢复动力学是否改变</td></tr>
+              <tr><td>耐久</td><td>30–45 分钟有氧解耦</td><td>每 2–4 周</td><td>稳态跑后半程效率是否更稳定</td></tr>
+              <tr><td>能力锚点</td><td>CS / LTHR / 标准化 Talk Test</td><td>每 6–8 周或训练阶段末</td><td>速度与强度锚点是否移动</td></tr>
+              <tr><td>实验室</td><td>气体交换阈值 / 多次恒负荷乳酸测试</td><td>需要精确分区时</td><td>确认 VT 与 MLSS；不作为每周便捷测试</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <p class="evidence-note">
+        解释边界：早期心率恢复主要受副交感再激活影响，但结果强烈依赖结束强度、恢复姿势与采样方式；有氧解耦还会受高温、补液、补给和传感器影响。近期跑步研究支持把心率漂移 / 解耦作为耐久相关信号，但采用约 2.5 小时训练跑或青少年半马协议，因此本站 30–45 分钟版本仅是便捷筛查，不等同完整耐久测试。本站采用 SSP 教练观察口径，不提供临床正常值。参考：
+        <a href="https://pubmed.ncbi.nlm.nih.gov/15612453/" target="_blank" rel="noopener">Kannankeril 等的恢复生理研究</a>、
+        <a href="https://pubmed.ncbi.nlm.nih.gov/15692320/" target="_blank" rel="noopener">高温与心血管漂移研究</a>、
+        <a href="https://pubmed.ncbi.nlm.nih.gov/42050344/" target="_blank" rel="noopener">长时跑耐久可靠性研究</a>、
+        <a href="https://pubmed.ncbi.nlm.nih.gov/42137179/" target="_blank" rel="noopener">心率—速度解耦探索研究</a>。
+      </p>
     </div>
 
     <!-- VT1/VT2 -->
     <div class="tab-panel" id="tab-vt">
-      <h3>VT1 / VT2 通气阈测试（无需设备的小白友好方法）</h3>
+      <h3>VT1 / VT2：现场锚点与实验室确认</h3>
       <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
-        通气阈 (VT) 是最古老也最好用的训练分区锚点之一。<strong>VT1</strong>≈有氧阈（能聊天→只能说短句的转折点），<strong>VT2</strong>≈无氧阈（只能说 1-2 个字→说不出话的转折点）。以下是三步骤简易方法。
+        <strong>VT1 / VT2 应由递增运动中的气体交换确认。</strong>没有实验室时，标准化 Talk Test 可以提供便捷的现场强度锚点，但不是对 VT1 / VT2 的直接测量；请记录配速、心率和说话等级并重复验证。
       </p>
 
       <div class="step-list">
         <div class="step-item">
-          <strong>🧪 说话测试 (Talk Test) — 找 VT1</strong>
-          <p>在跑台上从走路开始，每 <span class="highlight">2 分钟提速 0.5 km/h</span>。每一级结束时大声说一段 30 字的标准句子（如"我现在的配速感觉很轻松，可以一直跑下去"）。当你能完整说出但<span class="highlight">说完后需要吸一大口气</span>——这就是 VT1。对应的配速 ≈ Z2 上限，心率 ≈ <span class="highlight">65-75% HRmax</span>。HYROX 应用：你的恢复跑和站点后过渡跑不应超过 VT1。</p>
+          <strong>🧪 Talk Test — 建立低强度现场锚点</strong>
+          <p>在跑台或平路从轻松强度开始，每 <span class="highlight">2–3 分钟小幅提速</span>，每级末朗读同一段 30 字左右的句子并标记“舒服 / 不确定 / 不舒服”。最后一个“舒服”级别可作为轻松训练上限的建议起点。不要用固定 %HRmax 代替个人反应。</p>
         </div>
 
         <div class="step-item" style="border-left-color:var(--ssp-gold);">
-          <strong>🧪 倒数说话测试 — 找 VT2</strong>
-          <p>继续每 2 分钟提速。当你说出同一句话时，<span class="highlight">只能吐出 3-5 个字就必须换气</span>——这就是 VT2。此时你还能说单词但不能说句子。对应的配速 ≈ <span class="highlight">85-90% HRmax</span>，与 LTHR 高度相关（但不完全等同）。HYROX 应用：VT2 是你的比赛巡航上限线——跑步段心率不应长时间超过 VT2。</p>
+          <strong>🧪 Talk Test — 观察上强度转折</strong>
+          <p>继续按相同步长提速，记录从“不确定”到“不舒服、只能说少量词”的级别。这个转折可帮助约束阈值课强度，但<span class="highlight">不能单独命名为 VT2 或 MLSS</span>。HYROX 巡航上限应同时参考运动专项 LTHR、CS、RPE 与完整模拟的后程表现。</p>
         </div>
 
         <div class="step-item">
-          <strong>📊 VT1 vs VT2 vs LTHR vs MLSS 关系速查</strong>
+          <strong>📊 VT1 / VT2 / LTHR / MLSS / CS 关系速查</strong>
           <table style="margin-top:8px;">
-            <thead><tr><th>指标</th><th>生理意义</th><th>主观感受</th><th>≈ %HRmax</th><th>HYROX 用途</th></tr></thead>
+            <thead><tr><th>指标</th><th>如何得到</th><th>能回答什么</th><th>不能直接等同</th><th>HYROX 用途</th></tr></thead>
             <tbody>
-              <tr><td><strong>VT1</strong></td><td>有氧阈：血乳酸首次上升</td><td>能说话但需多换气</td><td>65-75%</td><td>恢复跑 / 站点后过渡</td></tr>
-              <tr><td><strong>VT2</strong></td><td>无氧阈：乳酸快速累积起点</td><td>只能说 1-3 个词</td><td>85-90%</td><td>比赛巡航心率上限</td></tr>
-              <tr><td><strong>LTHR</strong></td><td>乳酸阈值心率 ≈ 60min 红线</td><td>艰难但可维持</td><td>85-92%</td><td>整场比赛心率封顶</td></tr>
-              <tr><td><strong>MLSS</strong></td><td>最大乳酸稳态</td><td>极难但乳酸不累积</td><td>≈VT2 稍高</td><td>≈ CS 生理等价值</td></tr>
+              <tr><td><strong>VT1</strong></td><td>递增测试气体交换</td><td>第一通气转折</td><td>固定 %HRmax / Talk Test 单点</td><td>轻松跑与耐久跑锚点</td></tr>
+              <tr><td><strong>VT2</strong></td><td>递增测试气体交换</td><td>第二通气转折</td><td>LTHR / MLSS / CS</td><td>高强度持续区的参考边界</td></tr>
+              <tr><td><strong>LTHR</strong></td><td>专项场测或乳酸测试的心率近似</td><td>该项目阈值课心率锚点</td><td>实验室 VT2</td><td>限制长时间超阈暴露</td></tr>
+              <tr><td><strong>MLSS</strong></td><td>多次恒负荷乳酸测试</td><td>乳酸准稳态的最高负荷</td><td>CS / VT2</td><td>需要精细分区时确认</td></tr>
+              <tr><td><strong>CS</strong></td><td>多距离极限表现模型</td><td>严重强度域边界的模型估计</td><td>“无限维持” / MLSS</td><td>跑段速度与 D′ 策略锚点</td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="step-item" style="border-left-color:var(--ssp-gold);">
-          <strong>🏃 心率漂移测试 (Cardiac Drift) — 验证 VT1</strong>
-          <p>在疑似 VT1 配速下<span class="highlight">匀速跑 60 分钟</span>。记录第 10 分钟和第 60 分钟的心率。心率上升 <span class="highlight">≤5%</span> → 确认 VT1 正确；上升 <span class="highlight">5-10%</span> → 可能略高于 VT1；上升 <span class="highlight">>10%</span> → 配速远高于 VT1，降速重测。这是验证训练分区准确性最简单有效的方法。</p>
+          <strong>🏃 有氧解耦 — 看耐久，不“确认 VT1”</strong>
+          <p>先在 Talk Test 的轻松锚点下做 30–45 分钟稳态跑，再使用“恢复 / 耐久”页比较前后两半的速度—心率效率。<span class="highlight">≤3%、3–5%、&gt;5%</span>仅作为 SSP 内部观察带；先排查气温、坡度、配速、补液、补给和传感器，再决定是否增加 Z2 耐久训练。</p>
         </div>
 
         <div class="step-item">
           <strong>⚠️ 注意事项</strong>
-          <p>说话测试受主观因素影响，重复 2-3 次取平均更可靠。不同器械（跑/划船/滑雪）的 VT1/VT2 心率不同——划船 VT 通常比跑步低 3-5 bpm。测试时保持标准化的说话内容、换气节奏和提速度步长。</p>
+          <p>说话测试受句子、语言、测试者判断和疲劳影响；使用同一句话、同级时长、同提速步长，重复 2–3 次看稳定性。跑步、划船与 SkiErg 应分别建立心率锚点，不套用固定 bpm 修正。若需要确认 VT 或 MLSS，使用气体交换或多次恒负荷乳酸测试。</p>
         </div>
       </div>
+      <p class="evidence-note">依据：Talk Test 可用于现场调节强度，但与乳酸阈和通气阈的对应并非完全一致（<a href="https://pubmed.ncbi.nlm.nih.gov/21774751/" target="_blank" rel="noopener">Quinn &amp; Coons, 2011</a>；<a href="https://pubmed.ncbi.nlm.nih.gov/25536539/" target="_blank" rel="noopener">Woltmann 等, 2015</a>）；研究也提示 CS / CP 与 MLSS 不应互换（<a href="https://pubmed.ncbi.nlm.nih.gov/12736836/" target="_blank" rel="noopener">Dekerle 等, 2003</a>）。</p>
     </div>
 
     <!-- 8段策略 -->
@@ -1439,39 +1746,39 @@ select:focus-visible {
       <div class="step-list">
 
         <div class="step-item" style="border-left-color:var(--ssp-gold);">
-          <strong>01 · Phase 0 + Run 1 — SkiErg → 第 1 跑</strong>
-          <p><span class="highlight">生理主题：氧亏与 VO₂ 慢成分。</span>0-500m 不超速，进站感觉应像"还能再跑 5km"。Ski 心率高不一定等于全身失控——上肢耗氧占比大但腿部仍相对新鲜。首跑用 CS×0.90，给心率建仓留空间。</p>
+          <strong>01 · Start → Run 1 → SkiErg</strong>
+          <p><span class="highlight">主题：开局配速与首站成本。</span>Run 1 前 500m 不追随人群超速，进入 SkiErg 前仍应保留动作余量。首跑的 CS 比例只是建议起点；用呼吸、RPE 和完整模拟确认，避免把开局兴奋当作可持续能力。</p>
         </div>
 
         <div class="step-item">
-          <strong>02 · Run 2-3 — Sled Push / Pull → 第 2-3 跑</strong>
-          <p><span class="highlight">生理主题：Pi 积累、钙离子释放衰竭与升压反射。</span>推雪橇分段波动控制在 10% 以内——第一段压住速度。拉雪橇每次发力配合强呼气，松手站直后视线平视远处固定点，避免 ROXZone 眩晕。跑步段目标 CS×0.93，找到巡航节奏。</p>
+          <strong>02 · SkiErg → Run 2 → Sled Push → Run 3 → Sled Pull</strong>
+          <p><span class="highlight">主题：重新巡航与局部力量耐力。</span>Run 2 先重建步频与呼吸，再进入 Sled Push；推后 Run 3 的前段优先找回步态，不抢配速。雪橇分段目标是稳定而非首段冲刺；拉雪橇时配合呼气，站直后若眩晕立即减速或停止。</p>
         </div>
 
         <div class="step-item" style="border-left-color:var(--ssp-gold);">
-          <strong>03 · Run 4-5 — Burpee Broad Jump → 第 4-5 跑</strong>
-          <p><span class="highlight">生理主题：直立性压力与神经肌肉传递下降。</span>红区暴露 >95% HRmax 时开始计时——每次超红区应有时间上限。每 5m 看 Burpee 节律是否掉线（单次耗时波动 >0.5s = 神经肌肉输出崩）。<strong>Run 5 是主动恢复段</strong>——降配速换 D' 恢复。</p>
+          <strong>03 · Sled Pull → Run 4 → BBJ → Run 5 → Row</strong>
+          <p><span class="highlight">主题：直立转换与动作节律。</span>Run 4 保持可控进入 Burpee Broad Jump；用固定距离分段记录动作节律。BBJ 后的 Run 5 可作为受控重建段，但是否主动降速应由个人目标、呼吸、RPE 与下一站 Row 的执行质量共同决定。</p>
         </div>
 
         <div class="step-item">
-          <strong>04 · Run 6 — Row → 第 6 跑</strong>
-          <p><span class="highlight">生理主题：心输出量天花板与血流竞争。</span>心率封顶设 Run 1 均值 −5 bpm 或 88-90% HRmax。同配速下心率漂移 >5 bpm → 主动降功率。前 200m 用高步频冲刷跑，不急于回到巡航配速。</p>
+          <strong>04 · Row → Run 6 → Farmers Carry</strong>
+          <p><span class="highlight">主题：划船后步态重建。</span>离开 Row 后先用短步、放松上肢恢复跑姿，再逐步回到个人巡航范围。不要用固定 %HRmax 代替专项锚点；若同配速心率、RPE 与动作成本同时异常升高，先降速并复核环境和划船输出。</p>
         </div>
 
         <div class="step-item" style="border-left-color:var(--ssp-gold);">
-          <strong>05 · Run 7 — Farmers Carry → 第 7 跑</strong>
-          <p><span class="highlight">生理主题：呼吸肌代谢反射。</span>220+ spm 滑步走法，30-40cm 短步幅。4 步 1 呼吸周期——避免膈肌因稳定任务过度疲劳。上半身尽量减小垂直震荡，颈部放松。</p>
+          <strong>05 · Farmers Carry → Run 7 → Sandbag Lunges</strong>
+          <p><span class="highlight">主题：握力、躯干稳定与呼吸重建。</span>Farmer’s Carry 采用个人可控的短步与呼吸节律；进入 Run 7 后先放松肩颈、恢复自然摆臂，再为 Sandbag Lunges 保留动作质量。固定步频数字只可作为个体试验，不作通用要求。</p>
         </div>
 
         <div class="step-item">
-          <strong>06 · Run 8 + Finish — Lunges / Wall Balls → 终跑</strong>
-          <p><span class="highlight">生理主题：离心损伤与中枢疲劳。</span>箭步蹲膝盖最后 5cm 有意识减速，避免砸地离心损伤。墙球用腿-髋-核心-手的动量传递完成，手臂仅在惯性顶点顺势推出，记录中断次数。Run 8 不硬追配速——除非 D' 还有余量。</p>
+          <strong>06 · Sandbag Lunges → Run 8 → Wall Balls → Finish</strong>
+          <p><span class="highlight">主题：后程动作质量与最后一次跑站转换。</span>弓步后 Run 8 的前段先重建步态，再按个人容量决定是否加速；完成 Run 8 后进入 Wall Balls，按预先验证的分组与呼吸方案收尾。墙球后直接完赛，没有第 9 个跑段。</p>
         </div>
 
       </div>
 
       <div class="tip" style="margin-top:18px;">
-        <strong>教练决策框架：</strong>每站后看三点——① 配速是否在 CS×0.90-0.95 区间？② 心率是否拉回 LTHR 以下？③ D' 剩余是否足够完成后续站点的加速需求？三个答案全是"是"，你的策略就对了。
+        <strong>教练决策框架：</strong>每个站跑转换看三点——① 配速是否回到个人目标范围？② 心率、RPE 与动作质量是否同步可控？③ SSP 内部容量情景是否仍与模拟趋势一致？三项都稳定，只能说明当前策略可继续观察，不代表已证明“最优”。
       </div>
     </div>
 
@@ -1516,12 +1823,12 @@ select:focus-visible {
     <div class="tab-panel" id="tab-pace">
       <h3>🏃 HYROX 8段跑详细配速方案</h3>
       <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
-        这不是简单的8个配速数字——是包含站点耗时估算、D'逐站追踪、心率靶点、配速上下限、以及每段过渡策略的完整比赛执行方案。
+        这不是简单的 8 个配速数字——它把站点耗时、SSP 内部 D′容量预算、心率参考、配速上下限和每段过渡策略放在同一张执行表中。D′站点扣减为教练启发式，不是生理测量。
       </p>
 
       <div class="hrr-form">
         <div class="input-group"><label>CS 配速 (/km)</label><div style="display:flex;gap:4px;align-items:center;"><input id="pace-cs-min" type="number" value="4" min="2" max="8" style="width:55px;"><span>:</span><input id="pace-cs-sec" type="number" value="00" min="0" max="59" style="width:55px;"></div></div>
-        <div class="input-group"><label>D' (米)</label><input id="pace-dprime" type="number" value="200" min="50" max="500"></div>
+        <div class="input-group"><label>跑步 D′模型参数 (米)</label><input id="pace-dprime" type="number" value="200" min="50" max="500"></div>
         <div class="input-group"><label>LTHR (bpm)</label><input id="pace-lthr" type="number" value="175" min="120" max="210"></div>
         <div class="input-group"><label>年龄</label><input id="pace-age" type="number" value="30" min="18" max="65"></div>
       </div>
@@ -1532,8 +1839,8 @@ select:focus-visible {
         <div class="info-item"><div class="num" id="pace-total-run">--</div><div class="txt">8km跑段总计</div></div>
         <div class="info-item"><div class="num" id="pace-avg-pace">--</div><div class="txt">平均配速</div></div>
         <div class="info-item"><div class="num" id="pace-station-est">--</div><div class="txt">站点估算</div></div>
-        <div class="info-item"><div class="num" id="pace-est-finish">--</div><div class="txt">预估完赛</div></div>
-        <div class="info-item"><div class="num" id="pace-d-final">--</div><div class="txt">终点D'余量</div></div>
+        <div class="info-item"><div class="num" id="pace-est-finish">--</div><div class="txt">模型时间参考</div></div>
+        <div class="info-item"><div class="num" id="pace-d-final">--</div><div class="txt">内部容量预算余量</div></div>
       </div>
 
       <!-- Main detailed table -->
@@ -1541,9 +1848,9 @@ select:focus-visible {
         <table id="pace-table" style="font-size:0.82rem;">
           <thead><tr>
             <th>阶段</th><th>跑段</th><th>跑后站点</th><th>站点<br>估算</th>
-            <th>D'起跑</th><th>D'进站</th><th>D'出站</th>
+            <th>模型D′起跑</th><th>模型D′进站</th><th>模型D′出站</th>
             <th>保守配速</th><th>激进配速</th><th>%CS</th>
-            <th>心率靶</th><th>累计</th><th>过渡策略</th>
+            <th>心率参考*</th><th>累计</th><th>过渡策略</th>
           </tr></thead>
           <tbody id="pace-tbody"></tbody>
         </table>
@@ -1555,20 +1862,20 @@ select:focus-visible {
       </div>
 
       <div class="tip" style="margin-top:14px;">
-        <strong>怎么用这张表：</strong>比赛前打印或截图。每跑完一个1km跑段+一个站点，就在对应行打勾。保守配速=最安全完成比赛的配速，激进配速=状态极好时的上限（超过它大概率后面崩）。心率靶=bpm单位，如果你有心率表直接对数字。
+        <strong>怎么用这张表：</strong>比赛前先在完整模拟中校准。表内“保守 / 激进”是策略范围的建议起点，不是安全保证；心率靶也应根据传感器、环境、运动史和模拟反应调整。模型时间不含赛事现场全部不确定性。
       </div>
     </div>
 
 
     <!-- ⚡ 站点能量消耗对照表 -->
     <div class="tab-panel" id="tab-station">
-      <h3>⚡ 8个站点能量消耗对照表</h3>
+      <h3>⚡ 8 个站点负荷特征与内部权重</h3>
       <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
-        每个HYROX站点对不同能量系统的消耗完全不同。理解这一点，你才知道为什么有些站点后还能加速，有些站点后只能保命。
+        各站点的动作模式、局部肌群和代谢需求不同。下表星级与百分比仅是 SSP 课程用于安排站跑策略的内部权重，不代表真实 D′消耗或通用生理比例。
       </p>
       <div style="overflow-x:auto;">
         <table>
-          <thead><tr><th>站点</th><th>主要代谢</th><th>D'消耗</th><th>心率冲击</th><th>恢复需求</th><th>主要肌群</th><th>技术节能要点</th></tr></thead>
+          <thead><tr><th>站点</th><th>主要代谢</th><th>SSP 容量权重*</th><th>常见心率反应</th><th>建议恢复观察</th><th>主要肌群</th><th>技术要点</th></tr></thead>
           <tbody>
             <tr style="background:rgba(182,211,80,0.06);"><td><strong>SkiErg</strong></td><td>有氧+上肢磷酸原</td><td>⭐⭐ 15-20%</td><td>↑↑↑ 高心率但腿新鲜</td><td>1-2min跑步恢复</td><td>背阔肌·三头·核心</td><td>用髋驱动非纯手臂；60%髋+40%臂发力比例</td></tr>
             <tr><td><strong>Sled Push</strong></td><td>磷酸原+糖酵解</td><td>⭐⭐⭐ 25-30%</td><td>↑↑↑↑ 极高（全身紧绷）</td><td>2-3min+跑步段前200m慢</td><td>股四头肌·臀·核心</td><td>低姿短步·保持脊柱中立·手臂仅传导不主动发力</td></tr>
@@ -1582,7 +1889,7 @@ select:focus-visible {
         </table>
       </div>
       <div class="tip" style="margin-top:14px;">
-        <strong>D' 总量管理：</strong>如果你D'=200m，8站累计消耗≈170-210m。当你D'耗尽时心率会失控、配速暴跌。关键策略：前4站不把D'用超50%，在Run 5-6利用低于CS的配速让D'恢复。
+        <strong>*模型边界：</strong>站点百分比用于内部容量预算和情景比较，不能把真实站点能耗换算为 D′米数，也不能据此预测“耗尽时刻”。用个人分段、动作质量、心率、RPE 与下一跑表现校准权重。
       </div>
     </div>
 
@@ -1597,7 +1904,7 @@ select:focus-visible {
         <div class="step-item" style="border-left-color:#e07060;">
           <strong>🚨 翻车 #1：Run 1 超速（"比赛兴奋症"）</strong>
           <p><span class="highlight">症状：</span>跑完Run 1感觉很轻松，配速比计划快10-15s/km。心跳高但不觉得累。</p>
-          <p><span class="highlight">后果：</span>D'在Run 1-3就被提前消耗40%+，到Run 5-6出现"突然的墙"，配速暴跌30s+/km。</p>
+          <p><span class="highlight">可能方向：</span>开局超出个人模拟范围可能放大后续心率、RPE 与动作成本，但不能把它直接换算成固定 D′百分比或必然掉速。</p>
           <p><span class="highlight">数据信号：</span>Run 1-2配速 vs CS配速差异 >8% = 超速警告。Run 1心率 > LTHR − 10bpm = 开局过激。</p>
           <p><span class="highlight">补救（如果已经超了）：</span>Run 2立刻降速到CS×0.85，Run 3再降回CS×0.82，牺牲2-3分钟换后面不崩。不要在Run 2继续"找节奏"。</p>
         </div>
@@ -1613,9 +1920,9 @@ select:focus-visible {
         <div class="step-item" style="border-left-color:#e07060;">
           <strong>🚨 翻车 #3：BBJ 站点动作崩盘 → Run 5 "死亡跑"</strong>
           <p><span class="highlight">症状：</span>Burpee到第40-50m时单次耗时从4s变成6-7s，动作变形，站起时头晕。跑Run 5时感觉"每一步都在挣扎"。</p>
-          <p><span class="highlight">后果：</span>BBJ是所有站点中D'消耗最大的（30-35%），且直立性血压波动让Run 5变成整场比赛最难受的跑段。</p>
-          <p><span class="highlight">数据信号：</span>BBJ单次耗时波动 >0.5s = 动作崩。Run 5心率持续 >LTHR+5bpm = D'即将耗尽。</p>
-          <p><span class="highlight">补救：</span>BBJ站点不要追求速度——追求节律（保持3.5-4s/次均速）。如果已经崩了，Run 5主动降为CS×0.75-0.80，<strong>这是整场比赛唯一应该主动降配速的跑段。</strong>在这里牺牲的时间会在Run 6-8全部拿回来。</p>
+          <p><span class="highlight">可能方向：</span>BBJ 动作节律、直立转换、前序配速与环境因素都可能影响 Run 5；不能用固定“D′消耗 30–35%”解释单次表现。</p>
+          <p><span class="highlight">数据信号：</span>按固定距离比较 BBJ 前后半节律，再看 Run 5 相对个人目标的偏差、RPE 与动作质量。心率越过 LTHR 不等同于 D′即将耗尽。</p>
+          <p><span class="highlight">训练处理：</span>先用 BBJ 分段和 BBJ → Run 5 串联确定个人可控节律；比赛中若多项信号同时恶化，临时降速重建动作。降速能否在后程拿回时间必须由完整模拟验证。</p>
         </div>
 
         <div class="step-item" style="border-left-color:#e07060;">
@@ -1627,17 +1934,17 @@ select:focus-visible {
         </div>
 
         <div class="step-item" style="border-left-color:#e07060;">
-          <strong>🚨 翻车 #5：Wall Balls 中断 → Run 8 冲刺变保命</strong>
-          <p><span class="highlight">症状：</span>墙球做到第60-75个时，手臂无法持续推出，开始频繁中断（每5-8个停一次）。跑Run 8时本该冲刺但配速反而比Run 7还慢。</p>
-          <p><span class="highlight">后果：</span>墙球的中断不是体能问题——是技术崩盘。当腿-髋-核心-手的动量链断裂后，手臂单独发力推球=极低效率=急速衰竭。</p>
-          <p><span class="highlight">数据信号：</span>墙球中断次数 >5次。最后20个墙球用时 > 前20个用时×1.5 = 崩盘。Run 8配速 &lt; Run 7配速 = D'已耗尽。</p>
-          <p><span class="highlight">补救：</span>墙球崩了不要硬撑——每组10个后站直深呼吸2次（2秒），中断5-6次比连续崩更好。Run 8如果D'耗尽：不要冲刺，用CS×0.90完成。如果D'还有余量（>30m），冲刺到CS×1.05-1.10。</p>
+          <strong>🚨 翻车 #5：Lunges 后 Run 8 掉速 → Wall Balls 收尾碎裂</strong>
+          <p><span class="highlight">症状：</span>弓步后 Run 8 步幅和躯干控制明显下降；进入 Wall Balls 后很快偏离预定分组，休息时间逐组拉长。</p>
+          <p><span class="highlight">可能方向：</span>可能同时包含弓步局部疲劳、Run 8 过早加速、墙球动作经济性与分组策略问题，不能只凭一个分段归因。</p>
+          <p><span class="highlight">数据信号：</span>比较 Lunges 前后分段、Run 8 相对目标的偏差，以及 Wall Balls 前 / 后半完成速率和中断次数；使用同组别、同球重和同动作标准复测。</p>
+          <p><span class="highlight">训练处理：</span>先分别验证弓步后受控跑与疲劳墙球，再做 Lunges → Run 8 → Wall Balls 的短流程串联。比赛中按已经验证的 Run 8 配速与墙球分组执行，不临场套用固定冲刺比例。</p>
         </div>
 
       </div>
 
       <div class="tip" style="margin-top:18px;">
-        <strong>比赛中三问决策法：</strong>每完成一个站点后，在跑段前200m内问自己——① 配速是否在目标区间？② 心率是否被拉回LTHR以下？③ D'余量是否够完成剩余站点？任一个答案"否"→立刻调整。HYROX不是拼谁跑得快，是拼谁<strong>在最后3段仍然能跑</strong>。
+        <strong>比赛中三问决策法：</strong>进入下一跑段后问自己——① 配速是否回到个人目标范围？② 心率、RPE 与动作是否共同可控？③ 当前走势是否仍符合完整模拟建立的容量情景？若多项持续偏离，先降速复核；不要把内部 D′预算当作可实时读取的生理电量。
       </div>
     </div>
 
@@ -1649,11 +1956,13 @@ select:focus-visible {
 <div class="card" id="explainer">
   <h2><span class="dot"></span>各指标含义（每次比赛前回来看一眼）</h2>
   <div class="explain-grid">
-    <div class="explain-card"><span class="tag">核心</span><h3>CS — 临界速度</h3><p>你能<span class="highlight">无限维持</span>的最高速度。CS 以下 = 不累垮。HYROX 里不能全程跑 CS——站点也需要能量。</p><ul><li>CS ≈ 最大乳酸稳态</li><li>HYROX 巡航 ≈ CS × 0.95</li><li>慢跑堆量 + 节奏跑 → CS↑</li></ul></div>
-    <div class="explain-card"><span class="tag">核心</span><h3>D' — 无氧电池</h3><p>高于 CS 时能额外跑的距离。站点后加速回配速就耗 D'。电池耗尽→掉速。</p><ul><li>耗尽时间 = D'/(速度−CS)</li><li>低于 CS 跑 → D' 慢慢恢复</li><li>短间歇 + 力量 → D'↑</li></ul></div>
-    <div class="explain-card"><span class="tag">心率</span><h3>LTHR — 心率红线</h3><p>约 60 分钟的最高心率。超过 = 进入倒计时。HYROX 里站点推高心率后，跑步段必须拉回 LTHR 以下。</p><ul><li>30 分钟法：后 20 分钟均值</li><li>划船 LTHR ≈ 跑步 LTHR − 5</li></ul></div>
-    <div class="explain-card"><span class="tag">心率</span><h3>HRR — 储备心率</h3><p>考虑你个人静息心率的强度计算。公式：<span class="highlight">RHR + (MHR−RHR) × %</span>。比单纯 % 最大心率更准。</p><ul><li>静息心率越低 → 窗口越宽</li><li>Z2 训练对此公式最敏感</li></ul></div>
-    <div class="explain-card"><span class="tag">权衡</span><h3>CS vs D' 取舍</h3><p>CS 和 D' 通常负相关——耐力型 CS↑/D'↓，冲刺型 CS↓/D'↑。训练需按项目距离分配比例。</p></div>
+    <div class="explain-card"><span class="tag">核心</span><h3>CS — 临界速度</h3><p>由多个极限时长成绩拟合出的速度—时间模型边界，常用于描述严重强度域附近的跑步能力；它<span class="highlight">不是可无限维持的速度</span>，也不能直接替代 MLSS 或 VT2。</p><ul><li>用于设定跑段速度与 D′ 策略锚点</li><li>HYROX 巡航比例是建议起点，需经模拟校准</li><li>用同场地、同协议复测趋势</li></ul></div>
+    <div class="explain-card"><span class="tag">核心</span><h3>D′ — CS 以上距离容量</h3><p>速度—时间模型中高于 CS 的有限距离容量。“电池”是便于策略沟通的比喻，不能把站点能耗直接换算成真实 D′。</p><ul><li>恒速模型耗尽时间 = D′/(速度−CS)</li><li>恢复具有强度与时间依赖性</li><li>需与实际站跑模拟共同校准</li></ul></div>
+    <div class="explain-card"><span class="tag">心率</span><h3>LTHR — 场地阈值心率锚点</h3><p>特定专项和测试协议下的阈值心率近似，不是绝对“红线”。HYROX 中用它限制长时间超阈暴露，并结合配速、RPE 与后程表现调整。</p><ul><li>30 分钟场测：后 20 分钟均值作为近似</li><li>跑、划、Ski 应分别建立锚点</li></ul></div>
+    <div class="explain-card"><span class="tag">区间</span><h3>HR Reserve — 心率储备</h3><p>HRmax − HRrest；Karvonen 目标心率为 <span class="highlight">RHR + HR Reserve × %</span>。用于估算训练区间，不等于运动后心率恢复。</p><ul><li>最大心率估算会带来误差</li><li>分区需用 Talk Test / LTHR / 实际训练校准</li></ul></div>
+    <div class="explain-card"><span class="tag">恢复</span><h3>HRR1 / HRR2 — 心率恢复</h3><p>负荷结束当刻心率分别减去 60 秒、120 秒心率。早期回落受副交感再激活影响，也受终点强度和恢复姿势影响。</p><ul><li>只比较同运动员、同协议趋势</li><li>不用单次结果判断准备度或疾病</li></ul></div>
+    <div class="explain-card"><span class="tag">耐久</span><h3>有氧解耦 — 短时效率漂移</h3><p>比较稳态跑前后两半的“速度 ÷ 心率”效率。正值表示后半单位心率对应速度下降；高温、补液、补给、路线和传感器都可能影响。</p><ul><li>3% / 5% 是 SSP 内部观察带</li><li>不能单次确认 VT1</li></ul></div>
+    <div class="explain-card"><span class="tag">权衡</span><h3>CS 与 D′ 共同看</h3><p>两者来自同一速度—时间模型，但个体变化并非固定跷跷板。训练决策应看绝对值、测试拟合、专项成绩与重复测试，而不是仅按“耐力型 / 冲刺型”贴标签。</p></div>
     <div class="explain-card"><span class="tag">质控</span><h3>R² — 可信度</h3><p>测试点拟合程度。≥0.98=可靠，0.95-0.98=可用，&lt;0.95=重测。不稳定的原因：未全力跑 / 疲劳 / 条件不一致。</p></div>
   </div>
 </div>
@@ -1677,22 +1986,73 @@ document.querySelectorAll('img[src="LOGO_PLACEHOLDER"]').forEach(function(img) {
 });
 
 // ═══ TABS ═══
-document.querySelectorAll('.tab-btn').forEach(function(btn) {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
+var protocolTabList = document.querySelector('.tabs-nav');
+var protocolTabButtons = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'));
+var protocolTabPanels = Array.prototype.slice.call(document.querySelectorAll('.tab-panel'));
+if (protocolTabList) protocolTabList.setAttribute('role', 'tablist');
+
+function activateProtocolTab(btn, shouldFocus) {
+  protocolTabButtons.forEach(function(item) {
+    var selected = item === btn;
+    item.classList.toggle('active', selected);
+    item.setAttribute('aria-selected', selected ? 'true' : 'false');
+    item.setAttribute('tabindex', selected ? '0' : '-1');
+  });
+  protocolTabPanels.forEach(function(panel) {
+    var selected = panel.id === btn.dataset.tab;
+    panel.classList.toggle('active', selected);
+    panel.setAttribute('aria-hidden', selected ? 'false' : 'true');
+  });
+  if (shouldFocus) btn.focus();
+}
+
+protocolTabButtons.forEach(function(btn, index) {
+  var panel = document.getElementById(btn.dataset.tab);
+  var tabId = 'protocol-tab-' + (index + 1);
+  btn.id = tabId;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-controls', btn.dataset.tab);
+  if (panel) {
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', tabId);
+    panel.setAttribute('tabindex', '0');
+  }
+  btn.addEventListener('click', function() { activateProtocolTab(btn, false); });
+  btn.addEventListener('keydown', function(event) {
+    var targetIndex = index;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') targetIndex = (index + 1) % protocolTabButtons.length;
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') targetIndex = (index - 1 + protocolTabButtons.length) % protocolTabButtons.length;
+    else if (event.key === 'Home') targetIndex = 0;
+    else if (event.key === 'End') targetIndex = protocolTabButtons.length - 1;
+    else return;
+    event.preventDefault();
+    activateProtocolTab(protocolTabButtons[targetIndex], true);
   });
 });
+if (protocolTabButtons.length) activateProtocolTab(protocolTabButtons.filter(function(btn) { return btn.classList.contains('active'); })[0] || protocolTabButtons[0], false);
 
 // ═══ HRR ═══
 function calcHRR() {
-  var rhr = parseInt(document.getElementById('hrr-rest').value) || 52;
-  var mhr = parseInt(document.getElementById('hrr-max').value) || 190;
-  var lthr = parseInt(document.getElementById('hrr-lthr').value) || 175;
+  var age = parseInt(document.getElementById('hrr-age').value, 10);
+  var rhr = parseInt(document.getElementById('hrr-rest').value, 10);
+  var measuredMhr = parseInt(document.getElementById('hrr-max').value, 10);
+  var lthr = parseInt(document.getElementById('hrr-lthr').value, 10);
+  if (!Number.isFinite(age) || age < 16 || age > 100 || !Number.isFinite(rhr) || rhr < 30 || rhr > 120 || !Number.isFinite(lthr) || lthr < 80 || lthr > 230) {
+    alert('请填写有效的年龄、静息心率与 LTHR。');
+    return;
+  }
+  if (Number.isFinite(measuredMhr) && (measuredMhr < 120 || measuredMhr > 230)) {
+    alert('实测最大心率需在 120–230 bpm；不填写时将按年龄估算。');
+    return;
+  }
+  var mhr = Number.isFinite(measuredMhr) ? measuredMhr : Math.round(208 - 0.7 * age);
+  if (mhr <= rhr || lthr <= rhr || lthr >= mhr) {
+    alert('请检查心率关系：MHR 应高于 LTHR，LTHR 应高于静息心率。');
+    return;
+  }
   var hrr = mhr - rhr;
   document.getElementById('hrr-lthr-display').textContent = lthr + ' bpm';
+  document.getElementById('hrr-mhr-source').textContent = 'MHR ' + mhr + ' bpm（' + (Number.isFinite(measuredMhr) ? '实测' : '年龄估算') + '）';
   var zones = [
     { name: 'Z1 恢复', pct: '50-60%', lo: 0.50, hi: 0.60, use: '积极恢复、热身', feel: '极轻松' },
     { name: 'Z2 有氧基础', pct: '60-70%', lo: 0.60, hi: 0.70, use: 'LSD、脂肪代谢', feel: '轻松聊天' },
@@ -1711,6 +2071,97 @@ function calcHRR() {
   document.querySelector('#hrr-table tbody').innerHTML = html;
 }
 calcHRR();
+
+// ═══ FIELD PHYSIOLOGY: RECOVERY + DURABILITY ═══
+function physioNumber(id) {
+  var raw = String(document.getElementById(id).value || '').trim();
+  return raw === '' ? null : Number(raw);
+}
+
+function showPhysioError(prefix, message) {
+  var error = document.getElementById(prefix + '-error');
+  error.textContent = message;
+  error.style.display = 'block';
+  document.getElementById(prefix + '-output').classList.remove('visible');
+}
+
+function clearPhysioError(prefix) {
+  var error = document.getElementById(prefix + '-error');
+  error.textContent = '';
+  error.style.display = 'none';
+}
+
+function calcHeartRateRecovery() {
+  var endHr = physioNumber('recovery-end');
+  var hr60 = physioNumber('recovery-60');
+  var hr120 = physioNumber('recovery-120');
+  var baseline = physioNumber('recovery-baseline');
+  var valid = [endHr, hr60, hr120].every(function(value) { return Number.isFinite(value) && value >= 35 && value <= 230; });
+  if (!valid || (baseline !== null && (!Number.isFinite(baseline) || baseline <= 0 || baseline > 100))) {
+    showPhysioError('recovery', '请填写有效心率；个人基线留空或填写 1–100 bpm。');
+    return;
+  }
+  if (hr60 > endHr || hr120 > hr60) {
+    showPhysioError('recovery', '心率记录不是逐步下降：请确认结束时点、传感器读数和恢复协议后复测，不将异常值截断为 0。');
+    return;
+  }
+  clearPhysioError('recovery');
+  var hrr1 = endHr - hr60;
+  var hrr2 = endHr - hr120;
+  document.getElementById('recovery-hrr1').textContent = Math.round(hrr1);
+  document.getElementById('recovery-hrr2').textContent = Math.round(hrr2);
+  var advice = '仅与同一运动方式、相近终点强度和相同恢复姿势下的个人记录比较。';
+  if (baseline === null) {
+    advice += ' 先采集 3–5 次同协议结果建立 HRR1 基线；本次不自动判定“优秀”或“异常”。';
+  } else {
+    var diff = hrr1 - baseline;
+    advice += ' 本次 HRR1 相对个人基线 ' + (diff > 0 ? '+' : diff < 0 ? '−' : '') + Math.abs(Math.round(diff)) + ' bpm。单次变化不调整训练；若连续至少两次下降，且晨起心率、睡眠或主观疲劳也变差，再考虑减量并复核。';
+  }
+  document.getElementById('recovery-advice').textContent = advice;
+  document.getElementById('recovery-output').classList.add('visible');
+}
+
+function calcAerobicDrift() {
+  var p1m = physioNumber('drift-p1-min');
+  var p1s = physioNumber('drift-p1-sec');
+  var hr1 = physioNumber('drift-hr1');
+  var p2m = physioNumber('drift-p2-min');
+  var p2s = physioNumber('drift-p2-sec');
+  var hr2 = physioNumber('drift-hr2');
+  var validPace = [p1m, p2m].every(function(value) { return Number.isFinite(value) && value >= 2 && value <= 15; }) &&
+    [p1s, p2s].every(function(value) { return Number.isFinite(value) && value >= 0 && value < 60; });
+  var validHr = [hr1, hr2].every(function(value) { return Number.isFinite(value) && value >= 60 && value <= 220; });
+  if (!validPace || !validHr) {
+    showPhysioError('drift', '请填写有效的两半平均配速与心率；秒数需为 0–59。');
+    return;
+  }
+  clearPhysioError('drift');
+  var pace1 = p1m * 60 + p1s;
+  var pace2 = p2m * 60 + p2s;
+  var speed1 = 1000 / pace1;
+  var speed2 = 1000 / pace2;
+  var ef1 = speed1 / hr1;
+  var ef2 = speed2 / hr2;
+  var drift = (ef1 - ef2) / ef1 * 100;
+  var paceChange = (pace2 - pace1) / pace1 * 100;
+  var hrChange = (hr2 - hr1) / hr1 * 100;
+  document.getElementById('drift-percent').textContent = (drift > 0 ? '+' : '') + drift.toFixed(1) + '%';
+  document.getElementById('drift-change').textContent = (paceChange > 0 ? '+' : '') + paceChange.toFixed(1) + '% / ' + (hrChange > 0 ? '+' : '') + hrChange.toFixed(1) + '%';
+  var advice;
+  if (Math.abs(paceChange) > 3) {
+    advice = '两半平均配速相差超过 3%，解耦解释受限。下次先固定路线、坡度、测试时长与配速，并排除热身、暂停、红绿灯和冷身。';
+  } else if (drift <= 0) {
+    advice = '后半段速度—心率效率未下降。负值也可能来自热身未完成、负分段或传感器延迟；不要解释成“负疲劳”，按同条件复测确认。';
+  } else if (drift <= 3) {
+    advice = '落在 SSP ≤3% 观察带，本次短时稳态效率较稳定。维持当前有氧量，并在 2–4 周后用相同条件复测。';
+  } else if (drift <= 5) {
+    advice = '落在 SSP 3–5% 观察带。先检查气温、坡度、配速、补液、补给和传感器；条件一致时再观察是否需要增加轻松稳态时长。';
+  } else {
+    advice = '超过 SSP 5% 观察带。先排除环境、补液、补给、配速与设备因素；若连续复现，可逐步增加 Z2 耐久跑或站后受控跑，而不是直接提高阈值强度。';
+  }
+  document.getElementById('drift-advice').textContent = advice + ' 该结果不用于单次确认 VT1。';
+  document.getElementById('drift-output').classList.add('visible');
+}
 
 // ═══ HYROX shared race model ═══
 var HYROX_STATIONS = [
@@ -1745,6 +2196,7 @@ var RUN_CONTEXTS = [
 ];
 var latestCSMetrics = null;
 var LOSS_STORAGE_KEY = 'ssp-race-loss-v1';
+var latestLossAnalysis = null;
 
 function secondsToClock(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return '--';
@@ -1768,7 +2220,13 @@ function parseClockValue(value) {
   if (!/^\d+(?::\d{1,2}){0,2}$/.test(raw)) return NaN;
   var parts = raw.split(':').map(Number);
   var total;
-  if (parts.length === 1) total = parts[0];
+  if (parts.length === 1) {
+    if (raw.length >= 3 && raw.length <= 4) {
+      var shorthandSeconds = Number(raw.slice(-2));
+      if (shorthandSeconds >= 60) return NaN;
+      total = Number(raw.slice(0, -2)) * 60 + shorthandSeconds;
+    } else total = parts[0];
+  }
   else if (parts.length === 2) {
     if (parts[1] >= 60) return NaN;
     total = parts[0] * 60 + parts[1];
@@ -1797,6 +2255,7 @@ function renderLossEntries() {
     input.addEventListener('input', function() {
       input.classList.remove('input-invalid');
       document.getElementById('loss-input-error').style.display = 'none';
+      markLossAnalysisDirty();
       saveLossInputs();
     });
     input.addEventListener('blur', function() {
@@ -1807,11 +2266,39 @@ function renderLossEntries() {
   });
 }
 
+function localDateValue() {
+  var now = new Date();
+  var offset = now.getTimezoneOffset() * 60000;
+  return new Date(now.getTime() - offset).toISOString().slice(0, 10);
+}
+
+function initLossMeta() {
+  var dateInput = document.getElementById('loss-date');
+  if (dateInput && !dateInput.value) dateInput.value = localDateValue();
+  document.querySelectorAll('[data-loss-meta]').forEach(function(field) {
+    field.addEventListener(field.tagName === 'SELECT' ? 'change' : 'input', function() {
+      saveLossInputs();
+    });
+  });
+}
+
+function markLossAnalysisDirty() {
+  latestLossAnalysis = null;
+  var feedback = document.getElementById('report-feedback');
+  var results = document.getElementById('loss-results');
+  if (feedback && results.style.display !== 'none') {
+    results.classList.add('is-stale');
+    feedback.textContent = '分段输入已更新：下方结果已过期，请重新生成后再复制或打印。';
+  }
+}
+
 function saveLossInputs() {
   try {
     var values = {};
+    var meta = {};
     document.querySelectorAll('[data-loss-input]').forEach(function(input) { values[input.id] = input.value; });
-    localStorage.setItem(LOSS_STORAGE_KEY, JSON.stringify({ values: values, savedAt: Date.now() }));
+    document.querySelectorAll('[data-loss-meta]').forEach(function(field) { meta[field.id] = field.value; });
+    localStorage.setItem(LOSS_STORAGE_KEY, JSON.stringify({ values: values, meta: meta, savedAt: Date.now() }));
   } catch (e) {}
 }
 
@@ -1823,6 +2310,10 @@ function restoreLossInputs() {
     Object.keys(saved.values).forEach(function(id) {
       var input = document.getElementById(id);
       if (input) { input.value = saved.values[id]; restored++; }
+    });
+    if (saved.meta) Object.keys(saved.meta).forEach(function(id) {
+      var field = document.getElementById(id);
+      if (field) field.value = saved.meta[id];
     });
     if (restored) {
       document.getElementById('loss-target-status').textContent = '已恢复上次填写 · 可同步 Run 目标或继续分析';
@@ -1851,6 +2342,7 @@ function syncLossTargets(silent) {
     }
   }
   document.getElementById('loss-target-status').textContent = '已同步 Run 目标：CS ' + secondsToClock(csPaceSec) + '/km · 站点目标保留个人设定' + (initializedStations ? '（空白项已载入参考值）' : '');
+  markLossAnalysisDirty();
   saveLossInputs();
   if (!silent) document.getElementById('loss-live').textContent = '已同步 8 个 Run 目标；站点目标未覆盖';
   return true;
@@ -1861,6 +2353,8 @@ function clearLossActuals() {
     document.getElementById('loss-run-actual-' + i).value = '';
     document.getElementById('loss-station-actual-' + i).value = '';
   }
+  document.querySelectorAll('[data-loss-input]').forEach(function(input) { input.classList.remove('input-invalid'); });
+  latestLossAnalysis = null;
   document.getElementById('loss-results').style.display = 'none';
   document.getElementById('loss-input-error').style.display = 'none';
   saveLossInputs();
@@ -1967,6 +2461,10 @@ function chooseDominantDomain(runDomain, stationDomain) {
   if (!runReady && !stationReady) return 'insufficient';
   if (runReady && !stationReady) return 'run';
   if (!runReady && stationReady) return 'station';
+  if (runDomain.coverage !== stationDomain.coverage) {
+    if (Math.abs(runDomain.rate - stationDomain.rate) < 0.05) return 'mixed';
+    return runDomain.rate > stationDomain.rate ? 'run' : 'station';
+  }
   if (runDomain.positiveLoss === stationDomain.positiveLoss) return 'mixed';
   return runDomain.positiveLoss > stationDomain.positiveLoss ? 'run' : 'station';
 }
@@ -1979,7 +2477,7 @@ function renderTrainingAdvice(runDomain, stationDomain, dominant) {
   var grid = document.getElementById('training-rec-grid');
   var subtitle = document.getElementById('training-plan-subtitle');
   if (dominant === 'insufficient') {
-    subtitle.textContent = '方向性诊断至少需要 4 个有效 Run 或 4 个有效站点。';
+    subtitle.textContent = '方向性复盘至少需要 4 个有效 Run 或 4 个有效站点。';
     grid.innerHTML = trainingCard('先补数据', '完成同口径分段记录', '补齐目标与实际时间；站点目标要固定组别、负重、距离/次数与场地。ROXZone 过渡时间单独记录，不并入跑步或站点，避免双计。');
     return;
   }
@@ -2001,17 +2499,17 @@ function renderTrainingAdvice(runDomain, stationDomain, dominant) {
     return;
   }
 
-  var domainText = dominant === 'run' ? '跑步转换能力' : dominant === 'station' ? '站点专项能力' : '跑步与站点混合限制';
-  subtitle.textContent = '主要限制：' + domainText + '。4 周只优先改变以下两个变量。';
+  var domainText = dominant === 'run' ? '跑步转换能力' : dominant === 'station' ? '站点专项能力' : '跑步与站点混合表现';
+  subtitle.textContent = '本次优先复盘方向：' + domainText + '。未来 4 周建议优先验证以下 1–2 个变量。';
   var html = picks.map(function(pick, index) {
     if (pick.type === 'run') {
       var context = RUN_CONTEXTS[pick.item.index];
-      return trainingCard('优先 ' + (index + 1) + ' · 可回收 ' + secondsToClock(pick.item.delta), context.title, context.advice);
+      return trainingCard('优先 ' + (index + 1) + ' · 本次超目标 +' + secondsToClock(pick.item.delta), context.title, context.advice);
     }
     var station = HYROX_STATIONS[pick.item.index];
-    return trainingCard('优先 ' + (index + 1) + ' · 可回收 ' + secondsToClock(pick.item.delta), station.adviceTitle, station.advice);
+    return trainingCard('优先 ' + (index + 1) + ' · 本次超目标 +' + secondsToClock(pick.item.delta), station.adviceTitle, station.advice);
   }).join('');
-  if (picks.length < 2) html += trainingCard('第 4 周', '同条件复测', '维持其他训练变量不变，用同一目标与计时口径复测该短板；若损耗仍>10%，先降低目标强度并检查动作标准。');
+  if (picks.length < 2) html += trainingCard('第 4 周', '同条件复测', '维持其他训练变量不变，用同一目标与计时口径复测；若仍超过 SSP 10% 观察线，先复核目标合理性、计时、总负荷、场地与动作标准，再决定训练调整。');
   grid.innerHTML = html;
 }
 
@@ -2046,24 +2544,120 @@ function analyzeRaceLosses(shouldScroll) {
   updateLossPanel('station', stationDomain, function(item) { return HYROX_STATIONS[item.index].name; });
   renderLossTables(runDomain, stationDomain);
   var dominant = chooseDominantDomain(runDomain, stationDomain);
-  var recoverable = runDomain.positiveLoss + stationDomain.positiveLoss;
+  var coverageNote = runDomain.coverage >= 4 && stationDomain.coverage >= 4 && runDomain.coverage !== stationDomain.coverage
+    ? ' 两方向覆盖数不同，本次按各自损耗率选择优先方向。'
+    : '';
+  var totalExcess = runDomain.positiveLoss + stationDomain.positiveLoss;
   var summary;
   if (dominant === 'insufficient') {
-    summary = '<strong>当前可回收时间 ' + secondsToClock(recoverable) + '：</strong>有效分段不足，先补到至少 4 个 Run 或 4 个站点，再判断主要训练方向。';
+    summary = '<strong>累计超目标时间 ' + secondsToClock(totalExcess) + '：</strong>有效分段不足，先补到至少 4 个 Run 或 4 个站点，再判断优先复盘方向。';
   } else if (dominant === 'mixed') {
-    summary = '<strong>主要限制：跑步与站点并列。</strong>两方向累计损耗均为 ' + secondsToClock(runDomain.positiveLoss) + '，优先各抓一个最大单项。总可回收时间约 ' + secondsToClock(recoverable) + '。';
+    summary = '<strong>本次优先复盘方向：跑步与站点并列。</strong>建议各验证一个最大单项。差值合计 ' + secondsToClock(totalExcess) + '，不代表可直接兑现的完赛提升。' + coverageNote;
   } else {
     var primary = dominant === 'run' ? runDomain : stationDomain;
     var secondary = dominant === 'run' ? stationDomain : runDomain;
     var label = dominant === 'run' ? '跑步转换能力' : '站点专项能力';
-    summary = '<strong>主要限制：' + label + '。</strong>该方向累计损耗 ' + secondsToClock(primary.positiveLoss) + '，另一方向 ' + secondsToClock(secondary.positiveLoss) + '；总可回收时间约 ' + secondsToClock(recoverable) + '。损耗率用于判断严重度，训练方向按累计超时选择。';
+    summary = '<strong>本次优先复盘方向：' + label + '。</strong>该方向累计超目标 ' + secondsToClock(primary.positiveLoss) + '，另一方向 ' + secondsToClock(secondary.positiveLoss) + '；差值合计 ' + secondsToClock(totalExcess) + '，不代表可直接兑现的完赛提升。' + coverageNote;
   }
   document.getElementById('loss-summary').innerHTML = summary;
   renderTrainingAdvice(runDomain, stationDomain, dominant);
+  document.getElementById('run-coverage-chip').textContent = 'Run ' + runDomain.coverage + '/8';
+  document.getElementById('station-coverage-chip').textContent = 'Station ' + stationDomain.coverage + '/8';
+  document.getElementById('report-feedback').textContent = '';
+  document.getElementById('loss-results').classList.remove('is-stale');
+  latestLossAnalysis = { runDomain: runDomain, stationDomain: stationDomain, dominant: dominant, totalExcess: totalExcess, generatedAt: new Date() };
   document.getElementById('loss-results').style.display = 'block';
   document.getElementById('loss-live').textContent = '分析完成。跑步损耗 ' + secondsToClock(runDomain.positiveLoss) + '，站点损耗 ' + secondsToClock(stationDomain.positiveLoss) + '。';
   saveLossInputs();
   if (shouldScroll) document.getElementById('loss-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function getLossMeta() {
+  return {
+    athlete: document.getElementById('loss-athlete').value.trim() || '未填写',
+    date: document.getElementById('loss-date').value || '未填写',
+    session: document.getElementById('loss-session').value,
+    division: document.getElementById('loss-division').value
+  };
+}
+
+function buildLossReport(mode) {
+  if (!latestLossAnalysis) return null;
+  var analysis = latestLossAnalysis;
+  var meta = getLossMeta();
+  var lines = [
+    'SSP · HYROX 分段复盘',
+    '运动员/编号：' + meta.athlete + '｜日期：' + meta.date + '｜类型：' + meta.session + '｜组别：' + meta.division,
+    '数据覆盖：Run ' + analysis.runDomain.coverage + '/8｜Station ' + analysis.stationDomain.coverage + '/8',
+    '',
+    '结论：' + document.getElementById('loss-summary').textContent.replace(/\s+/g, ' ').trim(),
+    '跑步累计超目标：' + secondsToClock(analysis.runDomain.positiveLoss) + '（净差 ' + signedClock(analysis.runDomain.netGap) + '）',
+    '站点累计超目标：' + secondsToClock(analysis.stationDomain.positiveLoss) + '（净差 ' + signedClock(analysis.stationDomain.netGap) + '）'
+  ];
+  if (analysis.runDomain.top) lines.push('最大 Run 超时：Run ' + (analysis.runDomain.top.index + 1) + ' ' + signedClock(analysis.runDomain.top.delta));
+  if (analysis.stationDomain.top) lines.push('最大站点超时：' + HYROX_STATIONS[analysis.stationDomain.top.index].name + ' ' + signedClock(analysis.stationDomain.top.delta));
+  var trainingLines = Array.prototype.map.call(document.querySelectorAll('#training-rec-grid .training-rec'), function(card) {
+    return card.querySelector('strong').textContent + '：' + card.querySelector('p').textContent;
+  });
+  if (trainingLines.length) {
+    lines.push('', '未来 4 周建议验证：');
+    trainingLines.forEach(function(line, index) { lines.push((index + 1) + '. ' + line); });
+  }
+  if (mode === 'full') {
+    lines.push('', 'Run 分段（目标｜实际｜差值）：');
+    analysis.runDomain.items.forEach(function(item) {
+      lines.push('Run ' + (item.index + 1) + '｜' + (Number.isFinite(item.target) ? secondsToClock(item.target) : '—') + '｜' + (Number.isFinite(item.actual) ? secondsToClock(item.actual) : '—') + '｜' + (Number.isFinite(item.delta) ? signedClock(item.delta) : '—'));
+    });
+    lines.push('', 'Station 分段（目标｜实际｜差值）：');
+    analysis.stationDomain.items.forEach(function(item) {
+      lines.push(HYROX_STATIONS[item.index].name + '｜' + (Number.isFinite(item.target) ? secondsToClock(item.target) : '—') + '｜' + (Number.isFinite(item.actual) ? secondsToClock(item.actual) : '—') + '｜' + (Number.isFinite(item.delta) ? signedClock(item.delta) : '—'));
+    });
+  }
+  lines.push('', '边界：累计超目标时间为差值合计，不等于可直接兑现的完赛提升；站后下一跑偏差只表示相邻关联。SSP 内部复盘，不是 HYROX 官方评分、比赛预测或医学诊断。');
+  return lines.join('\n');
+}
+
+function fallbackCopyText(text) {
+  var textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  var ok = document.execCommand('copy');
+  document.body.removeChild(textarea);
+  return ok;
+}
+
+function copyLossReport(mode) {
+  var report = buildLossReport(mode);
+  var feedback = document.getElementById('report-feedback');
+  if (!report) {
+    feedback.textContent = '请先重新生成分析，再复制报告。';
+    return;
+  }
+  var successText = mode === 'full' ? '完整分段已复制。' : '复盘摘要已复制。';
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(report).then(function() { feedback.textContent = successText; }).catch(function() {
+      feedback.textContent = fallbackCopyText(report) ? successText : '复制失败，请使用打印 / 保存 PDF。';
+    });
+  } else feedback.textContent = fallbackCopyText(report) ? successText : '复制失败，请使用打印 / 保存 PDF。';
+}
+
+function printLossReport() {
+  var feedback = document.getElementById('report-feedback');
+  if (!latestLossAnalysis) {
+    feedback.textContent = '请先重新生成分析，再打印报告。';
+    return;
+  }
+  var meta = getLossMeta();
+  document.getElementById('print-report-meta').textContent = meta.athlete + ' · ' + meta.date + ' · ' + meta.session + ' · ' + meta.division + ' · Run ' + latestLossAnalysis.runDomain.coverage + '/8 · Station ' + latestLossAnalysis.stationDomain.coverage + '/8';
+  var cleanupPrintMode = function() { document.body.classList.remove('print-report'); };
+  window.addEventListener('afterprint', cleanupPrintMode, { once: true });
+  document.body.classList.add('print-report');
+  window.print();
+  setTimeout(cleanupPrintMode, 60000);
 }
 
 // ═══ CS ═══
@@ -2148,7 +2742,7 @@ function calculate() {
     { name: '有氧基础', pct: '70-80%', l:0.70, h:0.80, feel: '持续对话', benefit: '线粒体↑' },
     { name: '有氧耐力', pct: '80-88%', l:0.80, h:0.88, feel: '说短句', benefit: '乳酸阈值↑' },
     { name: '阈值跑', pct: '92-97%', l:0.92, h:0.97, feel: '1-2个字', benefit: '乳酸清除↑' },
-    { name: 'CS 临界速度', pct: '100%', l:1.00, h:1.00, feel: '艰难可控', benefit: 'MLSS 适应' },
+    { name: 'CS 临界速度', pct: '100%', l:1.00, h:1.00, feel: '艰难可控', benefit: '临界速度附近适应' },
     { name: '间歇跑', pct: '103-110%', l:1.03, h:1.10, feel: '2-5分钟', benefit: 'VO₂max↑' },
     { name: '重复冲刺', pct: '115-130%', l:1.15, h:1.30, feel: '30-90秒', benefit: 'D\'↑' },
     { name: '最大冲刺', pct: '>140%', l:1.40, h:1.80, feel: '<30秒', benefit: '最大速度↑' },
@@ -2176,9 +2770,8 @@ function calcHyroxPace() {
   var csPaceSec = csMin * 60 + csSec;
   var csSpeed = 1000 / csPaceSec;
 
-  // Station data with estimated times (elite ~60min, competitive ~75min, novice ~90min)
-  // Times scaled based on D' (lower D' = less anaerobic power = slower stations)
-  var stationTimeScale = dprime < 120 ? 1.25 : dprime < 180 ? 1.10 : 1.0;
+  // Station reference times are not inferred from running D′.
+  var stationTimeScale = 1.0;
   
   var stations = HYROX_STATIONS;
 
@@ -2199,19 +2792,19 @@ function calcHyroxPace() {
     Math.round(lthr + 3),   // Run 5: may exceed (active recovery in pace, not HR)
     Math.round(lthr - 1),   // Run 6: back to LTHR
     Math.round(lthr + 2),   // Run 7: pushing
-    Math.round(lthr + 5),   // Run 8: max effort if D' allows
+    Math.round(lthr + 5),   // Run 8: internal high-reference scenario; validate individually
   ];
 
   // Transition strategies
   var transitions = [
-    '前500m压速·鼻吸口呼·心率<'+hrTargetsBpm[0],
-    '找巡航节奏·稳定步频·不追前面的人',
-    '前200m小步高频(200spm)·不追配速·等腿回来',
-    '保持节律·心率上限'+Math.round(lthr+2),
-    '主动降速·缩小步幅·4步1呼吸·这是恢复段',
-    '前200m极短步幅·给大腿30s再灌注·别被骗',
-    '高步频滑步(220spm)·恢复膈肌·不看配速表',
-    '看D\'余量决定：>30m冲刺·<10m保命完成',
+    '前段压速·用呼吸/RPE校准·不追人群',
+    '找回个人巡航·稳定步态与呼吸',
+    'Push后短步重建·再逐步回目标',
+    '保持可控节律·为BBJ留动作余量',
+    'BBJ后受控重建·按模拟决定降速幅度',
+    'Row后短步放松·动作恢复后再提速',
+    'Carry后放松肩颈·重建自然摆臂',
+    '执行模拟验证的Run 8方案·不临场套冲刺比例',
   ];
 
   var dprimeRemaining = dprime;
@@ -2243,7 +2836,7 @@ function calcHyroxPace() {
     var avgFactor = (consFactor + aggrFactor) / 2;
     var avgPace = csPaceSec / avgFactor;
 
-    // D' recovery during run (recover more when running below CS)
+    // SSP internal capacity-budget recovery heuristic below CS.
     var runSec = avgPace; // 1km at average pace
     var belowCS = csSpeed - (1000 / avgPace);
     if (belowCS > 0 && dprimeRemaining < dprime) {
@@ -2253,7 +2846,7 @@ function calcHyroxPace() {
     }
     var dBeforeStation = Math.round(dprimeRemaining);
 
-    // Station occurs after this run and drains D'.
+    // Station occurs after this run; its model deduction is an SSP planning weight.
     var stationSec = Math.round(st.baseTime * stationTimeScale);
     totalStationSec += stationSec;
     var drainMeters = Math.round(st.drainPct * dprime);
@@ -2313,10 +2906,10 @@ function calcHyroxPace() {
   document.getElementById('pace-phase-summary').style.display = 'grid';
   
   // Phase commentary
-  phaseCommentary['开局'].note = '开局两段的核心：建立心率基线，不点燃D\'。R1用鼻吸口呼检测强度——如果需要嘴呼吸说明超速了。R2找到巡航节奏后锁住步频，不看配速看心率。';
-  phaseCommentary['建立'].note = 'R3是最容易步频崩溃的跑段（Sled Push后股四头肌离心疲劳）。前200m的过渡决定了整个中盘的质量。R4是BBJ前最后一个正常跑段——保持节奏，不要因为"感觉还行"就加速。';
-  phaseCommentary['中盘'].note = 'R5是全场唯一应该主动降配速的跑段。BBJ消耗了D\'的30%+，此时强行维持配速会让R6-8崩盘。R6的"大腿再灌注"是生理现象不是能力问题——前200m的耐心=后800m的速度。';
-  phaseCommentary['收尾'].note = 'R7膈肌疲劳是真正限制因素——用220spm高步频滑步让腿带着呼吸走，不要用呼吸带着腿走。R8的配速完全取决于D\'余量：>30m可以冲刺(CS×1.05)，10-30m用CS巡航，<10m保命完成。';
+  phaseCommentary['开局'].note = 'R1–2 用个人模拟建立开局上限：同时看配速、呼吸、RPE 和动作放松度。任何单一心率或固定 CS 比例都不是通用答案。';
+  phaseCommentary['建立'].note = 'R3 在 Sled Push 后优先重建步态；R4 为 BBJ 保留动作质量。用个人前后分段判断转换是否改善，不把固定步频当作硬指标。';
+  phaseCommentary['中盘'].note = 'R5 在 BBJ 后、R6 在 Row 后，是否降速以及降多少都应来自完整模拟。先观察呼吸、RPE、动作与心率是否共同异常，再调整配速。';
+  phaseCommentary['收尾'].note = 'R7 为 Lunges 保留控制，R8 后直接进入 Wall Balls。最后加速与墙球分组都按已验证方案执行；内部容量预算只做情景参考，不能现场读作真实 D′余量。';
   
   var commHtml = '';
   for (var phaseName of ['开局', '建立', '中盘', '收尾']) {
@@ -2338,7 +2931,9 @@ function calcHyroxPace() {
 
 renderTests();
 renderLossEntries();
-if (!restoreLossInputs()) syncLossTargets(true);
+var restoredLossInputs = restoreLossInputs();
+initLossMeta();
+if (!restoredLossInputs) syncLossTargets(true);
 </script>
 </body>
 </html>
