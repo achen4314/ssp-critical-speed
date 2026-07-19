@@ -193,6 +193,7 @@ body::after {
 .top-nav::-webkit-scrollbar { display: none; }
 #intro,
 #calculator,
+#race-analysis,
 #protocols,
 #explainer { scroll-margin-top: 84px; }
 .top-nav::after {
@@ -694,6 +695,323 @@ tbody tr:hover { background: rgba(182,211,80,0.10); }
   border-radius: 10px;
 }
 
+/* Race loss analysis desk */
+.analysis-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(250px, .65fr);
+  gap: 18px;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+.analysis-copy,
+.analysis-guide {
+  padding: 20px 22px;
+  border: 1px solid rgba(58,72,64,0.12);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #f5f7f0, #fff);
+}
+.analysis-copy p,
+.analysis-guide p { margin: 0; color: #4f5a55; font-size: .88rem; }
+.analysis-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: var(--ssp-gold);
+  font-size: .74rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.analysis-kicker::before {
+  content: "";
+  width: 20px;
+  height: 3px;
+  border-radius: 99px;
+  background: var(--ssp-green);
+}
+.analysis-guide strong { color: var(--ssp-ink); }
+.analysis-guide .thresholds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+.threshold-chip,
+.loss-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.threshold-chip { color: var(--ssp-dark); background: rgba(183,212,80,.18); }
+.threshold-chip:nth-child(2) { background: rgba(124,129,46,.15); }
+.threshold-chip:nth-child(3) { color: #8a3e34; background: rgba(198,92,75,.12); }
+.analysis-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.analysis-toolbar .btn-row { justify-content: flex-start; margin: 0; }
+.analysis-status {
+  color: var(--ssp-muted);
+  font-size: .8rem;
+  text-align: right;
+}
+.split-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.split-entry-card {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid rgba(58,72,64,.13);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(31,41,36,.05);
+}
+.split-entry-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--ssp-green), var(--ssp-gold));
+}
+.split-entry-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.split-entry-title { color: var(--ssp-ink); font-size: .94rem; font-weight: 850; }
+.split-entry-title span { color: var(--ssp-muted); font-size: .76rem; font-weight: 650; }
+.split-sequence {
+  flex: 0 0 auto;
+  color: var(--ssp-gold);
+  font-size: .68rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+.split-entry-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+.split-field { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
+.split-field label {
+  color: var(--ssp-muted);
+  font-size: .68rem;
+  font-weight: 750;
+  line-height: 1.25;
+}
+.split-field input {
+  width: 100%;
+  min-width: 0;
+  padding: 9px 10px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.split-field.target input { background: #f5f7f0; border-color: rgba(124,129,46,.28); }
+.split-field input.input-invalid {
+  border-color: #c65c4b;
+  box-shadow: 0 0 0 3px rgba(198,92,75,.12);
+}
+.loss-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(58,72,64,.10);
+}
+.loss-actions p { margin: 0; color: var(--ssp-muted); font-size: .78rem; }
+.loss-results { margin-top: 26px; scroll-margin-top: 84px; }
+.loss-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.loss-panel {
+  position: relative;
+  overflow: hidden;
+  min-height: 190px;
+  padding: 24px;
+  color: #fff;
+  border: 1px solid rgba(183,212,80,.24);
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--ssp-ink), var(--ssp-dark));
+  box-shadow: 0 18px 42px rgba(31,41,36,.16);
+}
+.loss-panel::after {
+  content: "";
+  position: absolute;
+  right: -30px;
+  bottom: -38px;
+  width: 130px;
+  height: 130px;
+  border: 24px solid rgba(183,212,80,.06);
+  transform: rotate(45deg);
+}
+.loss-panel.station { background: linear-gradient(135deg, #384843, #56633e); }
+.loss-panel-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.loss-panel-head h3 { margin: 0; color: #fff; font-size: 1rem; }
+.loss-panel-value {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 2px;
+  color: var(--ssp-green);
+  font-size: clamp(2.15rem, 5vw, 3.35rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -.05em;
+  font-variant-numeric: tabular-nums;
+}
+.loss-panel-meta {
+  position: relative;
+  z-index: 1;
+  color: rgba(255,255,255,.72);
+  font-size: .79rem;
+}
+.loss-panel-top {
+  position: relative;
+  z-index: 1;
+  margin-top: 13px;
+  color: #fff;
+  font-size: .84rem;
+  font-weight: 700;
+}
+.loss-badge.good { color: #dff2b7; background: rgba(183,212,80,.17); }
+.loss-badge.medium { color: #fff1b4; background: rgba(124,129,46,.38); }
+.loss-badge.high { color: #ffd7d1; background: rgba(198,92,75,.25); }
+.loss-badge.pending { color: rgba(255,255,255,.65); background: rgba(255,255,255,.09); }
+.loss-summary {
+  margin: 16px 0 0;
+  padding: 16px 18px;
+  color: #48544e;
+  border: 1px solid rgba(58,72,64,.12);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(183,212,80,.10), #fff);
+  font-size: .86rem;
+}
+.loss-summary strong { color: var(--ssp-ink); }
+.loss-table-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+.loss-table-card {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(58,72,64,.12);
+  border-radius: 14px;
+  background: #fff;
+}
+.loss-table-card h3 { margin-bottom: 12px; font-size: .95rem; }
+.loss-table-wrap { overflow-x: auto; }
+.loss-table-card table { min-width: 470px; font-size: .78rem; }
+.loss-table-card thead th,
+.loss-table-card tbody td { padding: 10px 9px; }
+.loss-delta { font-weight: 850; font-variant-numeric: tabular-nums; }
+.loss-delta.over { color: #b14c3f; }
+.loss-delta.ahead { color: #4d7657; }
+.loss-delta.even { color: var(--ssp-muted); }
+.mini-loss-bar {
+  width: 72px;
+  height: 5px;
+  margin-top: 5px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(58,72,64,.09);
+}
+.mini-loss-bar span { display: block; height: 100%; border-radius: inherit; background: #c65c4b; }
+.training-plan {
+  position: relative;
+  margin-top: 20px;
+  padding: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(183,212,80,.25);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f1f5e8, #fff 65%);
+}
+.training-plan::after {
+  content: "";
+  position: absolute;
+  right: -36px;
+  top: -46px;
+  width: 150px;
+  height: 150px;
+  background: var(--logo-bg) center / contain no-repeat;
+  opacity: .025;
+  transform: rotate(8deg);
+}
+.training-head { position: relative; z-index: 1; }
+.training-head h3 { margin-bottom: 4px; font-size: 1.08rem; }
+.training-head p { margin: 0; color: var(--ssp-muted); font-size: .82rem; }
+.training-rec-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.training-rec {
+  padding: 17px 18px;
+  border: 1px solid rgba(58,72,64,.11);
+  border-left: 4px solid var(--ssp-green);
+  border-radius: 11px;
+  background: rgba(255,255,255,.88);
+}
+.training-rec:nth-child(2) { border-left-color: var(--ssp-gold); }
+.training-rec .priority {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ssp-gold);
+  font-size: .69rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+.training-rec strong { display: block; color: var(--ssp-ink); font-size: .9rem; }
+.training-rec p { margin: 5px 0 0; color: #53605a; font-size: .8rem; line-height: 1.6; }
+.method-note {
+  margin-top: 16px;
+  color: var(--ssp-muted);
+  font-size: .74rem;
+  line-height: 1.6;
+}
+.method-note a { color: var(--ssp-gold); font-weight: 750; }
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 /* Brand footer */
 .footer {
   padding: 46px 24px 42px;
@@ -742,6 +1060,8 @@ select:focus-visible {
   .top-nav > a:not(.nav-brand) { flex: 0 0 auto; }
   .header { min-height: 310px; }
   .header::before { inset: -25% -28% -35% 38%; background-size: 360px auto; }
+  .analysis-intro,
+  .loss-table-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
@@ -778,10 +1098,14 @@ select:focus-visible {
   .tab-panel { padding: 22px 16px; }
   .chart-wrap { height: 280px; padding: 8px; }
   table { display: block; overflow-x: auto; white-space: nowrap; }
+  .split-entry-grid,
+  .loss-panel-grid,
+  .training-rec-grid { grid-template-columns: 1fr; }
+  .analysis-status { width: 100%; text-align: left; }
 }
 
 @media (max-width: 480px) {
-  .top-nav { gap: 13px; padding-inline: 12px; overflow-x: visible; }
+  .top-nav { gap: 13px; padding-inline: 12px; overflow-x: auto; }
   .nav-brand span { display: none; }
   .top-nav > a:not(.nav-brand) { font-size: 0.74rem; letter-spacing: 0; }
   .header::before { inset: -5% -55% -10% 20%; background-size: 300px auto; }
@@ -790,6 +1114,11 @@ select:focus-visible {
   .info-stripe { grid-template-columns: 1fr; }
   .btn { width: 100%; }
   .btn-sm { width: auto; flex: 1 1 42%; }
+  .split-entry-card { padding: 16px 14px 16px 17px; }
+  .split-entry-fields { grid-template-columns: 1fr 1fr; }
+  .loss-panel,
+  .training-plan { padding: 20px 18px; }
+  .loss-actions .btn { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -809,6 +1138,7 @@ select:focus-visible {
   <a href="#" class="nav-brand"><img src="assets/ssp-mark.svg" alt="SSP"><span>SSP DATA LAB</span></a>
   <a href="#intro">小白入门</a>
   <a href="#calculator">计算器</a>
+  <a href="#race-analysis">损耗分析</a>
   <a href="#protocols">测试规范</a>
   <a href="#explainer">指标解读</a>
 </nav>
@@ -887,6 +1217,103 @@ select:focus-visible {
 <div class="card" id="zones-card" style="display:none;">
   <h2><span class="dot"></span>你的训练配速分区（基于 CS）</h2>
   <div style="overflow-x:auto;"><table id="zones-table"><thead><tr><th>区间</th><th>%CS</th><th>配速</th><th>速度</th><th>感受</th><th>收益</th></tr></thead><tbody></tbody></table></div>
+</div>
+
+<!-- ═══ 比赛损耗分析台 ═══ -->
+<div class="card" id="race-analysis">
+  <h2><span class="dot"></span>比赛损耗分析台</h2>
+  <div class="analysis-intro">
+    <div class="analysis-copy">
+      <span class="analysis-kicker">Race split diagnostic</span>
+      <p><strong>逐段填写目标与实际时间：</strong>跑步损耗累计每个 Run 超出目标巡航 / 恢复配速的时间；站点损耗累计每个站点超出个人目标的时间。快于目标的段落会保留为“优于目标”，不会掩盖其他段的超时。</p>
+    </div>
+    <div class="analysis-guide">
+      <p><strong>课程内部判定线</strong><br>损耗率只用于同一运动员、同一口径复测；训练建议优先抓最大的 1–2 个变量。</p>
+      <div class="thresholds" aria-label="损耗率判定线">
+        <span class="threshold-chip">&lt;5% 可控</span>
+        <span class="threshold-chip">5–10% 中度</span>
+        <span class="threshold-chip">&gt;10% 明显</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="analysis-toolbar">
+    <div class="btn-row">
+      <button class="btn btn-sm btn-outline" type="button" onclick="syncLossTargets()">↻ 同步 Run 目标</button>
+      <button class="btn btn-sm btn-outline" type="button" onclick="loadLossExample()">📋 载入课堂示例</button>
+      <button class="btn btn-sm btn-outline" type="button" onclick="clearLossActuals()">清空实际成绩</button>
+    </div>
+    <div class="analysis-status" id="loss-target-status">目标尚未同步 · 可直接手动填写</div>
+  </div>
+
+  <div class="split-entry-grid" id="split-entry-grid"></div>
+
+  <div class="loss-actions">
+    <p>时间格式：<strong>分:秒</strong>（例如 4:12）；站点目标应尽量来自同组别、同负重、同场地的个人基准。</p>
+    <button class="btn btn-primary" type="button" onclick="analyzeRaceLosses(true)">生成损耗与训练建议</button>
+  </div>
+  <p id="loss-input-error" role="alert" style="display:none;margin-top:12px;color:#a54337;font-size:.82rem;font-weight:700;"></p>
+
+  <div class="loss-results" id="loss-results" style="display:none;">
+    <div class="loss-panel-grid">
+      <article class="loss-panel" aria-labelledby="run-loss-title">
+        <div class="loss-panel-head">
+          <h3 id="run-loss-title">跑步损耗</h3>
+          <span class="loss-badge pending" id="run-loss-badge">待分析</span>
+        </div>
+        <div class="loss-panel-value" id="run-loss-value">--</div>
+        <div class="loss-panel-meta" id="run-loss-meta">损耗率 -- · 已填 0/8</div>
+        <div class="loss-panel-top" id="run-loss-top">填写实际 Run 时间后生成</div>
+      </article>
+      <article class="loss-panel station" aria-labelledby="station-loss-title">
+        <div class="loss-panel-head">
+          <h3 id="station-loss-title">站点损耗</h3>
+          <span class="loss-badge pending" id="station-loss-badge">待分析</span>
+        </div>
+        <div class="loss-panel-value" id="station-loss-value">--</div>
+        <div class="loss-panel-meta" id="station-loss-meta">损耗率 -- · 已填 0/8</div>
+        <div class="loss-panel-top" id="station-loss-top">填写实际站点时间后生成</div>
+      </article>
+    </div>
+
+    <div class="loss-summary" id="loss-summary"></div>
+
+    <div class="loss-table-grid">
+      <section class="loss-table-card">
+        <h3>8 个 Run 损耗拆解</h3>
+        <div class="loss-table-wrap">
+          <table>
+            <thead><tr><th>跑段</th><th>目标</th><th>实际</th><th>差值</th><th>损耗率</th></tr></thead>
+            <tbody id="run-loss-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="loss-table-card">
+        <h3>8 个站点损耗与后遗症</h3>
+        <div class="loss-table-wrap">
+          <table>
+            <thead><tr><th>站点</th><th>目标</th><th>实际</th><th>差值</th><th>下一跑拖累*</th></tr></thead>
+            <tbody id="station-loss-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <section class="training-plan" aria-labelledby="training-plan-title">
+      <div class="training-head">
+        <h3 id="training-plan-title">下一周期训练建议</h3>
+        <p id="training-plan-subtitle">建议会根据最大损耗方向与具体分段自动更新。</p>
+      </div>
+      <div class="training-rec-grid" id="training-rec-grid"></div>
+    </section>
+
+    <p class="method-note">
+      *“下一跑拖累”把 Station 1–7 后的下一公里超时归因显示，但不重复计入站点损耗；Wall Balls 后无跑段。目标差损耗与课件 F1/F2 的新鲜 / 疲劳复测干扰率是两种不同口径。站点顺序依据
+      <a href="https://hyrox.com/wp-content/uploads/2025/07/25_26_HYROX_RulebookSingles_EN.pdf" target="_blank" rel="noopener">HYROX 25/26 单人规则</a>；训练方向参考
+      <a href="https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2025.1519240/full" target="_blank" rel="noopener">Brandt 等（2025）</a>及本次公开课材料。建议为教练启发式，不替代医学诊断。
+    </p>
+  </div>
+  <div class="visually-hidden" id="loss-live" aria-live="polite"></div>
 </div>
 
 <!-- ═══ 测试规范 ═══ -->
@@ -1083,12 +1510,9 @@ select:focus-visible {
           <p>① <span class="highlight">速度靶点：</span>下个训练周期的每段配速目标（精确到 ±3 秒/km）；② <span class="highlight">心率封顶：</span>各站点的出站心率上限 + 跑步段恢复目标心率；③ <span class="highlight">站点动作节奏：</span>每个功能站点的分段策略和中断容忍上限。公开课现场用这三类靶点反推训练模块设计。</p>
         </div>
       </div>
-        </div>
-      </div>
     </div>
 
-    <!-- 🏃 HYROX 配速计算器 -->
-    <div class="tab-panel"     <!-- 🏃 HYROX 配速计算器（详细版） -->
+    <!-- 🏃 HYROX 配速计算器（详细版） -->
     <div class="tab-panel" id="tab-pace">
       <h3>🏃 HYROX 8段跑详细配速方案</h3>
       <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
@@ -1116,8 +1540,8 @@ select:focus-visible {
       <div style="overflow-x:auto;">
         <table id="pace-table" style="font-size:0.82rem;">
           <thead><tr>
-            <th>阶段</th><th>跑段</th><th>前站点</th><th>站点<br>估算</th>
-            <th>D'进站</th><th>D'出站</th><th>D'跑后</th>
+            <th>阶段</th><th>跑段</th><th>跑后站点</th><th>站点<br>估算</th>
+            <th>D'起跑</th><th>D'进站</th><th>D'出站</th>
             <th>保守配速</th><th>激进配速</th><th>%CS</th>
             <th>心率靶</th><th>累计</th><th>过渡策略</th>
           </tr></thead>
@@ -1136,7 +1560,8 @@ select:focus-visible {
     </div>
 
 
-    <!-- ⚡ 站点能量消耗对照表 -->>
+    <!-- ⚡ 站点能量消耗对照表 -->
+    <div class="tab-panel" id="tab-station">
       <h3>⚡ 8个站点能量消耗对照表</h3>
       <p style="color:var(--ssp-muted);font-size:0.86rem;margin-bottom:16px;">
         每个HYROX站点对不同能量系统的消耗完全不同。理解这一点，你才知道为什么有些站点后还能加速，有些站点后只能保命。
@@ -1287,6 +1712,360 @@ function calcHRR() {
 }
 calcHRR();
 
+// ═══ HYROX shared race model ═══
+var HYROX_STATIONS = [
+  { name: 'SkiErg', zh: '滑雪机', baseTime: 260, drainPct: 0.17, hrSpike: 8, muscle: '上肢+核心', energyType: '有氧+磷酸原',
+    adviceTitle: 'SkiErg 输出稳定与髋驱动', advice: '每周 1 次 5×500m，保持前后半程配速差≤2秒；桨频 45–50 s/m，以髋屈曲带动手柄。另做 4 轮 500m Ski → 400m 小步高频跑。' },
+  { name: 'Sled Push', zh: '推雪橇', baseTime: 180, drainPct: 0.27, hrSpike: 12, muscle: '股四头肌+臀', energyType: '磷酸原+糖酵解',
+    adviceTitle: '推雪橇匀速力量耐力', advice: '每周 1 次同草皮技术负荷 4×12.5m，首段压速，目标后两段不崩且分段波动<10%；再做 400m 控制跑 → 2×12.5m 推 → 500m 跑。' },
+  { name: 'Sled Pull', zh: '拉雪橇', baseTime: 200, drainPct: 0.23, hrSpike: 10, muscle: '后链+握力', energyType: '磷酸原+糖酵解',
+    adviceTitle: '拉雪橇后链、握力与呼吸', advice: '每周 1 次 4×12.5m 等节奏拉，逐次后倒配合强呼气；结束后立刻平视远端并完成 300–500m 受控跑，练习站直后的节奏重建。' },
+  { name: 'Burpee Broad Jump', zh: '波比跳远', baseTime: 280, drainPct: 0.32, hrSpike: 15, muscle: '全身爆发', energyType: '糖酵解为主',
+    adviceTitle: 'BBJ 动作经济性与固定节律', advice: '用每 5m 分段计时做 4×20m，单次动作波动目标<0.5秒；再做 3–4 轮 40m BBJ → 600m Z3 跑，先维持节律再提速度。' },
+  { name: 'Row', zh: '划船', baseTime: 250, drainPct: 0.22, hrSpike: 9, muscle: '腿+背', energyType: '有氧+糖酵解',
+    adviceTitle: 'Row 配速稳定与再灌注跑', advice: '每周 1 次 5×500m，保持同配速时后半程心率漂移≤5 bpm；再做 4 轮 500m Row → 500m 跑，前 200m 用 185+ spm 小步幅冲刷。' },
+  { name: 'Farmers Carry', zh: '农夫行走', baseTime: 160, drainPct: 0.13, hrSpike: 6, muscle: '握力+核心', energyType: '等长+有氧',
+    adviceTitle: '农夫行走握力与呼吸节律', advice: '做 5×40m 竞赛负重行走，采用 30–40cm 短步与 4 步 1 呼吸；随后接 400–600m 高步频跑，要求呼吸与步频重新同步。' },
+  { name: 'Sandbag Lunges', zh: '沙袋弓步', baseTime: 220, drainPct: 0.22, hrSpike: 10, muscle: '股四头肌+臀', energyType: '离心+糖酵解',
+    adviceTitle: '弓步离心控制与单腿耐力', advice: '每周 1 次 4×25m 竞赛负重弓步，膝触地前最后 5cm 主动减速；配合保加利亚分腿蹲 3×8/侧，并以 600–800m 受控跑收尾。' },
+  { name: 'Wall Balls', zh: '墙球', baseTime: 240, drainPct: 0.30, hrSpike: 14, muscle: '全身协调', energyType: '糖酵解+全身',
+    adviceTitle: '墙球有效率与分组策略', advice: '先做 4×10 个有效动作，把有效率稳定到≥95%；再固定比赛分组方案（如 20-20-15-15-10-10-10），疲劳下仍保持腿→髋→核心→手的动量链。' }
+];
+var RUN_CONS_FACTORS = [0.88, 0.90, 0.85, 0.90, 0.75, 0.90, 0.83, 0.85];
+var RUN_AGGR_FACTORS = [0.95, 0.96, 0.93, 0.96, 0.85, 0.96, 0.92, 0.95];
+var RUN_CONTEXTS = [
+  { label: '起跑', title: 'Run 1 开局控速', advice: '做 3×1km 目标巡航跑，首 500m 刻意压速、后 500m 持平或略快；全程以动作放松和稳定呼吸为成功标准，不追加冲刺。' },
+  { label: 'SkiErg 后', title: 'Ski → Run 2 血流重分配', advice: '做 4 轮 500m Ski → 400m 跑；跑步前 200m 用 185+ spm 小步幅，不追配速，后 200m 再回目标巡航。' },
+  { label: 'Sled Push 后', title: 'Push → Run 3 步频恢复', advice: '做 400m 控制跑 → 2×12.5m 推雪橇 → 500m 跑；出站前 200m 保持小步高频，雪橇四段波动目标<10%。' },
+  { label: 'Sled Pull 后', title: 'Pull → Run 4 站直过渡', advice: '做 4 轮 25m 拉雪橇 → 300m 跑；松手后强呼气、视线平视，前 10–30秒压速，心率自然回落后再巡航。' },
+  { label: 'BBJ 后', title: 'BBJ → Run 5 主动恢复', advice: '做 3–4 轮 40m BBJ → 600m 跑；前 300m 控制在 Z2–Z3，呼吸恢复后再回巡航，避免把恢复段跑成第二个站点。' },
+  { label: 'Row 后', title: 'Row → Run 6 再灌注', advice: '做 4 轮 500m Row → 500m 跑；前 200m 185–190+ spm、极短步幅，腿部沉重感消退后再拉回目标配速。' },
+  { label: 'Farmers 后', title: 'Farmers → Run 7 呼吸重建', advice: '做 4 轮 100m Farmers → 600m 跑；行走锁定 4 步 1 呼吸，跑步前 300m 只看步频与呼吸同步，不急着看配速。' },
+  { label: 'Lunges 后', title: 'Lunges → Run 8 后程刚性', advice: '做 3 轮 50m 弓步 → 800m 受控跑；弓步膝触地前最后 5cm 减速，跑步用高步频维持刚性，最后 400m 才逐步加速。' }
+];
+var latestCSMetrics = null;
+var LOSS_STORAGE_KEY = 'ssp-race-loss-v1';
+
+function secondsToClock(seconds) {
+  if (!Number.isFinite(seconds) || seconds < 0) return '--';
+  var rounded = Math.round(seconds);
+  var hours = Math.floor(rounded / 3600);
+  var mins = Math.floor((rounded % 3600) / 60);
+  var secs = rounded % 60;
+  if (hours > 0) return hours + ':' + String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+  return mins + ':' + String(secs).padStart(2, '0');
+}
+
+function signedClock(seconds) {
+  if (!Number.isFinite(seconds)) return '--';
+  if (Math.round(seconds) === 0) return '0:00';
+  return (seconds > 0 ? '+' : '−') + secondsToClock(Math.abs(seconds));
+}
+
+function parseClockValue(value) {
+  var raw = String(value == null ? '' : value).trim().replace(/：/g, ':');
+  if (!raw) return null;
+  if (!/^\d+(?::\d{1,2}){0,2}$/.test(raw)) return NaN;
+  var parts = raw.split(':').map(Number);
+  var total;
+  if (parts.length === 1) total = parts[0];
+  else if (parts.length === 2) {
+    if (parts[1] >= 60) return NaN;
+    total = parts[0] * 60 + parts[1];
+  } else {
+    if (parts[1] >= 60 || parts[2] >= 60) return NaN;
+    total = parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  return total > 0 ? total : NaN;
+}
+
+function renderLossEntries() {
+  var grid = document.getElementById('split-entry-grid');
+  if (!grid) return;
+  grid.innerHTML = HYROX_STATIONS.map(function(st, i) {
+    var runNumber = i + 1;
+    return '<article class="split-entry-card">' +
+      '<div class="split-entry-head"><div class="split-entry-title">Run ' + runNumber + ' <span>→ ' + st.name + ' · ' + st.zh + '</span></div><span class="split-sequence">0' + runNumber + ' / 08</span></div>' +
+      '<div class="split-entry-fields">' +
+        '<div class="split-field target"><label for="loss-run-target-' + i + '">Run 目标</label><input data-loss-input id="loss-run-target-' + i + '" inputmode="numeric" autocomplete="off" placeholder="4:12" aria-label="Run ' + runNumber + ' 目标时间"></div>' +
+        '<div class="split-field"><label for="loss-run-actual-' + i + '">Run 实际</label><input data-loss-input id="loss-run-actual-' + i + '" inputmode="numeric" autocomplete="off" placeholder="4:18" aria-label="Run ' + runNumber + ' 实际时间"></div>' +
+        '<div class="split-field target"><label for="loss-station-target-' + i + '">站点目标</label><input data-loss-input id="loss-station-target-' + i + '" inputmode="numeric" autocomplete="off" placeholder="3:00" aria-label="' + st.name + ' 目标时间"></div>' +
+        '<div class="split-field"><label for="loss-station-actual-' + i + '">站点实际</label><input data-loss-input id="loss-station-actual-' + i + '" inputmode="numeric" autocomplete="off" placeholder="3:15" aria-label="' + st.name + ' 实际时间"></div>' +
+      '</div></article>';
+  }).join('');
+  grid.querySelectorAll('[data-loss-input]').forEach(function(input) {
+    input.addEventListener('input', function() {
+      input.classList.remove('input-invalid');
+      document.getElementById('loss-input-error').style.display = 'none';
+      saveLossInputs();
+    });
+    input.addEventListener('blur', function() {
+      var parsed = parseClockValue(input.value);
+      if (parsed !== null && Number.isFinite(parsed)) input.value = secondsToClock(parsed);
+      saveLossInputs();
+    });
+  });
+}
+
+function saveLossInputs() {
+  try {
+    var values = {};
+    document.querySelectorAll('[data-loss-input]').forEach(function(input) { values[input.id] = input.value; });
+    localStorage.setItem(LOSS_STORAGE_KEY, JSON.stringify({ values: values, savedAt: Date.now() }));
+  } catch (e) {}
+}
+
+function restoreLossInputs() {
+  try {
+    var saved = JSON.parse(localStorage.getItem(LOSS_STORAGE_KEY) || 'null');
+    if (!saved || !saved.values) return false;
+    var restored = 0;
+    Object.keys(saved.values).forEach(function(id) {
+      var input = document.getElementById(id);
+      if (input) { input.value = saved.values[id]; restored++; }
+    });
+    if (restored) {
+      document.getElementById('loss-target-status').textContent = '已恢复上次填写 · 可同步 Run 目标或继续分析';
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+function syncLossTargets(silent) {
+  var csMin = parseInt(document.getElementById('pace-cs-min').value, 10);
+  var csSec = parseInt(document.getElementById('pace-cs-sec').value, 10);
+  if (!Number.isFinite(csMin) || !Number.isFinite(csSec) || csMin < 1 || csSec < 0 || csSec > 59) {
+    document.getElementById('loss-target-status').textContent = 'CS 配速无效 · 请手动填写 Run 目标';
+    return false;
+  }
+  var csPaceSec = csMin * 60 + csSec;
+  var initializedStations = 0;
+  for (var i = 0; i < 8; i++) {
+    var avgFactor = (RUN_CONS_FACTORS[i] + RUN_AGGR_FACTORS[i]) / 2;
+    document.getElementById('loss-run-target-' + i).value = secondsToClock(csPaceSec / avgFactor);
+    var stationTargetInput = document.getElementById('loss-station-target-' + i);
+    if (!stationTargetInput.value.trim()) {
+      stationTargetInput.value = secondsToClock(HYROX_STATIONS[i].baseTime);
+      initializedStations++;
+    }
+  }
+  document.getElementById('loss-target-status').textContent = '已同步 Run 目标：CS ' + secondsToClock(csPaceSec) + '/km · 站点目标保留个人设定' + (initializedStations ? '（空白项已载入参考值）' : '');
+  saveLossInputs();
+  if (!silent) document.getElementById('loss-live').textContent = '已同步 8 个 Run 目标；站点目标未覆盖';
+  return true;
+}
+
+function clearLossActuals() {
+  for (var i = 0; i < 8; i++) {
+    document.getElementById('loss-run-actual-' + i).value = '';
+    document.getElementById('loss-station-actual-' + i).value = '';
+  }
+  document.getElementById('loss-results').style.display = 'none';
+  document.getElementById('loss-input-error').style.display = 'none';
+  saveLossInputs();
+  document.getElementById('loss-live').textContent = '已清空实际成绩，目标时间已保留';
+}
+
+function loadLossExample() {
+  var runTargets = [262, 258, 270, 258, 300, 258, 274, 267];
+  var stationTargets = [260, 180, 200, 280, 250, 160, 220, 240];
+  var runGaps = [-4, 2, 16, 5, 28, 17, 12, 22];
+  var stationGaps = [6, 54, 18, 31, 12, -4, 24, 35];
+  for (var i = 0; i < 8; i++) {
+    document.getElementById('loss-run-target-' + i).value = secondsToClock(runTargets[i]);
+    document.getElementById('loss-run-actual-' + i).value = secondsToClock(runTargets[i] + runGaps[i]);
+    document.getElementById('loss-station-target-' + i).value = secondsToClock(stationTargets[i]);
+    document.getElementById('loss-station-actual-' + i).value = secondsToClock(stationTargets[i] + stationGaps[i]);
+  }
+  document.getElementById('loss-target-status').textContent = '课堂示例已载入 · 可直接修改任一目标或实际时间';
+  saveLossInputs();
+  analyzeRaceLosses(true);
+}
+
+function readLossInput(id, invalidIds) {
+  var input = document.getElementById(id);
+  var parsed = parseClockValue(input.value);
+  input.classList.remove('input-invalid');
+  if (Number.isNaN(parsed)) {
+    input.classList.add('input-invalid');
+    invalidIds.push(id);
+  }
+  return parsed;
+}
+
+function buildLossDomain(items) {
+  var valid = items.filter(function(item) { return Number.isFinite(item.target) && Number.isFinite(item.actual); });
+  var targetTotal = valid.reduce(function(sum, item) { return sum + item.target; }, 0);
+  var actualTotal = valid.reduce(function(sum, item) { return sum + item.actual; }, 0);
+  var positiveLoss = valid.reduce(function(sum, item) { return sum + Math.max(0, item.delta); }, 0);
+  var rate = targetTotal > 0 ? positiveLoss / targetTotal * 100 : 0;
+  var top = valid.filter(function(item) { return item.delta > 0; }).sort(function(a, b) { return b.delta - a.delta; })[0] || null;
+  return { items: items, valid: valid, coverage: valid.length, targetTotal: targetTotal, actualTotal: actualTotal, netGap: actualTotal - targetTotal, positiveLoss: positiveLoss, rate: rate, top: top };
+}
+
+function severityFor(domain) {
+  if (!domain.coverage) return { label: '待填写', cls: 'pending' };
+  if (domain.positiveLoss === 0) return { label: '无超时', cls: 'good' };
+  if (domain.rate < 5) return { label: '可控', cls: 'good' };
+  if (domain.rate <= 10) return { label: '中度', cls: 'medium' };
+  return { label: '明显', cls: 'high' };
+}
+
+function updateLossPanel(prefix, domain, itemLabel) {
+  var severity = severityFor(domain);
+  var badge = document.getElementById(prefix + '-loss-badge');
+  badge.textContent = severity.label;
+  badge.className = 'loss-badge ' + severity.cls;
+  document.getElementById(prefix + '-loss-value').textContent = domain.coverage ? secondsToClock(domain.positiveLoss) : '--';
+  document.getElementById(prefix + '-loss-meta').textContent = domain.coverage
+    ? '损耗率 ' + domain.rate.toFixed(1) + '% · 净差 ' + signedClock(domain.netGap) + ' · 已填 ' + domain.coverage + '/8'
+    : '损耗率 -- · 已填 0/8';
+  document.getElementById(prefix + '-loss-top').textContent = domain.top
+    ? '最大超时：' + itemLabel(domain.top) + ' ' + signedClock(domain.top.delta)
+    : domain.coverage ? '已填项目均达到或快于目标' : '填写实际时间后生成';
+}
+
+function deltaCell(item, maxLoss) {
+  if (!Number.isFinite(item.target) || !Number.isFinite(item.actual)) return '<span class="loss-delta even">—</span>';
+  var cls = item.delta > 0 ? 'over' : item.delta < 0 ? 'ahead' : 'even';
+  var width = item.delta > 0 && maxLoss > 0 ? Math.max(5, Math.round(item.delta / maxLoss * 100)) : 0;
+  return '<span class="loss-delta ' + cls + '">' + signedClock(item.delta) + '</span>' +
+    (item.delta > 0 ? '<div class="mini-loss-bar"><span style="width:' + width + '%"></span></div>' : '');
+}
+
+function renderLossTables(runDomain, stationDomain) {
+  var maxRun = Math.max.apply(null, [0].concat(runDomain.items.map(function(item) { return Math.max(0, item.delta || 0); })));
+  var maxStation = Math.max.apply(null, [0].concat(stationDomain.items.map(function(item) { return Math.max(0, item.delta || 0); })));
+  document.getElementById('run-loss-tbody').innerHTML = runDomain.items.map(function(item) {
+    var valid = Number.isFinite(item.target) && Number.isFinite(item.actual);
+    var pct = valid ? item.delta / item.target * 100 : null;
+    return '<tr><td><strong>Run ' + (item.index + 1) + '</strong><br><span style="color:var(--ssp-muted);font-size:.68rem;">' + RUN_CONTEXTS[item.index].label + '</span></td>' +
+      '<td>' + (Number.isFinite(item.target) ? secondsToClock(item.target) : '—') + '</td>' +
+      '<td>' + (Number.isFinite(item.actual) ? secondsToClock(item.actual) : '—') + '</td>' +
+      '<td>' + deltaCell(item, maxRun) + '</td>' +
+      '<td>' + (pct == null ? '—' : (pct > 0 ? '+' : '') + pct.toFixed(1) + '%') + '</td></tr>';
+  }).join('');
+
+  document.getElementById('station-loss-tbody').innerHTML = stationDomain.items.map(function(item) {
+    var nextRun = item.index < 7 ? runDomain.items[item.index + 1] : null;
+    var afterEffect = !nextRun ? '无后续跑' :
+      Number.isFinite(nextRun.target) && Number.isFinite(nextRun.actual)
+        ? (nextRun.delta > 0 ? 'Run ' + (item.index + 2) + ' ' + signedClock(nextRun.delta) : 'Run ' + (item.index + 2) + ' 达标')
+        : '—';
+    return '<tr><td><strong>' + HYROX_STATIONS[item.index].name + '</strong><br><span style="color:var(--ssp-muted);font-size:.68rem;">' + HYROX_STATIONS[item.index].zh + '</span></td>' +
+      '<td>' + (Number.isFinite(item.target) ? secondsToClock(item.target) : '—') + '</td>' +
+      '<td>' + (Number.isFinite(item.actual) ? secondsToClock(item.actual) : '—') + '</td>' +
+      '<td>' + deltaCell(item, maxStation) + '</td>' +
+      '<td>' + afterEffect + '</td></tr>';
+  }).join('');
+}
+
+function chooseDominantDomain(runDomain, stationDomain) {
+  var runReady = runDomain.coverage >= 4;
+  var stationReady = stationDomain.coverage >= 4;
+  if (!runReady && !stationReady) return 'insufficient';
+  if (runReady && !stationReady) return 'run';
+  if (!runReady && stationReady) return 'station';
+  if (runDomain.positiveLoss === stationDomain.positiveLoss) return 'mixed';
+  return runDomain.positiveLoss > stationDomain.positiveLoss ? 'run' : 'station';
+}
+
+function trainingCard(priority, title, body) {
+  return '<article class="training-rec"><span class="priority">' + priority + '</span><strong>' + title + '</strong><p>' + body + '</p></article>';
+}
+
+function renderTrainingAdvice(runDomain, stationDomain, dominant) {
+  var grid = document.getElementById('training-rec-grid');
+  var subtitle = document.getElementById('training-plan-subtitle');
+  if (dominant === 'insufficient') {
+    subtitle.textContent = '方向性诊断至少需要 4 个有效 Run 或 4 个有效站点。';
+    grid.innerHTML = trainingCard('先补数据', '完成同口径分段记录', '补齐目标与实际时间；站点目标要固定组别、负重、距离/次数与场地。ROXZone 过渡时间单独记录，不并入跑步或站点，避免双计。');
+    return;
+  }
+
+  var runIssues = runDomain.valid.filter(function(item) { return item.delta > 0; }).sort(function(a,b) { return b.delta - a.delta; });
+  var stationIssues = stationDomain.valid.filter(function(item) { return item.delta > 0; }).sort(function(a,b) { return b.delta - a.delta; });
+  var picks = [];
+  if (dominant === 'run') picks = runIssues.slice(0, 2).map(function(item) { return { type: 'run', item: item }; });
+  else if (dominant === 'station') picks = stationIssues.slice(0, 2).map(function(item) { return { type: 'station', item: item }; });
+  else {
+    if (runIssues[0]) picks.push({ type: 'run', item: runIssues[0] });
+    if (stationIssues[0]) picks.push({ type: 'station', item: stationIssues[0] });
+  }
+
+  if (!picks.length) {
+    subtitle.textContent = '已填项目全部达到目标，进入维持与精修阶段。';
+    grid.innerHTML = trainingCard('维持', '保留基础量与阈值训练', '每周保留 1 次阈值课与 1 次低剂量站跑串联，不额外增加最大测试；按最接近目标线的单项做小幅技术优化。') +
+      trainingCard('第 4 周', '同条件复测', '使用同场地、同负重、同组别和同计时口径复测，确认提升来自能力变化而非条件变化。');
+    return;
+  }
+
+  var domainText = dominant === 'run' ? '跑步转换能力' : dominant === 'station' ? '站点专项能力' : '跑步与站点混合限制';
+  subtitle.textContent = '主要限制：' + domainText + '。4 周只优先改变以下两个变量。';
+  var html = picks.map(function(pick, index) {
+    if (pick.type === 'run') {
+      var context = RUN_CONTEXTS[pick.item.index];
+      return trainingCard('优先 ' + (index + 1) + ' · 可回收 ' + secondsToClock(pick.item.delta), context.title, context.advice);
+    }
+    var station = HYROX_STATIONS[pick.item.index];
+    return trainingCard('优先 ' + (index + 1) + ' · 可回收 ' + secondsToClock(pick.item.delta), station.adviceTitle, station.advice);
+  }).join('');
+  if (picks.length < 2) html += trainingCard('第 4 周', '同条件复测', '维持其他训练变量不变，用同一目标与计时口径复测该短板；若损耗仍>10%，先降低目标强度并检查动作标准。');
+  grid.innerHTML = html;
+}
+
+function analyzeRaceLosses(shouldScroll) {
+  var invalidIds = [];
+  var runs = [];
+  var stations = [];
+  for (var i = 0; i < 8; i++) {
+    var runTarget = readLossInput('loss-run-target-' + i, invalidIds);
+    var runActual = readLossInput('loss-run-actual-' + i, invalidIds);
+    var stationTarget = readLossInput('loss-station-target-' + i, invalidIds);
+    var stationActual = readLossInput('loss-station-actual-' + i, invalidIds);
+    runs.push({ index: i, target: runTarget, actual: runActual, delta: Number.isFinite(runTarget) && Number.isFinite(runActual) ? runActual - runTarget : null });
+    stations.push({ index: i, target: stationTarget, actual: stationActual, delta: Number.isFinite(stationTarget) && Number.isFinite(stationActual) ? stationActual - stationTarget : null });
+  }
+  var error = document.getElementById('loss-input-error');
+  if (invalidIds.length) {
+    error.textContent = '有 ' + invalidIds.length + ' 个时间格式无效。请使用“分:秒”，并确保秒数小于 60。';
+    error.style.display = 'block';
+    document.getElementById(invalidIds[0]).focus();
+    return;
+  }
+  var runDomain = buildLossDomain(runs);
+  var stationDomain = buildLossDomain(stations);
+  if (!runDomain.coverage && !stationDomain.coverage) {
+    error.textContent = '请至少填写一组“目标时间 + 实际时间”后再分析。';
+    error.style.display = 'block';
+    return;
+  }
+  error.style.display = 'none';
+  updateLossPanel('run', runDomain, function(item) { return 'Run ' + (item.index + 1); });
+  updateLossPanel('station', stationDomain, function(item) { return HYROX_STATIONS[item.index].name; });
+  renderLossTables(runDomain, stationDomain);
+  var dominant = chooseDominantDomain(runDomain, stationDomain);
+  var recoverable = runDomain.positiveLoss + stationDomain.positiveLoss;
+  var summary;
+  if (dominant === 'insufficient') {
+    summary = '<strong>当前可回收时间 ' + secondsToClock(recoverable) + '：</strong>有效分段不足，先补到至少 4 个 Run 或 4 个站点，再判断主要训练方向。';
+  } else if (dominant === 'mixed') {
+    summary = '<strong>主要限制：跑步与站点并列。</strong>两方向累计损耗均为 ' + secondsToClock(runDomain.positiveLoss) + '，优先各抓一个最大单项。总可回收时间约 ' + secondsToClock(recoverable) + '。';
+  } else {
+    var primary = dominant === 'run' ? runDomain : stationDomain;
+    var secondary = dominant === 'run' ? stationDomain : runDomain;
+    var label = dominant === 'run' ? '跑步转换能力' : '站点专项能力';
+    summary = '<strong>主要限制：' + label + '。</strong>该方向累计损耗 ' + secondsToClock(primary.positiveLoss) + '，另一方向 ' + secondsToClock(secondary.positiveLoss) + '；总可回收时间约 ' + secondsToClock(recoverable) + '。损耗率用于判断严重度，训练方向按累计超时选择。';
+  }
+  document.getElementById('loss-summary').innerHTML = summary;
+  renderTrainingAdvice(runDomain, stationDomain, dominant);
+  document.getElementById('loss-results').style.display = 'block';
+  document.getElementById('loss-live').textContent = '分析完成。跑步损耗 ' + secondsToClock(runDomain.positiveLoss) + '，站点损耗 ' + secondsToClock(stationDomain.positiveLoss) + '。';
+  saveLossInputs();
+  if (shouldScroll) document.getElementById('loss-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // ═══ CS ═══
 var tests = [{ id: 1, dist: 1200, min: 3, sec: 45 },{ id: 2, dist: 2400, min: 7, sec: 50 },{ id: 3, dist: 3600, min: 12, sec: 0 }];
 var nextId = 4, chartInstance = null;
@@ -1321,17 +2100,31 @@ function calculate() {
   var meanY = sumY / n, ssRes = 0, ssTot = 0;
   pts.forEach(function(p) { var e = p.dist - (CS * p.time + Dprime); ssRes += e * e; var d = p.dist - meanY; ssTot += d * d; });
   var rSquared = ssTot > 0 ? 1 - ssRes / ssTot : 1;
-  var ppk = CS > 0 ? 1000 / CS : 0, pMin = Math.floor(ppk / 60), pSec = Math.round(ppk % 60);
-  var ck = CS * 0.95 > 0 ? 1000 / (CS * 0.95) : 0, cMin = Math.floor(ck / 60), cSec = Math.round(ck % 60);
+  var ppk = CS > 0 ? 1000 / CS : 0;
+  var ck = CS * 0.95 > 0 ? 1000 / (CS * 0.95) : 0;
+  var pClock = secondsToClock(ppk);
+  var cClock = secondsToClock(ck);
+
+  latestCSMetrics = { cs: CS, dprime: Dprime, rSquared: rSquared, paceSec: ppk };
+  if (CS > 0 && Dprime > 0 && rSquared >= 0.95) {
+    var roundedPace = Math.round(ppk);
+    document.getElementById('pace-cs-min').value = Math.floor(roundedPace / 60);
+    document.getElementById('pace-cs-sec').value = roundedPace % 60;
+    document.getElementById('pace-dprime').value = Math.round(Dprime);
+    syncLossTargets(true);
+    document.getElementById('loss-target-status').textContent = '已从 CS 测试同步 Run 目标：' + pClock + '/km · 站点目标保持不变';
+  } else {
+    document.getElementById('loss-target-status').textContent = 'CS 结果可信度不足或 D\' 无效 · 请重测或手动填写目标';
+  }
 
   document.getElementById('results-card').style.display = 'block';
   document.getElementById('zones-card').style.display = 'block';
   document.getElementById('results-grid').innerHTML =
     '<div class="result-box"><div class="label">CS 临界速度</div><div class="value">' + CS.toFixed(2) + '</div><div class="sub">m/s</div></div>' +
-    '<div class="result-box"><div class="label">CS 配速</div><div class="value">' + pMin + ':' + String(pSec).padStart(2,'0') + '</div><div class="sub">/km（纯跑上限）</div></div>' +
+    '<div class="result-box"><div class="label">CS 配速</div><div class="value">' + pClock + '</div><div class="sub">/km（纯跑上限）</div></div>' +
     '<div class="result-box"><div class="label">D\' 无氧电池</div><div class="value">' + Dprime.toFixed(0) + '</div><div class="sub">米</div></div>' +
     '<div class="result-box"><div class="label">R² 可信度</div><div class="value">' + rSquared.toFixed(4) + '</div><div class="sub">' + (rSquared >= 0.98 ? '✅ 可靠' : rSquared >= 0.95 ? '⚠️ 可用' : '❌ 重测') + '</div></div>' +
-    '<div class="result-box" style="border-left-color:var(--ssp-gold);"><div class="label">🏁 HYROX 巡航配速</div><div class="value">' + cMin + ':' + String(cSec).padStart(2,'0') + '</div><div class="sub">CS×0.95 含站点缓冲</div></div>';
+    '<div class="result-box" style="border-left-color:var(--ssp-gold);"><div class="label">🏁 HYROX 巡航配速</div><div class="value">' + cClock + '</div><div class="sub">CS×0.95 含站点缓冲</div></div>';
   document.getElementById('regression-info').textContent = '回归方程：距离 = ' + CS.toFixed(2) + ' × 时间 + ' + Dprime.toFixed(0) + ' | ' + n + ' 个数据点';
 
   if (chartInstance) chartInstance.destroy();
@@ -1360,7 +2153,7 @@ function calculate() {
     { name: '重复冲刺', pct: '115-130%', l:1.15, h:1.30, feel: '30-90秒', benefit: 'D\'↑' },
     { name: '最大冲刺', pct: '>140%', l:1.40, h:1.80, feel: '<30秒', benefit: '最大速度↑' },
   ];
-  function fmt(spd) { if(spd<=0) return '—'; var s=1000/spd; return Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0'); }
+  function fmt(spd) { if(spd<=0) return '—'; return secondsToClock(1000/spd); }
   var tbody = document.querySelector('#zones-table tbody');
   tbody.innerHTML = zones.map(function(z) {
     var lo = CS*z.l, hi = CS*z.h, pLo = fmt(hi), pHi = fmt(lo);
@@ -1387,24 +2180,15 @@ function calcHyroxPace() {
   // Times scaled based on D' (lower D' = less anaerobic power = slower stations)
   var stationTimeScale = dprime < 120 ? 1.25 : dprime < 180 ? 1.10 : 1.0;
   
-  var stations = [
-    { name: 'SkiErg',       baseTime: 260, drainPct: 0.17, hrSpike: 8,  muscle: '上肢+核心',   energyType: '有氧+磷酸原' },
-    { name: 'Sled Push',    baseTime: 180, drainPct: 0.27, hrSpike: 12, muscle: '股四头肌+臀',  energyType: '磷酸原+糖酵解' },
-    { name: 'Sled Pull',    baseTime: 200, drainPct: 0.23, hrSpike: 10, muscle: '后链+握力',    energyType: '磷酸原+糖酵解' },
-    { name: 'BBJ',          baseTime: 280, drainPct: 0.32, hrSpike: 15, muscle: '全身爆发',     energyType: '糖酵解为主' },
-    { name: 'Row',          baseTime: 250, drainPct: 0.22, hrSpike: 9,  muscle: '腿+背',        energyType: '有氧+糖酵解' },
-    { name: 'Farmers Carry',baseTime: 160, drainPct: 0.13, hrSpike: 6,  muscle: '握力+核心',    energyType: '等长+有氧' },
-    { name: 'Lunges',       baseTime: 220, drainPct: 0.22, hrSpike: 10, muscle: '股四头肌+臀',  energyType: '离心+糖酵解' },
-    { name: 'Wall Balls',   baseTime: 240, drainPct: 0.30, hrSpike: 14, muscle: '全身协调',     energyType: '糖酵解+全身' },
-  ];
+  var stations = HYROX_STATIONS;
 
   // Phase definitions
   var phases = ['开局', '开局', '建立', '建立', '中盘', '中盘', '收尾', '收尾'];
   var phaseColors = ['#384843', '#384843', '#7c812e', '#7c812e', '#b7d450', '#b7d450', '#384843', '#384843'];
 
   // Conservative vs aggressive pace factors
-  var consFactors = [0.88, 0.90, 0.85, 0.90, 0.75, 0.90, 0.83, 0.85];
-  var aggrFactors = [0.95, 0.96, 0.93, 0.96, 0.85, 0.96, 0.92, 0.95];
+  var consFactors = RUN_CONS_FACTORS;
+  var aggrFactors = RUN_AGGR_FACTORS;
 
   // HR targets in bpm (based on LTHR)
   var hrTargetsBpm = [
@@ -1449,25 +2233,16 @@ function calcHyroxPace() {
     var phase = phases[i];
     var consFactor = consFactors[i];
     var aggrFactor = aggrFactors[i];
-    
-    // Station time estimate
-    var stationSec = Math.round(st.baseTime * stationTimeScale);
-    totalStationSec += stationSec;
-    
-    // D' before station
-    var dBefore = Math.round(Math.max(0, dprimeRemaining));
-    
-    // D' drain during station
-    var drainMeters = Math.round(st.drainPct * dprime);
-    dprimeRemaining = Math.max(0, dprimeRemaining - drainMeters);
-    var dAfterStation = Math.round(dprimeRemaining);
-    
+
+    // Real race order: Run i → Station i.
+    var dAtRunStart = Math.round(Math.max(0, dprimeRemaining));
+
     // Pace calculations
     var consPace = csPaceSec / consFactor;
     var aggrPace = csPaceSec / aggrFactor;
     var avgFactor = (consFactor + aggrFactor) / 2;
     var avgPace = csPaceSec / avgFactor;
-    
+
     // D' recovery during run (recover more when running below CS)
     var runSec = avgPace; // 1km at average pace
     var belowCS = csSpeed - (1000 / avgPace);
@@ -1476,20 +2251,27 @@ function calcHyroxPace() {
       var recovered = Math.round(recoveryRate * runSec * 0.25);
       dprimeRemaining = Math.min(dprime, dprimeRemaining + recovered);
     }
-    var dAfterRun = Math.round(dprimeRemaining);
-    
+    var dBeforeStation = Math.round(dprimeRemaining);
+
+    // Station occurs after this run and drains D'.
+    var stationSec = Math.round(st.baseTime * stationTimeScale);
+    totalStationSec += stationSec;
+    var drainMeters = Math.round(st.drainPct * dprime);
+    dprimeRemaining = Math.max(0, dprimeRemaining - drainMeters);
+    var dAfterStation = Math.round(dprimeRemaining);
+
     totalRunSec += runSec;
     cumulativeSec += runSec + stationSec;
-    
+
     // Format
-    var fmtPace = function(s) { var m=Math.floor(s/60); var sec=Math.round(s%60); return m+':'+String(sec).padStart(2,'0'); };
-    var fmtTime = function(s) { var m=Math.floor(s/60); var sec=Math.round(s%60); return m+'分'+sec+'秒'; };
-    var fmtCum = function(s) { var m=Math.floor(s/60); var sec=Math.round(s%60); return m+'\':'+String(sec).padStart(2,'0')+'"'; };
+    var fmtPace = function(s) { return secondsToClock(s); };
+    var fmtTime = function(s) { return secondsToClock(s); };
+    var fmtCum = function(s) { return secondsToClock(s); };
     
     // Row styling
     var rowClass = '';
     if (phase === '中盘' && i === 4) rowClass = ' style="background:rgba(124,128,46,0.08);"';
-    if (dAfterRun < dprime * 0.15) rowClass = ' style="background:rgba(224,112,96,0.08);"';
+    if (dAfterStation < dprime * 0.15) rowClass = ' style="background:rgba(224,112,96,0.08);"';
     
     // HR target
     var hrStr = hrTargetsBpm[i] + ' bpm';
@@ -1502,9 +2284,9 @@ function calcHyroxPace() {
       '<td><strong>R' + (i+1) + '</strong></td>' +
       '<td>' + st.name + '<br><span style="font-size:0.7rem;color:var(--ssp-muted);">' + st.energyType + '</span></td>' +
       '<td style="font-size:0.78rem;">~' + fmtTime(stationSec) + '</td>' +
-      '<td>' + dBefore + 'm</td>' +
+      '<td>' + dAtRunStart + 'm</td>' +
+      '<td style="font-weight:600;">' + dBeforeStation + 'm</td>' +
       '<td style="color:#e07060;">' + dAfterStation + 'm <span style="font-size:0.7rem;">(-' + drainMeters + ')</span></td>' +
-      '<td style="font-weight:600;">' + dAfterRun + 'm</td>' +
       '<td style="color:var(--ssp-dark);font-weight:600;">' + fmtPace(consPace) + '</td>' +
       '<td style="color:#e07060;">' + fmtPace(aggrPace) + '</td>' +
       '<td>' + Math.round(avgFactor*100) + '%</td>' +
@@ -1521,16 +2303,12 @@ function calcHyroxPace() {
   
   // Phase summary cards
   var avgPaceSec = totalRunSec / 8;
-  var stationTotalMin = Math.floor(totalStationSec / 60);
-  var stationTotalSecR = Math.round(totalStationSec % 60);
   var estFinishSec = totalRunSec + totalStationSec + 480; // ~8min Roxzone
-  var finMin = Math.floor(estFinishSec / 60);
-  var finSec = Math.round(estFinishSec % 60);
-  
-  document.getElementById('pace-total-run').textContent = Math.floor(totalRunSec/60)+':'+String(Math.round(totalRunSec%60)).padStart(2,'0');
-  document.getElementById('pace-avg-pace').textContent = Math.floor(avgPaceSec/60)+':'+String(Math.round(avgPaceSec%60)).padStart(2,'0');
-  document.getElementById('pace-station-est').textContent = stationTotalMin+'分'+stationTotalSecR+'秒';
-  document.getElementById('pace-est-finish').textContent = finMin+':'+String(finSec).padStart(2,'0');
+
+  document.getElementById('pace-total-run').textContent = secondsToClock(totalRunSec);
+  document.getElementById('pace-avg-pace').textContent = secondsToClock(avgPaceSec);
+  document.getElementById('pace-station-est').textContent = secondsToClock(totalStationSec);
+  document.getElementById('pace-est-finish').textContent = secondsToClock(estFinishSec);
   document.getElementById('pace-d-final').textContent = Math.round(Math.max(0, dprimeRemaining)) + 'm';
   document.getElementById('pace-phase-summary').style.display = 'grid';
   
@@ -1549,6 +2327,9 @@ function calcHyroxPace() {
   }
   document.getElementById('pace-commentary-list').innerHTML = commHtml;
   document.getElementById('pace-commentary').style.display = 'block';
+
+  syncLossTargets(true);
+  document.getElementById('loss-target-status').textContent = '已从详细配速模型同步 Run 目标：CS ' + secondsToClock(csPaceSec) + '/km · 站点目标保持不变';
   
   // Scroll to results
   document.getElementById('pace-phase-summary').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1556,6 +2337,8 @@ function calcHyroxPace() {
 
 
 renderTests();
+renderLossEntries();
+if (!restoreLossInputs()) syncLossTargets(true);
 </script>
 </body>
 </html>
