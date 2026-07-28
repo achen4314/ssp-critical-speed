@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SSP 临界速度计算器 | HYROX 数据锚点 · 测试规范 · 比赛策略</title>
+<title>SSP HYROX 数据分析台 | 临界速度 · 损耗分析 · 单日诊断课</title>
 <link rel="icon" type="image/svg+xml" href="assets/ssp-mark.svg">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -194,6 +194,7 @@ body::after {
 #intro,
 #calculator,
 #race-analysis,
+#single-day-analysis,
 #protocols,
 #explainer { scroll-margin-top: 84px; }
 .top-nav::after {
@@ -1001,6 +1002,298 @@ tbody tr:hover { background: rgba(182,211,80,0.10); }
 }
 .method-note a { color: var(--ssp-gold); font-weight: 750; }
 
+/* Single-day HYROX mixed-fatigue diagnostic */
+.day-goal-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0 24px;
+}
+.day-goal-card {
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid rgba(58,72,64,.11);
+  border-radius: 13px;
+  background: linear-gradient(145deg, #f5f7f0, #fff);
+}
+.day-goal-card .day-goal-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 9px;
+  color: var(--ssp-ink);
+  border-radius: 8px;
+  background: var(--ssp-green);
+  font-size: .72rem;
+  font-weight: 900;
+}
+.day-goal-card strong { display: block; color: var(--ssp-ink); font-size: .9rem; }
+.day-goal-card p { margin: 5px 0 0; color: var(--ssp-muted); font-size: .76rem; line-height: 1.55; }
+.day-section {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(58,72,64,.10);
+}
+.day-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 13px;
+}
+.day-section-head h3 { margin: 0; }
+.day-section-head p { margin: 0; color: var(--ssp-muted); font-size: .76rem; }
+.day-table-wrap { overflow-x: auto; }
+.day-plan-table,
+.day-threshold-table { min-width: 720px; font-size: .79rem; }
+.day-plan-table td:first-child { width: 92px; color: var(--ssp-gold); font-weight: 850; }
+.day-plan-table td:nth-child(2) { width: 270px; font-weight: 750; }
+.day-session-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr);
+  gap: 16px;
+}
+.day-session-panel {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid rgba(58,72,64,.12);
+  border-radius: 14px;
+  background: #fff;
+}
+.day-session-panel.dark {
+  color: #fff;
+  background: linear-gradient(135deg, var(--ssp-ink), var(--ssp-dark));
+  border-color: rgba(183,212,80,.24);
+}
+.day-session-panel h4 { margin: 0 0 10px; color: var(--ssp-ink); font-size: .92rem; }
+.day-session-panel.dark h4 { color: var(--ssp-green); }
+.day-session-panel p,
+.day-session-panel li { color: #53605a; font-size: .79rem; line-height: 1.65; }
+.day-session-panel.dark p,
+.day-session-panel.dark li { color: rgba(255,255,255,.78); }
+.day-session-panel ul { margin: 8px 0 0; padding-left: 18px; }
+.day-task-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 12px 0 14px;
+}
+.day-task-flow span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 10px;
+  color: var(--ssp-dark);
+  border: 1px solid rgba(183,212,80,.30);
+  border-radius: 999px;
+  background: rgba(183,212,80,.13);
+  font-size: .72rem;
+  font-weight: 800;
+}
+.day-total-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 13px;
+}
+.day-total-strip div {
+  padding: 10px;
+  text-align: center;
+  border-radius: 9px;
+  background: rgba(255,255,255,.08);
+}
+.day-total-strip strong { display: block; color: var(--ssp-green); font-size: .94rem; }
+.day-total-strip span { color: rgba(255,255,255,.65); font-size: .66rem; }
+.day-diag-context {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr .8fr .95fr .8fr;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid rgba(58,72,64,.11);
+  border-radius: 13px;
+  background: linear-gradient(145deg, rgba(242,244,240,.78), #fff);
+}
+.day-diag-field { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
+.day-diag-field label {
+  color: var(--ssp-muted);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+.day-diag-field input,
+.day-diag-field select,
+.day-diag-field textarea { width: 100%; min-width: 0; }
+.day-diag-field textarea { min-height: 66px; resize: vertical; }
+.day-diag-field.full { grid-column: 1 / -1; }
+.day-diag-privacy {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--ssp-muted);
+  font-size: .7rem;
+}
+.day-diag-round-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.day-diag-round-card {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid rgba(58,72,64,.13);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(31,41,36,.05);
+}
+.day-diag-round-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--ssp-green), var(--ssp-gold));
+}
+.day-diag-round-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.day-diag-round-head strong { color: var(--ssp-ink); font-size: .94rem; }
+.day-diag-round-head span { color: var(--ssp-gold); font-size: .68rem; font-weight: 850; letter-spacing: .07em; }
+.day-diag-round-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+.day-diag-round-fields .day-diag-field.note { grid-column: 1 / -1; }
+.day-diag-round-fields input { padding: 9px 8px; text-align: center; font-variant-numeric: tabular-nums; }
+.day-diag-round-fields input.input-invalid {
+  border-color: #c65c4b;
+  box-shadow: 0 0 0 3px rgba(198,92,75,.12);
+}
+.day-diag-round-fields .day-diag-field.note input { text-align: left; }
+.day-contam-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #8a3e34;
+  font-size: .72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.day-contam-label input { width: 17px; height: 17px; accent-color: #c65c4b; }
+.day-diag-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 0;
+}
+.day-diag-toolbar .btn-row { justify-content: flex-start; margin: 0; }
+.day-diag-status { color: var(--ssp-muted); font-size: .76rem; }
+.day-diag-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 17px;
+  padding-top: 17px;
+  border-top: 1px solid rgba(58,72,64,.10);
+}
+.day-diag-actions p { margin: 0; color: var(--ssp-muted); font-size: .75rem; }
+.day-diag-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+.day-diag-metric {
+  min-width: 0;
+  min-height: 158px;
+  padding: 18px;
+  color: #fff;
+  border: 1px solid rgba(183,212,80,.22);
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--ssp-ink), var(--ssp-dark));
+}
+.day-diag-metric:nth-child(even) { background: linear-gradient(135deg, #384843, #56633e); }
+.day-diag-metric .label { color: rgba(255,255,255,.72); font-size: .73rem; font-weight: 800; }
+.day-diag-metric .value {
+  margin: 11px 0 5px;
+  color: var(--ssp-green);
+  font-size: clamp(1.65rem, 3.2vw, 2.35rem);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.day-diag-metric .meta { color: rgba(255,255,255,.72); font-size: .7rem; line-height: 1.45; }
+.day-diag-decision {
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid rgba(183,212,80,.28);
+  border-radius: 15px;
+  background: linear-gradient(135deg, rgba(183,212,80,.11), #fff 70%);
+}
+.day-diag-decision-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.day-diag-decision h3 { margin: 0; }
+.day-diag-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.day-diag-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  color: var(--ssp-dark);
+  border-radius: 999px;
+  background: rgba(183,212,80,.20);
+  font-size: .72rem;
+  font-weight: 850;
+}
+.day-diag-tag.warn { color: #8a3e34; background: rgba(198,92,75,.12); }
+.day-diag-decision > p { margin: 12px 0 0; color: #4d5953; font-size: .82rem; line-height: 1.65; }
+.day-after-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 14px;
+}
+.day-after-item {
+  padding: 12px;
+  border: 1px solid rgba(58,72,64,.10);
+  border-radius: 10px;
+  background: #fff;
+}
+.day-after-item strong { display: block; color: var(--ssp-ink); font-size: .78rem; }
+.day-after-item span { color: var(--ssp-muted); font-size: .72rem; }
+.day-download-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 20px;
+  padding: 18px 20px;
+  color: #fff;
+  border-radius: 14px;
+  background: linear-gradient(110deg, var(--ssp-ink), var(--ssp-dark));
+}
+.day-download-card strong { display: block; color: var(--ssp-green); }
+.day-download-card p { margin: 3px 0 0; color: rgba(255,255,255,.68); font-size: .76rem; }
+.day-download-card .btn-outline { color: #fff; border-color: rgba(255,255,255,.55); text-decoration: none; }
+.day-download-card .btn-outline:hover { color: var(--ssp-ink); background: #fff; }
+
 /* Review context and report actions */
 .report-context-grid {
   display: grid;
@@ -1189,6 +1482,10 @@ select:focus-visible {
   .analysis-intro,
   .loss-table-grid { grid-template-columns: 1fr; }
   .report-context-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .day-goal-grid,
+  .day-diag-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .day-session-grid { grid-template-columns: 1fr; }
+  .day-diag-context { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 768px) {
@@ -1228,9 +1525,11 @@ select:focus-visible {
   .split-entry-grid,
   .loss-panel-grid,
   .training-rec-grid,
-  .physio-grid { grid-template-columns: 1fr; }
+  .physio-grid,
+  .day-diag-round-grid { grid-template-columns: 1fr; }
   .analysis-status { width: 100%; text-align: left; }
   .report-output-toolbar .btn-row { width: 100%; justify-content: flex-start; }
+  .day-diag-status { width: 100%; }
 }
 
 @media (max-width: 480px) {
@@ -1248,6 +1547,13 @@ select:focus-visible {
   .split-entry-card { padding: 16px 14px 16px 17px; }
   .split-entry-fields { grid-template-columns: 1fr 1fr; }
   .report-context-grid { grid-template-columns: 1fr; }
+  .day-goal-grid,
+  .day-diag-metric-grid,
+  .day-diag-context,
+  .day-after-list { grid-template-columns: 1fr; }
+  .day-diag-round-fields { grid-template-columns: 1fr 1fr; }
+  .day-diag-actions .btn,
+  .day-download-card .btn { width: 100%; }
   .physio-card .hrr-form,
   .physio-output { grid-template-columns: 1fr; }
   .physio-advice { grid-column: auto; }
@@ -1325,6 +1631,7 @@ select:focus-visible {
   <a href="#intro">小白入门</a>
   <a href="#calculator">计算器</a>
   <a href="#race-analysis">损耗分析</a>
+  <a href="#single-day-analysis">单日诊断课</a>
   <a href="#protocols">测试规范</a>
   <a href="#explainer">指标解读</a>
 </nav>
@@ -1547,6 +1854,253 @@ select:focus-visible {
     </p>
   </div>
   <div class="visually-hidden" id="loss-live" aria-live="polite"></div>
+</div>
+
+<!-- ═══ 单日备赛课分析 ═══ -->
+<div class="card" id="single-day-analysis">
+  <h2><span class="dot"></span>单日备赛课分析：4轮标准化混合疲劳诊断</h2>
+  <div class="analysis-intro">
+    <div class="analysis-copy">
+      <span class="analysis-kicker">Single-day mixed-fatigue diagnostic</span>
+      <p><strong>这不是全力模拟赛。</strong>在相同任务下连续完成 4 轮，观察诊断课跑步损耗、诊断课站点损耗、站后下一跑变化和跑段平均心率变化。课程保留了重复跑—站转换与站后重建跑步节奏这一关键比赛需求，但不是正式比赛的等比例、同顺序模拟。</p>
+    </div>
+    <div class="analysis-guide">
+      <p><strong>为什么这样设计</strong><br>HYROX 正式赛由 8 次 1km 跑与 8 个功能站点交替组成；官方备赛说明也建议练习站点后的跑步能力，并避免首段过快。</p>
+      <div class="thresholds">
+        <a class="threshold-chip" href="https://hyrox.com/the-fitness-race/" target="_blank" rel="noopener">比赛结构</a>
+        <a class="threshold-chip" href="https://hyrox.com/best-hyrox-preparation/" target="_blank" rel="noopener">官方备赛说明</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-goal-grid" aria-label="课程输出">
+    <article class="day-goal-card"><span class="day-goal-index">01</span><strong>诊断课跑步损耗</strong><p>后两轮 800m 平均时间相对 R1 的变化。</p></article>
+    <article class="day-goal-card"><span class="day-goal-index">02</span><strong>诊断课站点损耗</strong><p>后两轮站点总时间相对 R1 的变化。</p></article>
+    <article class="day-goal-card"><span class="day-goal-index">03</span><strong>站后下一跑变化</strong><p>R2、R3、R4 各自相对上一轮跑步的变化，仅作相邻描述。</p></article>
+    <article class="day-goal-card"><span class="day-goal-index">04</span><strong>限制类型与处方</strong><p>区分跑步、站点、综合耐力与疑似配速策略问题。</p></article>
+  </div>
+
+  <section class="day-section" aria-labelledby="day-plan-title">
+    <div class="day-section-head">
+      <h3 id="day-plan-title">60 分钟教案</h3>
+      <p>建议 6 人按能力由快到慢起跑，默认间隔 75 秒</p>
+    </div>
+    <div class="day-table-wrap">
+      <table class="day-plan-table">
+        <thead><tr><th>时间</th><th>内容</th><th>教练重点</th></tr></thead>
+        <tbody>
+          <tr><td>0–4 分钟</td><td>签到与状态筛查</td><td>记录睡眠、腿部酸痛、疼痛和今日主观状态 1–5 分；状态评分不能替代医学筛查。</td></tr>
+          <tr><td>4–10 分钟</td><td>600–800m 轻松跑＋动态活动</td><td>髋、踝、胸椎、肩关节；同步观察步态、呼吸和疼痛反应。</td></tr>
+          <tr><td>10–14 分钟</td><td>专项激活</td><td>Ski 100m、轻雪橇推/拉各 12.5m、BBJ 10m、Wall Ball 5 次。</td></tr>
+          <tr><td>14–16 分钟</td><td>讲解数据、动作标准与起跑顺序</td><td>说明两次 Lap、污染标记、首轮控速和终止条件。</td></tr>
+          <tr><td>16–50 分钟</td><td>4 轮连续混合疲劳主课</td><td>每轮单独记录跑步与站点总时间；教练记录技术异常、排队和器械变化。</td></tr>
+          <tr><td>50–55 分钟</td><td>400m 慢跑 / 走＋呼吸恢复</td><td>不追加冲刺、惩罚训练或临时加量。</td></tr>
+          <tr><td>55–60 分钟</td><td>数据汇总与简短反馈</td><td>先判断数据是否可比，再给瓶颈方向；课后约 20–30 分钟补收整体 session-RPE。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="day-section" aria-labelledby="day-main-title">
+    <div class="day-section-head">
+      <h3 id="day-main-title">主课内容与现场组织</h3>
+      <p>4 轮连续完成；每轮跑完按一次 Lap，全部站点结束再按一次 Lap</p>
+    </div>
+    <div class="day-session-grid">
+      <article class="day-session-panel dark">
+        <h4>每轮任务</h4>
+        <div class="day-task-flow" aria-label="每轮任务顺序">
+          <span>800m 跑</span><span>SkiErg 250m</span><span>雪橇推 12.5m</span><span>雪橇拉 12.5m</span><span>BBJ 20m</span><span>Wall Ball 15 次</span>
+        </div>
+        <div class="day-total-strip" aria-label="四轮总量">
+          <div><strong>3.2 km</strong><span>跑步总量</span></div>
+          <div><strong>1000 m</strong><span>SkiErg</span></div>
+          <div><strong>50 / 50 m</strong><span>雪橇推 / 拉</span></div>
+          <div><strong>80 m</strong><span>BBJ</span></div>
+          <div><strong>60 次</strong><span>Wall Ball</span></div>
+          <div><strong>4 轮</strong><span>同任务复测</span></div>
+        </div>
+      </article>
+      <article class="day-session-panel">
+        <h4>雪橇、排队与数据污染</h4>
+        <ul>
+          <li>雪橇可用目标比赛组别负重，但第一轮必须动作连续、技术稳定、无需多次停顿；否则本课主要反映绝对力量。</li>
+          <li>场地摩擦差异大，必须记录雪橇总负重、雪橇/草皮、Ski 设置、Wall Ball 重量与目标高度。</li>
+          <li>起跑间隔应覆盖所有单通道器械的占用时间并留缓冲；若 Ski 250m 超过 75 秒，改 90 秒或启用第二台。</li>
+          <li>任何排队、器械更换、路线错误、漏做、动作标准改变或计时错误，都要把该轮标为“受污染”。</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="day-section" aria-labelledby="day-intensity-title">
+    <div class="day-section-head">
+      <h3 id="day-intensity-title">强度控制与记录口径</h3>
+      <p>第一轮不能冲，第四轮可提速但不允许最后 200m 冲刺掩盖配速崩溃</p>
+    </div>
+    <div class="day-session-grid">
+      <article class="day-session-panel">
+        <h4>跑步与 RPE</h4>
+        <ul>
+          <li>本课跑步目标：个人预计 HYROX 比赛配速慢 5–10 秒/km；前三轮控制在目标值 ±5 秒/km，换算到 800m 即 ±4 秒。</li>
+          <li>R1 约 7/10，R2 为 7–8，R3 约 8，R4 最高 8.5；R1 RPE ≥8 且后程有损耗时，优先复核起步策略。</li>
+          <li>有跑步 LTHR 者，前两轮平均心率尽量不超过其附近；LTHR 只作观察锚点，不是安全阈值，也不临场追心率。</li>
+          <li>没有心率时使用配速＋RPE，数据仍有效。</li>
+        </ul>
+      </article>
+      <article class="day-session-panel">
+        <h4>心率与站点时间</h4>
+        <ul>
+          <li>只比较每段 800m 平均心率，不使用握器械或拉雪橇时的瞬时腕式光电心率；胸带优先。</li>
+          <li>“站点总时间”从 800m Lap 结束开始，到第 15 个有效 Wall Ball 完成为止，包含器械间转换。</li>
+          <li>跑段平均心率变化 ΔHR = 平均(HR3, HR4) − HR1；它不是标准稳态心率漂移/解耦测试。</li>
+          <li>仅当后两轮平均跑步时间相对 R1 的绝对差异 &lt;3%、环境近似且心率完整时，ΔHR 才辅助解读。</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="day-section" aria-labelledby="day-recorder-title">
+    <div class="day-section-head">
+      <h3 id="day-recorder-title">单人 4 轮分析器</h3>
+      <p>教练可依次为 6 名学员分析；数据仅保存在当前浏览器</p>
+    </div>
+
+    <div class="day-diag-context">
+      <div class="day-diag-field">
+        <label for="day-diag-athlete">运动员 / 编号</label>
+        <input data-day-diag id="day-diag-athlete" type="text" maxlength="40" autocomplete="off" placeholder="例如 1号 / SSP-021">
+      </div>
+      <div class="day-diag-field">
+        <label for="day-diag-date">训练日期</label>
+        <input data-day-diag id="day-diag-date" type="date">
+      </div>
+      <div class="day-diag-field">
+        <label for="day-diag-division">目标组别</label>
+        <select data-day-diag id="day-diag-division">
+          <option value="Open">Open</option>
+          <option value="Pro">Pro</option>
+          <option value="Doubles">Doubles</option>
+          <option value="Relay">Relay</option>
+        </select>
+      </div>
+      <div class="day-diag-field">
+        <label for="day-diag-target-pace">本课目标配速 /km</label>
+        <input data-day-diag id="day-diag-target-pace" inputmode="numeric" autocomplete="off" placeholder="4:30">
+      </div>
+      <div class="day-diag-field">
+        <label for="day-diag-duration">实际完成分钟</label>
+        <input data-day-diag id="day-diag-duration" type="number" min="1" max="180" step="1" value="60">
+      </div>
+      <div class="day-diag-field">
+        <label for="day-diag-session-rpe">课后整体 session-RPE</label>
+        <input data-day-diag id="day-diag-session-rpe" type="number" min="0" max="10" step="0.5" placeholder="20–30分钟后">
+      </div>
+      <div class="day-diag-field full">
+        <label for="day-diag-setup">复测条件：雪橇总负重 / 雪橇与草皮 / Ski 设置 / Wall Ball 重量与高度 / 环境</label>
+        <textarea data-day-diag id="day-diag-setup" maxlength="240" placeholder="例如：男子 Open；推152kg、拉103kg（含雪橇）；3号草皮；Ski阻尼6；WB 6kg/3m；室内24℃"></textarea>
+      </div>
+      <p class="day-diag-privacy">运动员信息和记录只存于当前浏览器，不会由本站上传；共享设备使用后请清空。比赛负重与动作标准必须按参赛赛季的官方规则重新核对。</p>
+    </div>
+
+    <div class="day-diag-toolbar">
+      <div class="btn-row">
+        <button class="btn btn-sm btn-outline" type="button" onclick="dayDiagLoadExample()">载入完整示例</button>
+        <button class="btn btn-sm btn-outline" type="button" onclick="dayDiagClear()">清空当前学员</button>
+      </div>
+      <div class="day-diag-status" id="day-diag-status">请填写本课目标配速与 4 轮记录</div>
+    </div>
+
+    <div class="day-diag-round-grid" id="day-diag-round-grid"></div>
+
+    <div class="day-diag-actions">
+      <p>时间格式使用“分:秒”；每轮即时 RPE 与课后整体 session-RPE 是两个不同记录。</p>
+      <button class="btn btn-primary" type="button" onclick="dayDiagAnalyze(true)">生成单日诊断与训练计划</button>
+    </div>
+    <p id="day-diag-error" role="alert" style="display:none;margin-top:12px;color:#a54337;font-size:.82rem;font-weight:700;"></p>
+
+    <div id="day-diag-results" style="display:none;scroll-margin-top:84px;">
+      <div class="day-diag-metric-grid">
+        <article class="day-diag-metric">
+          <div class="label">诊断课跑步损耗</div>
+          <div class="value" id="day-diag-run-value">--</div>
+          <div class="meta" id="day-diag-run-meta">晚段平均 vs R1</div>
+        </article>
+        <article class="day-diag-metric">
+          <div class="label">诊断课站点损耗</div>
+          <div class="value" id="day-diag-station-value">--</div>
+          <div class="meta" id="day-diag-station-meta">晚段平均 vs R1</div>
+        </article>
+        <article class="day-diag-metric">
+          <div class="label">最大站后下一跑变化</div>
+          <div class="value" id="day-diag-after-value">--</div>
+          <div class="meta" id="day-diag-after-meta">相邻描述，不证明站点造成</div>
+        </article>
+        <article class="day-diag-metric">
+          <div class="label">跑段平均心率变化 ΔHR</div>
+          <div class="value" id="day-diag-hr-value">--</div>
+          <div class="meta" id="day-diag-hr-meta">非标准心率漂移 / 解耦测试</div>
+        </article>
+      </div>
+
+      <section class="day-diag-decision" aria-labelledby="day-diag-decision-title">
+        <div class="day-diag-decision-head">
+          <h3 id="day-diag-decision-title">本次判断</h3>
+          <div class="day-diag-tags">
+            <span class="day-diag-tag" id="day-diag-pace-tag">配速待判断</span>
+            <span class="day-diag-tag" id="day-diag-limit-tag">限制类型待判断</span>
+          </div>
+        </div>
+        <p id="day-diag-decision-copy"></p>
+        <div class="day-after-list" id="day-diag-after-list"></div>
+      </section>
+
+      <section class="training-plan" aria-labelledby="day-diag-training-title">
+        <div class="training-head">
+          <h3 id="day-diag-training-title">对应训练建议</h3>
+          <p id="day-diag-training-subtitle">建议会根据配速合规、跑损等级、站损等级、污染标记与 session-RPE 更新。</p>
+        </div>
+        <div class="training-rec-grid" id="day-diag-training-grid"></div>
+      </section>
+    </div>
+  </section>
+
+  <section class="day-section" aria-labelledby="day-threshold-title">
+    <div class="day-section-head">
+      <h3 id="day-threshold-title">SSP 团课内部决策线</h3>
+      <p>不是医学阈值或人群常模；仅用于同一标准课、同一学员的趋势复盘</p>
+    </div>
+    <div class="day-table-wrap">
+      <table class="day-threshold-table">
+        <thead><tr><th>跑损等级</th><th>站损等级</th><th>组合判断</th><th>下一步</th></tr></thead>
+        <tbody>
+          <tr><td>≤3% 稳定</td><td>≤5% 稳定</td><td>混合耐力稳定</td><td>下次只增加一个变量：800m→1km，或站点总量约 +10%。</td></tr>
+          <tr><td>&gt;3–6% 中度</td><td>任一较低等级</td><td>跑步受限</td><td>维持总负荷，优先站后目标配速跑；2–4周同条件复测。</td></tr>
+          <tr><td>任一较低等级</td><td>&gt;5–10% 中度</td><td>站点受限</td><td>维持总负荷，复核站点技术与单站分段后再指定专项。</td></tr>
+          <tr><td>&gt;6% 高</td><td>≤5% 稳定</td><td>跑步受限</td><td>先排除首轮过快，再安排混合砖式跑与独立阈值课。</td></tr>
+          <tr><td>≤3% 稳定</td><td>&gt;10% 高</td><td>站点受限</td><td>站点总块受限；需结合技术异常定位雪橇、BBJ或Wall Ball。</td></tr>
+          <tr><td>同为中度或同为高</td><td>同等级</td><td>综合混合耐力受限</td><td>站点量或负重先降10–15%，保留两次低强度有氧，暂不加全力模拟。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="day-download-card">
+    <div>
+      <strong>六人团课教练工作簿</strong>
+      <p>14页 A4：完整教案与编排、六人总览、每人独立监控页＋2–4周训练计划页。</p>
+    </div>
+    <a class="btn btn-sm btn-outline" href="assets/SSP-HYROX-4round-coach-workbook.pdf" download>下载可打印 PDF</a>
+  </div>
+
+  <p class="method-note">
+    诊断课损耗以 R1 为本课情境基准，不能与上方“实际相对目标”的比赛损耗合并累计。站后下一跑变化同时包含累积疲劳、配速与站点影响，只作描述，不证明因果。session-RPE 负荷 = 课后整体 RPE × 实际完成分钟；更适合做同一学员的纵向比较。来源：
+    <a href="https://hyrox.com/the-fitness-race/" target="_blank" rel="noopener">HYROX 比赛结构</a>、
+    <a href="https://hyrox.com/best-hyrox-preparation/" target="_blank" rel="noopener">官方备赛说明</a>、
+    <a href="https://pubmed.ncbi.nlm.nih.gov/11708692/" target="_blank" rel="noopener">Foster 等 session-RPE 研究</a>。
+    比赛负重和动作标准请在赛前通过 <a href="https://hyrox.com/rulebook/" target="_blank" rel="noopener">HYROX 最新规则页</a>复核。出现胸痛/胸部压迫感、晕厥或近晕厥、异常严重气短、意识或协调异常、锐痛或动作失控时立即停止并启动现场应急流程；任何心率数字都不能覆盖症状判断。
+  </p>
+  <div class="visually-hidden" id="day-diag-live" aria-live="polite"></div>
 </div>
 
 <!-- ═══ 测试规范 ═══ -->
@@ -2197,6 +2751,8 @@ var RUN_CONTEXTS = [
 var latestCSMetrics = null;
 var LOSS_STORAGE_KEY = 'ssp-race-loss-v1';
 var latestLossAnalysis = null;
+var DAY_DIAG_STORAGE_KEY = 'ssp-single-day-diagnostic-v1';
+var latestDayDiagAnalysis = null;
 
 function secondsToClock(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return '--';
@@ -2660,6 +3216,373 @@ function printLossReport() {
   setTimeout(cleanupPrintMode, 60000);
 }
 
+// ═══ Single-day mixed-fatigue diagnostic ═══
+function dayDiagRenderRounds() {
+  var grid = document.getElementById('day-diag-round-grid');
+  if (!grid) return;
+  grid.innerHTML = [1, 2, 3, 4].map(function(round) {
+    var index = round - 1;
+    return '<article class="day-diag-round-card">' +
+      '<div class="day-diag-round-head">' +
+        '<strong>R' + round + (round === 1 ? ' · 本课情境基准' : round >= 3 ? ' · 晚段计算轮' : ' · 过渡轮') + '</strong>' +
+        '<label class="day-contam-label" for="day-diag-contam-' + index + '"><input data-day-diag id="day-diag-contam-' + index + '" type="checkbox">本轮受污染</label>' +
+      '</div>' +
+      '<div class="day-diag-round-fields">' +
+        '<div class="day-diag-field"><label for="day-diag-run-' + index + '">800m 时间</label><input data-day-diag id="day-diag-run-' + index + '" inputmode="numeric" autocomplete="off" placeholder="' + (round === 1 ? '3:36' : '3:45') + '"></div>' +
+        '<div class="day-diag-field"><label for="day-diag-station-' + index + '">站点总时间</label><input data-day-diag id="day-diag-station-' + index + '" inputmode="numeric" autocomplete="off" placeholder="' + (round === 1 ? '2:45' : '3:00') + '"></div>' +
+        '<div class="day-diag-field"><label for="day-diag-hr-' + index + '">跑步平均 HR</label><input data-day-diag id="day-diag-hr-' + index + '" type="number" min="50" max="240" step="1" placeholder="可选"></div>' +
+        '<div class="day-diag-field"><label for="day-diag-rpe-' + index + '">本轮即时 RPE</label><input data-day-diag id="day-diag-rpe-' + index + '" type="number" min="0" max="10" step="0.5" placeholder="' + (round === 1 ? '7' : round === 4 ? '8.5' : '8') + '"></div>' +
+        '<div class="day-diag-field note"><label for="day-diag-note-' + index + '">技术异常 / 排队 / 器械变化</label><input data-day-diag id="day-diag-note-' + index + '" type="text" maxlength="100" autocomplete="off" placeholder="没有则留空；出现污染需同时勾选"></div>' +
+      '</div>' +
+    '</article>';
+  }).join('');
+}
+
+function dayDiagMarkDirty() {
+  latestDayDiagAnalysis = null;
+  var results = document.getElementById('day-diag-results');
+  if (results && results.style.display !== 'none') {
+    document.getElementById('day-diag-status').textContent = '输入已更新：下方结果已过期，请重新生成。';
+  }
+}
+
+function dayDiagSave() {
+  try {
+    var values = {};
+    document.querySelectorAll('[data-day-diag]').forEach(function(field) {
+      values[field.id] = field.type === 'checkbox' ? field.checked : field.value;
+    });
+    localStorage.setItem(DAY_DIAG_STORAGE_KEY, JSON.stringify({ values: values, savedAt: Date.now() }));
+  } catch (e) {}
+}
+
+function dayDiagRestore() {
+  try {
+    var saved = JSON.parse(localStorage.getItem(DAY_DIAG_STORAGE_KEY) || 'null');
+    if (!saved || !saved.values) return false;
+    var restored = 0;
+    Object.keys(saved.values).forEach(function(id) {
+      var field = document.getElementById(id);
+      if (!field) return;
+      if (field.type === 'checkbox') field.checked = Boolean(saved.values[id]);
+      else field.value = saved.values[id];
+      restored++;
+    });
+    if (restored) {
+      document.getElementById('day-diag-status').textContent = '已恢复上次学员记录 · 请核对条件后重新分析';
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+function dayDiagInit() {
+  var dateInput = document.getElementById('day-diag-date');
+  if (dateInput && !dateInput.value) dateInput.value = localDateValue();
+  document.querySelectorAll('[data-day-diag]').forEach(function(field) {
+    var eventName = field.type === 'checkbox' || field.tagName === 'SELECT' ? 'change' : 'input';
+    field.addEventListener(eventName, function() {
+      field.classList.remove('input-invalid');
+      document.getElementById('day-diag-error').style.display = 'none';
+      dayDiagMarkDirty();
+      dayDiagSave();
+    });
+    if (field.id === 'day-diag-target-pace' || field.id.indexOf('day-diag-run-') === 0 || field.id.indexOf('day-diag-station-') === 0) {
+      field.addEventListener('blur', function() {
+        var value = parseClockValue(field.value);
+        if (Number.isFinite(value)) field.value = secondsToClock(value);
+        dayDiagSave();
+      });
+    }
+  });
+}
+
+function dayDiagClear() {
+  try { localStorage.removeItem(DAY_DIAG_STORAGE_KEY); } catch (e) {}
+  document.querySelectorAll('[data-day-diag]').forEach(function(field) {
+    if (field.type === 'checkbox') field.checked = false;
+    else if (field.id === 'day-diag-date') field.value = localDateValue();
+    else if (field.id === 'day-diag-duration') field.value = '60';
+    else if (field.id === 'day-diag-division') field.value = 'Open';
+    else field.value = '';
+    field.classList.remove('input-invalid');
+  });
+  latestDayDiagAnalysis = null;
+  document.getElementById('day-diag-results').style.display = 'none';
+  document.getElementById('day-diag-error').style.display = 'none';
+  document.getElementById('day-diag-status').textContent = '已清空当前学员 · 可录入下一位';
+  document.getElementById('day-diag-live').textContent = '已清空单日诊断记录';
+}
+
+function dayDiagLoadExample() {
+  var runTimes = [216, 222, 228, 230];
+  var stationTimes = [165, 173, 181, 183];
+  var heartRates = [162, 166, 171, 173];
+  var rpes = [7, 7.5, 8, 8.5];
+  var notes = ['', '', '雪橇转向速度下降', 'Wall Ball 最后5次呼吸节奏变乱'];
+  document.getElementById('day-diag-athlete').value = '课堂示例';
+  document.getElementById('day-diag-date').value = localDateValue();
+  document.getElementById('day-diag-division').value = 'Open';
+  document.getElementById('day-diag-target-pace').value = '4:30';
+  document.getElementById('day-diag-duration').value = '60';
+  document.getElementById('day-diag-session-rpe').value = '8';
+  document.getElementById('day-diag-setup').value = '同一雪橇、同一草皮与器械设置；无排队；动作标准一致';
+  for (var i = 0; i < 4; i++) {
+    document.getElementById('day-diag-run-' + i).value = secondsToClock(runTimes[i]);
+    document.getElementById('day-diag-station-' + i).value = secondsToClock(stationTimes[i]);
+    document.getElementById('day-diag-hr-' + i).value = heartRates[i];
+    document.getElementById('day-diag-rpe-' + i).value = rpes[i];
+    document.getElementById('day-diag-note-' + i).value = notes[i];
+    document.getElementById('day-diag-contam-' + i).checked = false;
+  }
+  dayDiagSave();
+  dayDiagAnalyze(true);
+}
+
+function dayDiagRequiredClock(id, invalidIds) {
+  var field = document.getElementById(id);
+  var value = parseClockValue(field.value);
+  field.classList.remove('input-invalid');
+  if (!Number.isFinite(value)) {
+    field.classList.add('input-invalid');
+    invalidIds.push(id);
+    return null;
+  }
+  return value;
+}
+
+function dayDiagOptionalNumber(id, min, max, invalidIds) {
+  var field = document.getElementById(id);
+  var raw = field.value.trim();
+  field.classList.remove('input-invalid');
+  if (!raw) return null;
+  var value = Number(raw);
+  if (!Number.isFinite(value) || value < min || value > max) {
+    field.classList.add('input-invalid');
+    invalidIds.push(id);
+    return null;
+  }
+  return value;
+}
+
+function dayDiagPercent(value) {
+  if (!Number.isFinite(value)) return '--';
+  if (Math.abs(value) < 0.05) return '0.0%';
+  return (value > 0 ? '+' : '−') + Math.abs(value).toFixed(1) + '%';
+}
+
+function dayDiagBpm(value) {
+  if (!Number.isFinite(value)) return '--';
+  if (Math.abs(value) < 0.5) return '0 bpm';
+  return (value > 0 ? '+' : '−') + Math.abs(Math.round(value)) + ' bpm';
+}
+
+function dayDiagLevel(value, stableMax, mediumMax) {
+  if (value <= stableMax) return { rank: 0, label: '稳定' };
+  if (value <= mediumMax) return { rank: 1, label: '中度' };
+  return { rank: 2, label: '高' };
+}
+
+function dayDiagClassify(runLevel, stationLevel) {
+  if (runLevel.rank === 0 && stationLevel.rank === 0) return '混合耐力稳定';
+  if (runLevel.rank > stationLevel.rank) return '跑步受限';
+  if (stationLevel.rank > runLevel.rank) return '站点受限';
+  return '综合混合耐力受限';
+}
+
+function dayDiagCard(priority, title, body) {
+  return '<article class="training-rec"><span class="priority">' + priority + '</span><strong>' + title + '</strong><p>' + body + '</p></article>';
+}
+
+function dayDiagRenderTraining(analysis) {
+  var grid = document.getElementById('day-diag-training-grid');
+  var subtitle = document.getElementById('day-diag-training-subtitle');
+  var loadText = Number.isFinite(analysis.sessionLoad) ? ' 本次内部负荷 ' + Math.round(analysis.sessionLoad) + ' AU；主要与该学员自己的后续周负荷比较。' : '';
+
+  if (analysis.contaminated.length) {
+    subtitle.textContent = '本次含受污染轮次，不输出正式训练限制类型。' + loadText;
+    grid.innerHTML =
+      dayDiagCard('先修数据', '按相同条件完成一次干净复测', '排除排队、器械更换、路线/计时错误和动作标准变化；保留同一雪橇、草皮、Ski 设置、Wall Ball 重量与高度。') +
+      dayDiagCard('本周安排', '维持原计划，不据此加量', '本次结果只作描述。若当天状态差或异常症状出现，优先恢复与专业评估，不用单次损耗决定提高训练负荷。');
+    return;
+  }
+
+  if (analysis.paceIssue) {
+    subtitle.textContent = '先处理疑似起步 / 配速策略问题，再验证真实生理短板。' + loadText;
+    grid.innerHTML =
+      dayDiagCard('优先 1', '用相同课表按合规 R1 配速复测', 'R1 对齐本课目标，前三轮保持目标值 ±5秒/km（800m 为 ±4秒）；第四轮可提速，但不靠最后200m冲刺掩盖前段崩溃。') +
+      dayDiagCard('优先 2', '暂不叠加新的高强度变量', '保持站点量、负重和阈值训练不变；若合规复测后仍出现同方向损耗，再按“' + analysis.limitType + '”处方调整。');
+    return;
+  }
+
+  if (analysis.limitType === '混合耐力稳定') {
+    subtitle.textContent = '两项均在 SSP 内部稳定线内；进入单变量渐进。' + loadText;
+    grid.innerHTML =
+      dayDiagCard('下一次', '只增加一个变量', '要么把 800m 升级为 1km，要么站点总量增加约10%；不要同时增加速度、负重与总量。') +
+      dayDiagCard('2–4周', '保留条件并复测', '其他训练维持；复测时使用同一场地、器械、顺序、动作标准与计时口径，确认稳定性而非追求单次更累。');
+    return;
+  }
+
+  if (analysis.limitType === '跑步受限') {
+    subtitle.textContent = (analysis.runLevel.rank === 1 ? '中度跑步短板：维持总负荷，单方向微调。' : '高跑步损耗：优先站后跑步能力。') + loadText;
+    grid.innerHTML =
+      dayDiagCard('每周 1 次', '混合砖式目标配速跑', '完成4–5组（60–75秒标准站点＋800m目标配速跑），组间休息2分钟；要求各组跑步损耗压在3%以内。') +
+      dayDiagCard('另保留 1 次', '3×8分钟阈值跑', '以近期有效的跑步 CS、跑步 LTHR 或 Talk Test 锚点控制，组间慢跑2分钟，并与高强度混合课错开。2–4周后同条件复测。');
+    return;
+  }
+
+  if (analysis.limitType === '站点受限') {
+    var notes = analysis.notes.join(' ').toLowerCase();
+    var specific = notes.indexOf('雪橇') >= 0 || notes.indexOf('sled') >= 0
+      ? '记录提示雪橇环节异常：优先拆分雪橇起步、转向和连续推进。'
+      : notes.indexOf('wall') >= 0 || notes.indexOf('墙球') >= 0
+        ? '记录提示 Wall Ball 环节异常：优先练习分组方案、有效动作与呼吸节奏。'
+        : '当前只有站点总时间，需由教练结合异常记录或增加单站分段，才能定位 Ski、雪橇、BBJ 或 Wall Ball。';
+    subtitle.textContent = (analysis.stationLevel.rank === 1 ? '中度站点短板：维持总负荷，先复核技术。' : '高站点损耗：优先局部力量耐力与站点技术。') + loadText;
+    grid.innerHTML =
+      dayDiagCard('每周 1 次', '同站点重复质量训练', '完成6–8组×60–90秒，组间休息90秒；使用比赛负重和动作标准。相对第一组有效成绩损耗超过7%或动作变形时停止，该7%为SSP内部技术质量线。') +
+      dayDiagCard('教练复核', '根据记录定位具体站点', specific + ' 2–4周后使用相同器械条件复测。');
+    return;
+  }
+
+  subtitle.textContent = (analysis.runLevel.rank === 1 ? '两项同为中度：维持负荷并选择一个方向微调。' : '两项同为高：先降低整体密度。') + loadText;
+  grid.innerHTML =
+    dayDiagCard('未来 2–4 周', '降低混合课站点量或负重 10–15%', '完成3组（1km 目标配速慢10–15秒＋2分钟站点），组间恢复2–3分钟；先恢复连续动作与后程稳定。') +
+    dayDiagCard('基础与恢复', '保留每周两次低强度有氧', '暂时不要增加全力模拟赛。若当天睡眠、疼痛或状态评分异常，先恢复再判断能力；同条件复测后再逐步加量。');
+}
+
+function dayDiagAnalyze(shouldScroll) {
+  var invalidIds = [];
+  var targetPace = dayDiagRequiredClock('day-diag-target-pace', invalidIds);
+  var runs = [];
+  var stations = [];
+  var heartRates = [];
+  var rpes = [];
+  var notes = [];
+  var contaminated = [];
+
+  for (var i = 0; i < 4; i++) {
+    runs.push(dayDiagRequiredClock('day-diag-run-' + i, invalidIds));
+    stations.push(dayDiagRequiredClock('day-diag-station-' + i, invalidIds));
+    heartRates.push(dayDiagOptionalNumber('day-diag-hr-' + i, 50, 240, invalidIds));
+    rpes.push(dayDiagOptionalNumber('day-diag-rpe-' + i, 0, 10, invalidIds));
+    notes.push(document.getElementById('day-diag-note-' + i).value.trim());
+    if (document.getElementById('day-diag-contam-' + i).checked) contaminated.push(i + 1);
+  }
+
+  var duration = dayDiagOptionalNumber('day-diag-duration', 1, 180, invalidIds);
+  var sessionRpe = dayDiagOptionalNumber('day-diag-session-rpe', 0, 10, invalidIds);
+  var error = document.getElementById('day-diag-error');
+  if (invalidIds.length) {
+    error.textContent = '请填写有效的本课目标配速、4轮跑步时间和4轮站点总时间；心率应为50–240，RPE为0–10。';
+    error.style.display = 'block';
+    document.getElementById(invalidIds[0]).focus();
+    return;
+  }
+
+  var lateRun = (runs[2] + runs[3]) / 2;
+  var lateStation = (stations[2] + stations[3]) / 2;
+  var runDelta = lateRun - runs[0];
+  var stationDelta = lateStation - stations[0];
+  var runLoss = (lateRun / runs[0] - 1) * 100;
+  var stationLoss = (lateStation / stations[0] - 1) * 100;
+  var runLevel = dayDiagLevel(runLoss, 3, 6);
+  var stationLevel = dayDiagLevel(stationLoss, 5, 10);
+  var limitType = dayDiagClassify(runLevel, stationLevel);
+
+  var afterChanges = [];
+  for (var j = 1; j < 4; j++) {
+    afterChanges.push({
+      from: j,
+      to: j + 1,
+      seconds: runs[j] - runs[j - 1],
+      pct: (runs[j] / runs[j - 1] - 1) * 100
+    });
+  }
+  var maxAfter = afterChanges.slice().sort(function(a, b) { return b.pct - a.pct; })[0];
+
+  var hrComplete = Number.isFinite(heartRates[0]) && Number.isFinite(heartRates[2]) && Number.isFinite(heartRates[3]);
+  var hrDelta = hrComplete ? (heartRates[2] + heartRates[3]) / 2 - heartRates[0] : null;
+  var hrComparable = hrComplete && Math.abs(runLoss) < 3;
+
+  var target800 = targetPace * 0.8;
+  var r1PacePerKm = runs[0] / 0.8;
+  var fastByPerKm = targetPace - r1PacePerKm;
+  var highR1Rpe = Number.isFinite(rpes[0]) && rpes[0] >= 8;
+  var paceIssue = (fastByPerKm > 5 || highR1Rpe) && (runLoss > 3 || stationLoss > 5);
+  var sessionLoad = Number.isFinite(sessionRpe) && Number.isFinite(duration) ? sessionRpe * duration : null;
+
+  document.getElementById('day-diag-run-value').textContent = dayDiagPercent(runLoss);
+  document.getElementById('day-diag-run-meta').textContent = 'R3/R4均值 ' + secondsToClock(lateRun) + '｜比R1 ' + signedClock(runDelta) + '｜' + runLevel.label;
+  document.getElementById('day-diag-station-value').textContent = dayDiagPercent(stationLoss);
+  document.getElementById('day-diag-station-meta').textContent = 'R3/R4均值 ' + secondsToClock(lateStation) + '｜比R1 ' + signedClock(stationDelta) + '｜' + stationLevel.label;
+  document.getElementById('day-diag-after-value').textContent = dayDiagPercent(maxAfter.pct);
+  document.getElementById('day-diag-after-meta').textContent = '最大：R' + maxAfter.from + '→R' + maxAfter.to + ' ' + signedClock(maxAfter.seconds) + '；相邻描述';
+  document.getElementById('day-diag-hr-value').textContent = hrComplete ? dayDiagBpm(hrDelta) : '--';
+  document.getElementById('day-diag-hr-meta').textContent = !hrComplete
+    ? 'HR1、HR3、HR4不完整，仅用配速＋RPE分析'
+    : hrComparable
+      ? '跑步时间差<3%，环境近似时可辅助比较'
+      : '跑步时间差≥3%，配速不可比，仅记录不解读';
+
+  document.getElementById('day-diag-after-list').innerHTML = afterChanges.map(function(change) {
+    return '<div class="day-after-item"><strong>R' + change.from + '站点后 → R' + change.to + '跑</strong><span>' + signedClock(change.seconds) + ' · ' + dayDiagPercent(change.pct) + '</span></div>';
+  }).join('');
+
+  var paceTag = document.getElementById('day-diag-pace-tag');
+  if (paceIssue) {
+    paceTag.textContent = '疑似起步 / 配速策略问题';
+    paceTag.className = 'day-diag-tag warn';
+  } else {
+    paceTag.textContent = fastByPerKm > 5 ? 'R1快于目标，但未形成明显损耗' : '首轮配速合规';
+    paceTag.className = 'day-diag-tag';
+  }
+  var limitTag = document.getElementById('day-diag-limit-tag');
+  limitTag.textContent = contaminated.length ? '数据受污染 · 暂不分类' : limitType;
+  limitTag.className = contaminated.length || limitType !== '混合耐力稳定' ? 'day-diag-tag warn' : 'day-diag-tag';
+
+  var paceCopy = fastByPerKm > 0.05
+    ? 'R1折算配速比本课目标快 ' + fastByPerKm.toFixed(1) + '秒/km。'
+    : 'R1折算配速未快于本课目标超过5秒/km。';
+  var contaminationCopy = contaminated.length
+    ? ' R' + contaminated.join('、R') + ' 已标记受污染，本次只保留描述性结果，不据此调整训练负荷。'
+    : ' 本次数据未标记污染，限制类型为“' + limitType + '”。';
+  var loadCopy = Number.isFinite(sessionLoad)
+    ? ' 课后整体 RPE ' + sessionRpe + ' × 实际 ' + duration + ' 分钟 = ' + Math.round(sessionLoad) + ' AU。'
+    : ' 尚未填写课后整体 session-RPE，暂不计算内部负荷。';
+  document.getElementById('day-diag-decision-copy').textContent =
+    paceCopy + contaminationCopy + loadCopy + ' 诊断课损耗以R1为本课情境基准，不能与比赛目标损耗合并累计。';
+
+  var analysis = {
+    targetPace: targetPace,
+    target800: target800,
+    runs: runs,
+    stations: stations,
+    heartRates: heartRates,
+    rpes: rpes,
+    notes: notes,
+    contaminated: contaminated,
+    runLoss: runLoss,
+    stationLoss: stationLoss,
+    runLevel: runLevel,
+    stationLevel: stationLevel,
+    limitType: limitType,
+    paceIssue: paceIssue,
+    sessionLoad: sessionLoad,
+    generatedAt: new Date()
+  };
+  latestDayDiagAnalysis = analysis;
+  dayDiagRenderTraining(analysis);
+  error.style.display = 'none';
+  document.getElementById('day-diag-results').style.display = 'block';
+  document.getElementById('day-diag-status').textContent = contaminated.length
+    ? '分析完成 · 含污染轮次，只输出描述性结果'
+    : '分析完成 · ' + limitType + (paceIssue ? ' · 先复核配速策略' : '');
+  document.getElementById('day-diag-live').textContent = '单日诊断完成。跑步损耗 ' + runLoss.toFixed(1) + '%，站点损耗 ' + stationLoss.toFixed(1) + '%。';
+  dayDiagSave();
+  if (shouldScroll) document.getElementById('day-diag-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // ═══ CS ═══
 var tests = [{ id: 1, dist: 1200, min: 3, sec: 45 },{ id: 2, dist: 2400, min: 7, sec: 50 },{ id: 3, dist: 3600, min: 12, sec: 0 }];
 var nextId = 4, chartInstance = null;
@@ -2934,6 +3857,9 @@ renderLossEntries();
 var restoredLossInputs = restoreLossInputs();
 initLossMeta();
 if (!restoredLossInputs) syncLossTargets(true);
+dayDiagRenderRounds();
+dayDiagRestore();
+dayDiagInit();
 </script>
 </body>
 </html>
